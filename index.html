@@ -508,7 +508,15 @@ async function syncNow(){
       }
 
       if(item.type==="insert"){
-        await sb.from(item.table).upsert(payload,{onConflict:"local_id"});
+        const inserted = await sb.from(item.table).insert(payload);
+        if(inserted.error){
+          const msg = inserted.error.message || "";
+          if(msg.toLowerCase().includes("duplicate") && payload.local_id){
+            await sb.from(item.table).update(payload).eq("local_id", payload.local_id);
+          }else{
+            throw inserted.error;
+          }
+        }
       }else if(item.type==="update_preventivo_accettato"){
         let p=preventivi.find(x=>(x.local_id||x.id)===item.key);
         if(p?.id)await sb.from("preventivi").update(item.payload).eq("id",p.id);
