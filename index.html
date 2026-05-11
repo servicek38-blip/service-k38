@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Service K38 Gestionale</title>
+<link rel="icon" href="logo-k38.png" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="config.js"></script>
+<style>
+:root{--bg:#070b14;--panel:#111827;--panel2:#0d1423;--line:#26354f;--text:#fff;--muted:#a8b3c5;--yellow:#ffd400;--blue:#12b8ee;--pink:#ec1688;--red:#b91c1c;--green:#16a34a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;overflow-wrap:anywhere}
+button,input,select,textarea{font-family:inherit;font-size:15px}
+.app{max-width:1240px;margin:auto;padding:14px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:14px}
+.header-left{display:flex;align-items:center;gap:14px;min-width:0}
+.logo-box{width:98px;height:72px;background:#000;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:5px}
+.logo{max-width:100%;max-height:100%;object-fit:contain}
+h1{font-size:26px;margin:0;line-height:1.1} h2{margin:0 0 12px} h3{margin:0 0 8px}
+.muted{color:var(--muted);font-size:14px;line-height:1.35;overflow-wrap:anywhere}.brandline{height:4px;background:linear-gradient(90deg,var(--yellow),var(--blue),var(--pink));border-radius:100px;margin-top:8px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+button{background:var(--yellow);color:#111;border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;white-space:nowrap}
+button.secondary{background:#1b2942;color:#fff;border:1px solid var(--line)}button.danger{background:var(--red);color:#fff}button.green{background:var(--green);color:#fff}button.active{background:linear-gradient(90deg,var(--yellow),#fff176);color:#111}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px;overflow:hidden}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+label{display:block;font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:#fff;padding:11px;margin-top:6px;min-width:0}
+textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;font-weight:900;color:var(--yellow);word-break:break-word}
+.item{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px;overflow:hidden}.item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item img{width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:10px}.total{font-size:30px;color:var(--yellow);font-weight:900}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#24314c;color:#fff;font-size:12px;margin-top:4px}.calendar-day{border-left:4px solid var(--yellow)}.accepted{border-left:4px solid var(--green)}.blocked{opacity:.55}
+.notice{border-left:4px solid var(--yellow);padding:12px;background:#182235;border-radius:12px;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:0 1 auto;max-width:100%}.offline{background:#7f1d1d}.online{background:#14532d}.syncing{background:#854d0e}.pill{padding:6px 10px;border-radius:999px;font-size:13px;font-weight:800}
+@media(max-width:720px){.app{padding:10px}.header{align-items:flex-start}.logo-box{width:76px;height:58px}h1{font-size:21px}.item-head{flex-direction:column}.tabs button{flex:1 1 auto}.total,.stat{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-box"><img class="logo" src="logo-k38.png" alt="Service K38"></div>
+      <div style="min-width:0">
+        <h1>Gestionale Service K38</h1>
+        <div class="muted">Magazzino • Preventivi • Calendario • Offline</div>
+        <div class="brandline"></div>
+      </div>
+    </div>
+    <div>
+      <div id="netStatus" class="pill online">Online</div>
+      <button id="logoutBtn" class="danger hidden" onclick="logout()" style="margin-top:8px">Esci</button>
+    </div>
+  </div>
+
+  <section id="loginBox" class="card">
+    <h2>Login privato</h2>
+    <div class="row">
+      <label>Nome utente<input id="username" placeholder="Es. Gianluca"></label>
+      <label>Email<input id="email" type="email" autocomplete="email"></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password"></label>
+    </div>
+    <div class="actions">
+      <button onclick="login()">Accedi</button>
+      <button class="secondary" onclick="signup()">Crea utente</button>
+      <button class="secondary" onclick="resetPassword()">Recupera password</button>
+    </div>
+    <div id="loginMsg" class="muted" style="margin-top:10px"></div>
+  </section>
+
+  <section id="mainApp" class="hidden">
+    <div class="tabs">
+      <button class="active" onclick="tab('dashboard',this)">Home</button>
+      <button class="secondary" onclick="tab('magazzino',this)">Magazzino</button>
+      <button class="secondary" onclick="tab('preventivi',this)">Preventivi</button>
+      <button class="secondary" onclick="tab('calendario',this)">Calendario</button>
+      <button class="secondary" onclick="tab('dati',this)">Dati PDF</button>
+      <button id="adminTab" class="secondary hidden" onclick="tab('admin',this)">Admin</button>
+      <button class="secondary" onclick="syncNow()">Sincronizza ora</button>
+      <button id="soundToggle" class="secondary" onclick="toggleSounds()">Suoni ON</button>
+    </div>
+
+    <section id="dashboard" class="page">
+      <div class="grid">
+        <div class="card"><h3>Materiali</h3><div class="stat" id="statMateriali">0</div></div>
+        <div class="card"><h3>Preventivi</h3><div class="stat" id="statPreventivi">0</div></div>
+        <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
+        <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
+      </div>
+      <div class="card notice">
+        Offline attivo: senza rete puoi inserire materiali, preventivi ed eventi. Quando torna internet, premi “Sincronizza ora” o aspetta la sincronizzazione automatica.
+        <br><b>Elementi in coda:</b> <span id="queueCount">0</span>
+      </div>
+    </section>
+
+    <section id="magazzino" class="page hidden">
+      <div class="card">
+        <h2>Nuova scheda materiale</h2>
+        <div class="row">
+          <label>Codice inventario<input id="m_codice" placeholder="Es. K38-AUD-001"></label>
+          <label>Nome<input id="m_nome"></label>
+          <label>Categoria<select id="m_categoria"><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
+          <label>Marca<input id="m_marca"></label><label>Modello<input id="m_modello"></label><label>Seriale<input id="m_seriale"></label>
+          <label>Quantità<input id="m_quantita" type="number" value="1"></label><label>Posizione<input id="m_posizione"></label>
+          <label>Stato<select id="m_stato"><option>Disponibile</option><option>Impegnato</option><option>In manutenzione</option><option>Da controllare</option><option>Fuori servizio</option></select></label>
+          <label>Prezzo listino/acquisto €<input id="m_listino" type="number" value="0"></label>
+          <label>Prezzo reale pagato €<input id="m_reale" type="number" value="0"></label>
+          <label>Prezzo noleggio €<input id="m_noleggio" type="number" value="0"></label>
+          <label>Foto<input id="m_foto" type="file" accept="image/*"></label>
+        </div>
+        <label>Note<textarea id="m_note"></textarea></label>
+        <div class="actions"><button onclick="salvaMateriale()">Salva materiale</button><span id="m_msg" class="muted"></span></div>
+      </div>
+      <div class="card"><h2>Materiali inventariati</h2><input id="searchMateriale" placeholder="Cerca materiale..." oninput="render()"><div id="listaMateriali"></div></div>
+    </section>
+
+    <section id="preventivi" class="page hidden">
+      <div class="card">
+        <h2>Crea preventivo</h2>
+        <div class="row">
+          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data evento<input id="p_data" type="date"></label><label>Luogo<input id="p_luogo"></label>
+          <label>Audio €<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci €<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video €<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label><label>Trasporto €<input id="p_trasporto" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <label>Ore tecnico<input id="p_ore" type="number" value="0" oninput="aggiornaTotale()"></label><label>Tariffa tecnico €<input id="p_tariffa" type="number" value="0" oninput="aggiornaTotale()"></label><label>Montaggio €<input id="p_montaggio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Sconto €<input id="p_sconto" type="number" value="0" oninput="aggiornaTotale()"></label><label>IVA/Maggiorazione %<input id="p_iva" type="number" value="0" oninput="aggiornaTotale()"></label>
+        </div>
+        <label>Note<textarea id="p_note"></textarea></label>
+        <h3>Totale: <span class="total" id="totalePreventivo">0,00 €</span></h3>
+        <div class="actions"><button onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDF()">Scarica PDF</button><span id="p_msg" class="muted"></span></div>
+      </div>
+      <div class="card"><h2>Preventivi salvati</h2><div id="listaPreventivi"></div></div>
+    </section>
+
+    <section id="calendario" class="page hidden">
+      <div class="card"><h2>Calendario impegni</h2><div class="muted">Si compila automaticamente quando flagghi un preventivo come accettato.</div><div id="listaCalendario"></div></div>
+    </section>
+
+    <section id="dati" class="page hidden">
+      <div class="card">
+        <h2>Dati intestazione e firma PDF</h2>
+        <div class="row">
+          <label>Firma partner<input id="d_partner" value="Partner BENOW"></label>
+          <label>Ragione sociale<input id="d_ragione" value="Service K38"></label>
+          <label>BeNow<input id="d_benow" value="BeNow s.c.p.a."></label>
+          <label>CF BeNow<input id="d_cf" value="01516270137"></label>
+          <label>P.IVA BeNow<input id="d_piva" value="03080310174"></label>
+          <label>Codice Univoco<input id="d_univoco" value="M5UXCR1"></label>
+          <label>Telefono<input id="d_tel" value="3284218233"></label>
+          <label>Email<input id="d_email" value="servicek38@gmail.com"></label>
+        </div>
+        <label>Nota finale<textarea id="d_footer">Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilità e conferma.</textarea></label>
+        <div class="actions"><button onclick="salvaDatiPDF()">Salva dati PDF</button></div>
+      </div>
+    </section>
+
+    <section id="admin" class="page hidden">
+      <div class="card"><h2>Admin utenti</h2><div class="muted">Le password non vengono mostrate: per sicurezza non sono leggibili.</div><div id="listaUtenti"></div></div>
+    </section>
+  </section>
+</div>
+
+<script>
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
+
+let sb,user,profile,materiali=[],preventivi=[],eventi=[],utenti=[];
+let queue=JSON.parse(localStorage.getItem("k38_queue")||"[]");
+let datiPDF=JSON.parse(localStorage.getItem("k38_dati_pdf")||"{}");
+let soundsEnabled = localStorage.getItem("k38_sounds") !== "off";
+let lastSoundAt = 0;
+const soundClick = new Audio("sound-click.wav");
+const soundSuccess = new Audio("sound-success.wav");
+const soundError = new Audio("sound-error.wav");
+[soundClick, soundSuccess, soundError].forEach(a => { a.volume = 0.35; a.preload = "auto"; });
+
+function playSound(type="click"){
+  if(!soundsEnabled) return;
+  const now = Date.now();
+  if(type === "click" && now - lastSoundAt < 35) return;
+  lastSoundAt = now;
+  try{
+    const a = type==="success" ? soundSuccess : type==="error" ? soundError : soundClick;
+    a.currentTime = 0;
+    a.play().catch(()=>{});
+  }catch(e){}
+}
+function toggleSounds(){
+  soundsEnabled = !soundsEnabled;
+  localStorage.setItem("k38_sounds", soundsEnabled ? "on" : "off");
+  updateSoundButton();
+  playSound("success");
+}
+function updateSoundButton(){
+  const b = document.getElementById("soundToggle");
+  if(b) b.textContent = soundsEnabled ? "Suoni ON" : "Suoni OFF";
+}
+document.addEventListener("click", e => {
+  if(e.target.closest("button")) playSound("click");
+});
+
+const cacheKey="k38_cache_v1";
+function $(id){return document.getElementById(id)} function v(id){return $(id).value} function n(id){return Number(v(id)||0)} function euro(x){return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(Number(x||0))} function msg(id,t){$(id).textContent=" "+t}
+function online(){return navigator.onLine}
+function uid(){return "local_"+Date.now()+"_"+Math.random().toString(16).slice(2)}
+function updateNet(){let s=$("netStatus");if(!s)return;s.textContent=online()?"Online":"Offline";s.className="pill "+(online()?"online":"offline");}
+window.addEventListener("online",()=>{updateNet();syncNow()});window.addEventListener("offline",updateNet);updateNet();
+function saveQueue(){localStorage.setItem("k38_queue",JSON.stringify(queue));render()}
+function saveCache(){localStorage.setItem(cacheKey,JSON.stringify({materiali,preventivi,eventi,utenti}))}
+function loadCache(){let c=JSON.parse(localStorage.getItem(cacheKey)||"{}");materiali=c.materiali||[];preventivi=c.preventivi||[];eventi=c.eventi||[];utenti=c.utenti||[]}
+function initDati(){ $("d_partner").value=datiPDF.partner||"Partner BENOW";$("d_ragione").value=datiPDF.ragione||"Service K38";$("d_benow").value=datiPDF.benow||"BeNow s.c.p.a.";$("d_cf").value=datiPDF.cf||"01516270137";$("d_piva").value=datiPDF.piva||"03080310174";$("d_univoco").value=datiPDF.univoco||"M5UXCR1";$("d_tel").value=datiPDF.tel||"3284218233";$("d_email").value=datiPDF.email||"servicek38@gmail.com";$("d_footer").value=datiPDF.footer||"Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilità e conferma."} initDati();
+window.addEventListener("load",async()=>{updateSoundButton();sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
+async function signup(){if(!online())return msg("loginMsg","per creare utente serve internet");msg("loginMsg","creazione...");let {data,error}=await sb.auth.signUp({email:v("email"),password:v("password")});if(error)playSound("error");return msg("loginMsg",error.message);user=data.user;if(user){await upsertProfile(v("username")||v("email").split("@")[0]);msg("loginMsg","utente creato. Ora premi Accedi.")}}
+async function login(){if(!online())return msg("loginMsg","per il primo accesso serve internet");msg("loginMsg","accesso...");let {data,error}=await sb.auth.signInWithPassword({email:v("email"),password:v("password")});if(error)playSound("error");return msg("loginMsg",error.message);user=data.user;await upsertProfile(v("username")||user.email.split("@")[0]);await afterLogin()}
+async function resetPassword(){if(!online())return msg("loginMsg","per recupero password serve internet");if(!v("email"))return msg("loginMsg","inserisci prima la mail");let {error}=await sb.auth.resetPasswordForEmail(v("email"),{redirectTo:location.origin});msg("loginMsg",error?error.message:"email recupero inviata")}
+async function upsertProfile(username){let role=(user.email===MASTER_ADMIN_EMAIL)?"admin":"user";await sb.from("app_users").upsert({id:user.id,email:user.email,username,role,last_login:new Date().toISOString()})}
+async function afterLogin(){if(online()){let r=await sb.from("app_users").select("*").eq("id",user.id).single();profile=r.data;if(profile?.blocked){await logout();alert("Accesso bloccato dall'admin");return}}$("loginBox").classList.add("hidden");$("mainApp").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");if(profile?.role==="admin")$("adminTab").classList.remove("hidden");await caricaTutto();if(online()) syncNow()}
+async function logout(){await sb.auth.signOut();location.reload()}
+function tab(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));$(id).classList.remove("hidden");document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");}
+async function caricaTutto(){if(!online()){loadCache();render();return}let a=await sb.from("materiali").select("*").order("created_at",{ascending:false});let b=await sb.from("preventivi").select("*").order("created_at",{ascending:false});let c=await sb.from("eventi").select("*").order("data_evento",{ascending:true});materiali=a.data||[];preventivi=b.data||[];eventi=c.data||[];if(profile?.role==="admin"){let u=await sb.from("app_users").select("*").order("created_at",{ascending:false});utenti=u.data||[]}saveCache();render()}
+function totaleP(o){let sub=Number(o.audio||0)+Number(o.luci||0)+Number(o.video||0)+Number(o.trasporto||0)+Number(o.ore_tecnico||0)*Number(o.tariffa_tecnico||0)+Number(o.montaggio||0)-Number(o.sconto||0);return sub+sub*Number(o.iva||0)/100}
+function render(){
+$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));
+let search=(v("searchMateriale")||"").toLowerCase();$("listaMateriali").innerHTML=materiali.filter(m=>JSON.stringify(m).toLowerCase().includes(search)).map(m=>`<div class="item"><div class="item-head"><div><b>${m.nome}</b><div class="muted">Codice: ${m.codice_inventario||"-"} • ${m.categoria||""} • ${m.marca||""} ${m.modello||""} • q.tà ${m.quantita||0}</div><span class="status">${m.stato||""}</span>${m._pending?` <span class="status">da sincronizzare</span>`:""}</div><button class="danger" onclick="eliminaLocaleMateriale('${m.local_id||m.id}')">Elimina</button></div>${m.foto_url?`<img src="${m.foto_url}">`:""}<div class="muted">Listino: ${euro(m.prezzo_listino)} • Reale: ${euro(m.prezzo_reale)} • Noleggio: ${euro(m.prezzo_noleggio)}</div><p>${m.note||""}</p></div>`).join("");
+$("listaPreventivi").innerHTML=preventivi.map(p=>`<div class="item ${p.accettato?'accepted':''}"><div class="item-head"><div><b>${p.cliente||"Cliente"}</b><div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div><div class="total">${euro(p.totale)}</div><label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${p.local_id||p.id}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>${p._pending?`<span class="status">da sincronizzare</span>`:""}</div><button class="danger" onclick="eliminaLocalePreventivo('${p.local_id||p.id}')">Elimina</button></div></div>`).join("");
+$("listaCalendario").innerHTML=eventi.map(e=>`<div class="item calendar-day"><div class="item-head"><div><b>${e.data_evento||""} — ${e.titolo}</b><div class="muted">${e.cliente||""} • ${e.luogo||""}</div><span class="status">${e.stato||""}</span>${e._pending?` <span class="status">da sincronizzare</span>`:""}<div class="total">${euro(e.totale)}</div></div><button class="danger" onclick="eliminaLocaleEvento('${e.local_id||e.id}')">Elimina</button></div><p>${e.note||""}</p></div>`).join("");
+$("listaUtenti").innerHTML=utenti.map(u=>`<div class="item ${u.blocked?'blocked':''}"><div class="item-head"><div><b>${u.username||"-"}</b><div class="muted">${u.email}</div><span class="status">${u.role}</span><div class="muted">Ultimo accesso: ${u.last_login||"-"}</div></div>${u.id!==user.id?`<button class="${u.blocked?'green':'danger'}" onclick="toggleUser('${u.id}',${!u.blocked})">${u.blocked?'Sblocca':'Blocca'}</button>`:""}</div></div>`).join("");
+}
+function fileToDataURL(file){
+  return new Promise((res,rej)=>{
+    const img=new Image();
+    const reader=new FileReader();
+    reader.onload=()=>{
+      img.onload=()=>{
+        const max=1200;
+        let w=img.width, h=img.height;
+        if(w>h && w>max){h=Math.round(h*max/w);w=max}
+        if(h>=w && h>max){w=Math.round(w*max/h);h=max}
+        const canvas=document.createElement("canvas");
+        canvas.width=w; canvas.height=h;
+        const ctx=canvas.getContext("2d");
+        ctx.drawImage(img,0,0,w,h);
+        res(canvas.toDataURL("image/jpeg",0.72));
+      };
+      img.onerror=rej;
+      img.src=reader.result;
+    };
+    reader.onerror=rej;
+    reader.readAsDataURL(file);
+  });
+}
+async function salvaMateriale(){msg("m_msg","salvataggio...");let foto_url="";let foto_data="";let file=$("m_foto").files[0];if(file){foto_data=await fileToDataURL(file);foto_url=foto_data}
+let row={local_id:uid(),codice_inventario:v("m_codice"),nome:v("m_nome"),categoria:v("m_categoria"),marca:v("m_marca"),modello:v("m_modello"),seriale:v("m_seriale"),quantita:n("m_quantita"),posizione:v("m_posizione"),stato:v("m_stato"),prezzo_listino:n("m_listino"),prezzo_reale:n("m_reale"),prezzo_noleggio:n("m_noleggio"),foto_url,note:v("m_note"),_pending:true};
+materiali.unshift(row);queue.push({type:"insert",table:"materiali",payload:{...row},foto_data});saveCache();saveQueue();msg("m_msg",online()?"salvato, sincronizzo...":"salvato offline");if(online())syncNow()}
+function datiPreventivo(){let o={local_id:uid(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,luogo:v("p_luogo"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),accettato:false};o.totale=totaleP(o);return o}
+function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
+async function salvaPreventivo(){let row=datiPreventivo();row._pending=true;preventivi.unshift(row);queue.push({type:"insert",table:"preventivi",payload:{...row}});saveCache();saveQueue();msg("p_msg",online()?"salvato, sincronizzo...":"salvato offline");if(online())syncNow()}
+async function toggleAccettato(key,checked){let p=preventivi.find(x=>(x.local_id||x.id)===key);if(!p)return;p.accettato=checked;if(checked){let ev={local_id:uid(),titolo:p.evento||"Evento da preventivo",cliente:p.cliente,data_evento:p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,_pending:true};eventi.push(ev);p.evento_id=ev.local_id;queue.push({type:"insert",table:"eventi",payload:{...ev}})}queue.push({type:"update_preventivo_accettato",key,payload:{accettato:checked,evento_id:p.evento_id||null}});saveCache();saveQueue();if(online())syncNow()}
+async function syncNow(){
+  if(!online()||!user)return;
+  let s=$("netStatus");s.textContent="Sync";s.className="pill syncing";
+  let newQueue=[];
+  for(const item of queue){
+    try{
+      if(item.type==="delete"){
+        if(item.remote_id){
+          await sb.from(item.table).delete().eq("id",item.remote_id);
+        }
+        continue;
+      }
+
+      let payload={...item.payload};
+      delete payload._pending;
+
+      if(item.table==="materiali"&&item.foto_data){
+        let blob=await (await fetch(item.foto_data)).blob();
+        let path=`${Date.now()}-${payload.nome||"foto"}.png`;
+        let up=await sb.storage.from("foto-materiali").upload(path,blob,{upsert:true});
+        if(!up.error)payload.foto_url=sb.storage.from("foto-materiali").getPublicUrl(path).data.publicUrl;
+      }
+
+      if(item.type==="insert"){
+        await sb.from(item.table).upsert(payload,{onConflict:"local_id"});
+      }else if(item.type==="update_preventivo_accettato"){
+        let p=preventivi.find(x=>(x.local_id||x.id)===item.key);
+        if(p?.id)await sb.from("preventivi").update(item.payload).eq("id",p.id);
+        else if(p?.local_id)await sb.from("preventivi").update(item.payload).eq("local_id",p.local_id);
+      }
+    }catch(e){
+      newQueue.push(item);
+    }
+  }
+  queue=newQueue;
+  saveQueue();
+  await caricaTutto();
+  updateNet();
+}
+function eliminaLocaleMateriale(key){
+  let item=materiali.find(x=>(x.local_id||x.id)===key);
+  materiali=materiali.filter(x=>(x.local_id||x.id)!==key);
+  queue=queue.filter(q=>!(q.payload&&(q.payload.local_id===key||q.payload.id===key)));
+  if(item?.id)queue.push({type:"delete",table:"materiali",remote_id:item.id});
+  saveCache();saveQueue();
+  if(online())syncNow();
+}
+function eliminaLocalePreventivo(key){
+  let item=preventivi.find(x=>(x.local_id||x.id)===key);
+  preventivi=preventivi.filter(x=>(x.local_id||x.id)!==key);
+  queue=queue.filter(q=>!(q.payload&&(q.payload.local_id===key||q.payload.id===key)));
+  if(item?.id)queue.push({type:"delete",table:"preventivi",remote_id:item.id});
+  saveCache();saveQueue();
+  if(online())syncNow();
+}
+function eliminaLocaleEvento(key){
+  let item=eventi.find(x=>(x.local_id||x.id)===key);
+  eventi=eventi.filter(x=>(x.local_id||x.id)!==key);
+  queue=queue.filter(q=>!(q.payload&&(q.payload.local_id===key||q.payload.id===key)));
+  if(item?.id)queue.push({type:"delete",table:"eventi",remote_id:item.id});
+  saveCache();saveQueue();
+  if(online())syncNow();
+}
+async function toggleUser(id,blocked){if(!online())return alert("serve internet");await sb.from("app_users").update({blocked}).eq("id",id);await caricaTutto()}
+function salvaDatiPDF(){datiPDF={partner:v("d_partner"),ragione:v("d_ragione"),benow:v("d_benow"),cf:v("d_cf"),piva:v("d_piva"),univoco:v("d_univoco"),tel:v("d_tel"),email:v("d_email"),footer:v("d_footer")};localStorage.setItem("k38_dati_pdf",JSON.stringify(datiPDF));playSound("success");alert("Dati salvati")}
+function scaricaPDF(){salvaDatiPDF();let q=datiPreventivo();let {jsPDF}=window.jspdf;let doc=new jsPDF();let img=new Image();img.src="logo-k38.png";img.onload=()=>pdf(doc,q,img);img.onerror=()=>pdf(doc,q,null)}
+function pdf(doc,q,img){if(img)doc.addImage(img,"PNG",12,10,42,30);doc.setFontSize(18);doc.text("PREVENTIVO SERVICE K38",62,18);doc.setFontSize(10);doc.text(datiPDF.ragione||"Service K38",62,26);doc.text(`${datiPDF.partner||"Partner BENOW"} • ${datiPDF.benow||"BeNow s.c.p.a."}`,62,32);doc.text(`CF ${datiPDF.cf||"01516270137"} • P.IVA ${datiPDF.piva||"03080310174"} • CU ${datiPDF.univoco||"M5UXCR1"}`,62,38);doc.text(`${datiPDF.tel||""}${datiPDF.email?" • "+datiPDF.email:""}`,62,44);doc.line(12,52,198,52);let y=64;doc.setFontSize(12);[["Cliente",q.cliente],["Evento",q.evento],["Data",q.data_evento||""],["Luogo",q.luogo]].forEach(r=>{doc.text(`${r[0]}: ${r[1]||""}`,12,y);y+=8});y+=4;[["Audio",q.audio],["Luci",q.luci],["Video",q.video],["Trasporto",q.trasporto],["Tecnico",q.ore_tecnico*q.tariffa_tecnico],["Montaggio",q.montaggio],["Sconto",-q.sconto]].forEach(r=>{doc.text(r[0],12,y);doc.text(euro(r[1]),185,y,{align:"right"});y+=8});doc.line(12,y,198,y);y+=10;doc.setFontSize(16);doc.text("Totale",12,y);doc.text(euro(q.totale),185,y,{align:"right"});y+=14;doc.setFontSize(10);doc.text("Note:",12,y);y+=6;doc.text(doc.splitTextToSize(q.note||"",180),12,y);doc.setFontSize(9);doc.text(doc.splitTextToSize(datiPDF.footer||"",180),12,282);doc.save(`Preventivo-${q.cliente||"Service-K38"}.pdf`)}
+</script>
+</body>
+</html>
