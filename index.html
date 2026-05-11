@@ -34,6 +34,21 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
 .item{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px;overflow:hidden}.item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item img{width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:10px}.total{font-size:30px;color:var(--yellow);font-weight:900}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#24314c;color:#fff;font-size:12px;margin-top:4px}.calendar-day{border-left:4px solid var(--yellow)}.accepted{border-left:4px solid var(--green)}.blocked{opacity:.55}
 .notice{border-left:4px solid var(--yellow);padding:12px;background:#182235;border-radius:12px;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:0 1 auto;max-width:100%}.offline{background:#7f1d1d}.online{background:#14532d}.syncing{background:#854d0e}.pill{padding:6px 10px;border-radius:999px;font-size:13px;font-weight:800}
 @media(max-width:720px){.app{padding:10px}.header{align-items:flex-start}.logo-box{width:76px;height:58px}h1{font-size:21px}.item-head{flex-direction:column}.tabs button{flex:1 1 auto}.total,.stat{font-size:24px}}
+
+.calendar-list{display:flex;flex-direction:column;gap:10px}
+.calendar-day-row{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer}
+.calendar-day-row:hover{border-color:var(--yellow)}
+.calendar-detail{margin-top:10px;background:#0b1220;border:1px solid var(--line);border-radius:16px;padding:14px}
+.badge{display:inline-block;background:#24314c;border-radius:999px;padding:5px 10px;font-size:12px;margin:2px}
+.form-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+@media(max-width:720px){
+  .header{display:grid;grid-template-columns:1fr auto}
+  .header-left{align-items:flex-start}
+  .row{grid-template-columns:1fr}
+  input,select,textarea{font-size:16px}
+  button{white-space:normal}
+  .calendar-day-row{align-items:flex-start;flex-direction:column}
+}
 </style>
 </head>
 <body>
@@ -43,7 +58,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
       <div class="logo-box"><img class="logo" src="logo-k38.png" alt="Service K38"></div>
       <div style="min-width:0">
         <h1>Gestionale Service K38</h1>
-        <div class="muted">Magazzino • Preventivi • Calendario • Offline</div>
+        <div class="muted">Magazzino • Preventivi • Eventi • Calendario • Offline</div>
         <div class="brandline"></div>
       </div>
     </div>
@@ -74,6 +89,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
       <button class="secondary" onclick="tab('magazzino',this)">Magazzino</button>
       <button class="secondary" onclick="tab('preventivi',this)">Preventivi</button>
       <button class="secondary" onclick="tab('calendario',this)">Calendario</button>
+      <button class="secondary" onclick="tab('eventiPage',this)">Eventi</button>
       <button class="secondary" onclick="tab('dati',this)">Dati PDF</button>
       <button id="adminTab" class="secondary hidden" onclick="tab('admin',this)">Admin</button>
       <button class="secondary" onclick="syncNow()">Sincronizza ora</button>
@@ -87,7 +103,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
         <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
       </div>
-      <div class="card"><button class="green" onclick="tabFromHome(\'calendario\')">Apri calendario / impegni</button></div>
+      <div class="card"><button class="green" onclick="tabFromHome(\'calendario\')">Apri eventi / calendario</button></div>
       <div class="card notice">
         Offline attivo: senza rete puoi inserire materiali, preventivi ed eventi. Quando torna internet, premi “Sincronizza ora” o aspetta la sincronizzazione automatica.
         <br><b>Elementi in coda:</b> <span id="queueCount">0</span>
@@ -131,7 +147,45 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
     </section>
 
     <section id="calendario" class="page hidden">
-      <div class="card"><h2>Calendario impegni</h2><div class="muted">Si compila automaticamente quando flagghi un preventivo come accettato.</div><div id="listaCalendario"></div></div>
+      <div class="card">
+        <div class="form-title">
+          <div>
+            <h2>Calendario impegni</h2>
+            <div class="muted">Vista a lista: clicca un giorno per aprire dettaglio eventi e modifiche.</div>
+          </div>
+          <button class="green" onclick="mostraNuovoEvento()">Aggiungi impegno</button>
+        </div>
+        <div id="formNuovoEvento" class="item hidden">
+          <h3>Nuovo impegno / evento</h3>
+          <div class="row">
+            <label>Titolo<input id="new_ev_titolo" placeholder="Es. Matrimonio / Service live"></label>
+            <label>Cliente<input id="new_ev_cliente" placeholder="Cliente"></label>
+            <label>Data<input id="new_ev_data" type="date"></label>
+            <label>Luogo<input id="new_ev_luogo" placeholder="Luogo"></label>
+            <label>Stato<select id="new_ev_stato"><option>Richiesta</option><option>Preventivo</option><option>Confermato</option><option>Montato</option><option>Smontato</option><option>Pagato</option></select></label>
+            <label>Totale €<input id="new_ev_totale" type="number" value="0"></label>
+          </div>
+          <label>Note<textarea id="new_ev_note"></textarea></label>
+          <div class="actions">
+            <button onclick="creaEventoManuale()">Salva impegno</button>
+            <button class="secondary" onclick="mostraNuovoEvento(false)">Annulla</button>
+          </div>
+        </div>
+        <div id="listaCalendario"></div>
+      </div>
+    </section>
+
+    <section id="eventiPage" class="page hidden">
+      <div class="card">
+        <div class="form-title">
+          <div>
+            <h2>Eventi</h2>
+            <div class="muted">Elenco completo degli impegni/eventi. È la stessa base dati del calendario.</div>
+          </div>
+          <button class="green" onclick="tabFromHome('calendario'); mostraNuovoEvento()">Aggiungi evento</button>
+        </div>
+        <div id="listaEventiCompleta"></div>
+      </div>
     </section>
 
     <section id="dati" class="page hidden">
@@ -256,24 +310,27 @@ function render(){
 $("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));
 let search=(v("searchMateriale")||"").toLowerCase();$("listaMateriali").innerHTML=materiali.filter(m=>JSON.stringify(m).toLowerCase().includes(search)).map(m=>`<div class="item"><div class="item-head"><div><b>${m.nome}</b><div class="muted">Codice: ${m.codice_inventario||"-"} • ${m.categoria||""} • ${m.marca||""} ${m.modello||""} • q.tà ${m.quantita||0}</div><span class="status">${m.stato||""}</span>${m._pending?` <span class="status">da sincronizzare</span>`:""}</div><button class="danger" onclick="eliminaLocaleMateriale('${m.local_id||m.id}')">Elimina</button></div>${m.foto_url?`<img src="${m.foto_url}">`:""}<div class="muted">Listino: ${euro(m.prezzo_listino)} • Reale: ${euro(m.prezzo_reale)} • Noleggio: ${euro(m.prezzo_noleggio)}</div><p>${m.note||""}</p></div>`).join("");
 $("listaPreventivi").innerHTML=preventivi.map(p=>`<div class="item ${p.accettato?'accepted':''}"><div class="item-head"><div><b>${p.cliente||"Cliente"}</b><div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div><div class="total">${euro(p.totale)}</div><label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${p.local_id||p.id}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>${p._pending?`<span class="status">da sincronizzare</span>`:""}</div><button class="danger" onclick="eliminaLocalePreventivo('${p.local_id||p.id}')">Elimina</button></div></div>`).join("");
-$("listaCalendario").innerHTML=eventi.map(e=>`<div class="item calendar-day">
-  <div class="row">
-    <label>Titolo<input id="ev_t_${e.local_id||e.id}" value="${(e.titolo||"").replaceAll('"',"&quot;")}"></label>
-    <label>Cliente<input id="ev_c_${e.local_id||e.id}" value="${(e.cliente||"").replaceAll('"',"&quot;")}"></label>
-    <label>Data<input type="date" id="ev_d_${e.local_id||e.id}" value="${e.data_evento||""}"></label>
-    <label>Luogo<input id="ev_l_${e.local_id||e.id}" value="${(e.luogo||"").replaceAll('"',"&quot;")}"></label>
-    <label>Stato<select id="ev_s_${e.local_id||e.id}">
-      ${["Richiesta","Preventivo","Confermato","Montato","Smontato","Pagato"].map(st=>`<option ${st===(e.stato||"")?"selected":""}>${st}</option>`).join("")}
-    </select></label>
-  </div>
-  <label>Note<textarea id="ev_n_${e.local_id||e.id}">${e.note||""}</textarea></label>
-  <div class="total">${euro(e.totale)}</div>
-  <div class="actions">
-    <button class="green" onclick="salvaModificaEvento('${e.local_id||e.id}')">Salva modifiche impegno</button>
-    <button class="danger" onclick="eliminaLocaleEvento('${e.local_id||e.id}')">Elimina</button>
-  </div>
-  ${e._pending?`<span class="status">da sincronizzare</span>`:""}
-</div>`).join("");
+const grouped={};
+eventi.forEach(e=>{
+  const d=e.data_evento||"Senza data";
+  if(!grouped[d]) grouped[d]=[];
+  grouped[d].push(e);
+});
+const days=Object.keys(grouped).sort();
+$("listaCalendario").innerHTML=`<div class="calendar-list">`+days.map(day=>{
+  const list=grouped[day];
+  const label=day==="Senza data"?"Senza data":new Date(day+"T00:00:00").toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
+  return `<div>
+    <div class="calendar-day-row" onclick="toggleDayDetail('${day.replaceAll("'","\\'")}')">
+      <div><b>${label}</b><div class="muted">${list.length} impegno/i</div></div>
+      <div>${list.map(e=>`<span class="badge">${e.stato||"Evento"}</span>`).join("")}</div>
+    </div>
+    <div id="day_${safeId(day)}" class="calendar-detail hidden">
+      ${list.map(e=>renderEventoEdit(e)).join("")}
+    </div>
+  </div>`;
+}).join("")+`</div>`;
+$("listaEventiCompleta").innerHTML=eventi.length?eventi.map(e=>renderEventoEdit(e)).join(""):`<div class="notice">Nessun evento presente.</div>`;
 $("listaUtenti").innerHTML=utenti.map(u=>`<div class="item ${u.blocked?'blocked':''}"><div class="item-head"><div><b>${u.username||"-"}</b><div class="muted">${u.email}</div><span class="status">${u.role}</span><div class="muted">Ultimo accesso: ${u.last_login||"-"}</div></div>${u.id!==user.id?`<button class="${u.blocked?'green':'danger'}" onclick="toggleUser('${u.id}',${!u.blocked})">${u.blocked?'Sblocca':'Blocca'}</button>`:""}</div></div>`).join("");
 }
 function fileToDataURL(file){
@@ -306,6 +363,7 @@ function datiPreventivo(){let o={local_id:uid(),cliente:v("p_cliente"),evento:v(
 function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
 async function salvaPreventivo(){
   const row=datiPreventivo();
+  if(!row.cliente && !row.evento){ playSound("error"); alert("Inserisci almeno cliente o evento prima di salvare il preventivo."); return; }
   if(!confirmPastDate(row.data_evento)) return;
   row._pending=true;
   preventivi.unshift(row);
@@ -459,6 +517,84 @@ async function salvaModificaEvento(key){
   playSound("success");
   if(online())syncNow();
 }
+function safeId(str){return String(str||"").replace(/[^a-zA-Z0-9]/g,"_")}
+function toggleDayDetail(day){
+  const el=$("day_"+safeId(day));
+  if(el) el.classList.toggle("hidden");
+}
+function renderEventoEdit(e){
+  const key=e.local_id||e.id;
+  return `<div class="item calendar-day">
+    <div class="row">
+      <label>Titolo<input id="ev_t_${key}" value="${(e.titolo||"").replaceAll('"',"&quot;")}"></label>
+      <label>Cliente<input id="ev_c_${key}" value="${(e.cliente||"").replaceAll('"',"&quot;")}"></label>
+      <label>Data<input type="date" id="ev_d_${key}" value="${e.data_evento||""}"></label>
+      <label>Luogo<input id="ev_l_${key}" value="${(e.luogo||"").replaceAll('"',"&quot;")}"></label>
+      <label>Stato<select id="ev_s_${key}">
+        ${["Richiesta","Preventivo","Confermato","Montato","Smontato","Pagato"].map(st=>`<option ${st===(e.stato||"")?"selected":""}>${st}</option>`).join("")}
+      </select></label>
+      <label>Totale €<input type="number" id="ev_tot_${key}" value="${e.totale||0}"></label>
+    </div>
+    <label>Note<textarea id="ev_n_${key}">${e.note||""}</textarea></label>
+    <div class="actions">
+      <button class="green" onclick="salvaModificaEvento('${key}')">Salva modifiche</button>
+      <button class="danger" onclick="eliminaLocaleEvento('${key}')">Elimina</button>
+    </div>
+    ${e._pending?`<span class="status">da sincronizzare</span>`:""}
+  </div>`;
+}
+function mostraNuovoEvento(show=true){
+  const box=$("formNuovoEvento");
+  if(box) box.classList.toggle("hidden", !show);
+}
+async function creaEventoManuale(){
+  const row={
+    local_id:uid(),
+    titolo:v("new_ev_titolo")||"Nuovo impegno",
+    cliente:v("new_ev_cliente"),
+    data_evento:v("new_ev_data")||null,
+    luogo:v("new_ev_luogo"),
+    stato:v("new_ev_stato")||"Richiesta",
+    totale:n("new_ev_totale"),
+    note:v("new_ev_note"),
+    _pending:true
+  };
+  if(!confirmPastDate(row.data_evento)) return;
+  eventi.push(row);
+  queue.push({type:"insert",table:"eventi",payload:{...row}});
+  saveCache();saveQueue();
+  mostraNuovoEvento(false);
+  playSound("success");
+  if(online()) await syncNow();
+}
+async function salvaModificaEvento(key){
+  let e=eventi.find(x=>(x.local_id||x.id)===key);
+  if(!e)return;
+  const updated={
+    titolo:$("ev_t_"+key).value,
+    cliente:$("ev_c_"+key).value,
+    data_evento:$("ev_d_"+key).value||null,
+    luogo:$("ev_l_"+key).value,
+    stato:$("ev_s_"+key).value,
+    totale:Number($("ev_tot_"+key).value||0),
+    note:$("ev_n_"+key).value
+  };
+  if(!confirmPastDate(updated.data_evento)) return;
+  Object.assign(e,updated);
+  if(online() && e.id){
+    const {error}=await sb.from("eventi").update(updated).eq("id",e.id);
+    if(error){playSound("error");alert(error.message);return}
+    playSound("success");
+    await caricaTutto();
+    return;
+  }
+  e._pending=true;
+  queue.push({type:"update_evento",key,payload:updated});
+  saveCache();saveQueue();
+  playSound("success");
+  if(online())syncNow();
+}
+
 async function toggleUser(id,blocked){if(!online())return alert("serve internet");await sb.from("app_users").update({blocked}).eq("id",id);await caricaTutto()}
 function salvaDatiPDF(){datiPDF={partner:v("d_partner"),ragione:v("d_ragione"),benow:v("d_benow"),cf:v("d_cf"),piva:v("d_piva"),univoco:v("d_univoco"),tel:v("d_tel"),email:v("d_email"),footer:v("d_footer")};localStorage.setItem("k38_dati_pdf",JSON.stringify(datiPDF));playSound("success");alert("Dati salvati")}
 function scaricaPDF(){salvaDatiPDF();let q=datiPreventivo();let {jsPDF}=window.jspdf;let doc=new jsPDF();let img=new Image();img.src="logo-k38.png";img.onload=()=>pdf(doc,q,img);img.onerror=()=>pdf(doc,q,null)}
