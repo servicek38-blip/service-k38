@@ -462,7 +462,12 @@ async function syncNow(){
   }
   queue=newQueue;
   saveQueue();
-  await caricaTutto();
+  if(queue.length===0){
+    await caricaTutto();
+  }else{
+    saveCache();
+    render();
+  }
   updateNet();
 }
 function eliminaLocaleMateriale(key){
