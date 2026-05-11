@@ -103,7 +103,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
         <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
       </div>
-      <div class="card"><button class="green" onclick="tabFromHome(\'calendario\')">Apri eventi / calendario</button></div>
+      <div class="card"><button class="green" onclick="tabFromHome('calendario')">Apri eventi / calendario</button></div>
       <div class="card notice">
         Offline attivo: senza rete puoi inserire materiali, preventivi ed eventi. Quando torna internet, premi “Sincronizza ora” o aspetta la sincronizzazione automatica.
         <br><b>Elementi in coda:</b> <span id="queueCount">0</span>
@@ -151,10 +151,11 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <div class="form-title">
           <div>
             <h2>Calendario impegni</h2>
-            <div class="muted">Vista a lista: clicca un giorno per aprire dettaglio eventi e modifiche.</div>
+            <div class="muted">Lista giorni. Clicca un giorno per vedere e modificare gli impegni.</div>
           </div>
           <button class="green" onclick="mostraNuovoEvento()">Aggiungi impegno</button>
         </div>
+
         <div id="formNuovoEvento" class="item hidden">
           <h3>Nuovo impegno / evento</h3>
           <div class="row">
@@ -171,6 +172,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
             <button class="secondary" onclick="mostraNuovoEvento(false)">Annulla</button>
           </div>
         </div>
+
         <div id="listaCalendario"></div>
       </div>
     </section>
@@ -180,7 +182,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <div class="form-title">
           <div>
             <h2>Eventi</h2>
-            <div class="muted">Elenco completo degli impegni/eventi. È la stessa base dati del calendario.</div>
+            <div class="muted">Elenco completo degli impegni/eventi.</div>
           </div>
           <button class="green" onclick="tabFromHome('calendario'); mostraNuovoEvento()">Aggiungi evento</button>
         </div>
@@ -306,9 +308,71 @@ function confirmPastDate(dateStr){
   return confirm("ATTENZIONE: hai selezionato una data già trascorsa. Vuoi continuare comunque?");
 }
 function totaleP(o){let sub=Number(o.audio||0)+Number(o.luci||0)+Number(o.video||0)+Number(o.trasporto||0)+Number(o.ore_tecnico||0)*Number(o.tariffa_tecnico||0)+Number(o.montaggio||0)-Number(o.sconto||0);return sub+sub*Number(o.iva||0)/100}
+function renderMaterialeEdit(m){
+  const key=m.local_id||m.id;
+  const stati=["Disponibile","Impegnato","In manutenzione","Da controllare","Fuori servizio"];
+  const categorie=["Audio","Luci","Video","Cavi","Strutture","Accessori","Ricambi","Utensili"];
+  return '<div class="item">' +
+    '<div class="row">' +
+      '<label>Codice inventario<input id="mat_cod_'+key+'" value="'+escapeHtml(m.codice_inventario||"")+'"></label>' +
+      '<label>Nome<input id="mat_nome_'+key+'" value="'+escapeHtml(m.nome||"")+'"></label>' +
+      '<label>Categoria<select id="mat_cat_'+key+'">'+categorie.map(c=>'<option '+(c===(m.categoria||"")?'selected':'')+'>'+escapeHtml(c)+'</option>').join("")+'</select></label>' +
+      '<label>Marca<input id="mat_marca_'+key+'" value="'+escapeHtml(m.marca||"")+'"></label>' +
+      '<label>Modello<input id="mat_modello_'+key+'" value="'+escapeHtml(m.modello||"")+'"></label>' +
+      '<label>Seriale<input id="mat_seriale_'+key+'" value="'+escapeHtml(m.seriale||"")+'"></label>' +
+      '<label>Quantità<input type="number" id="mat_qta_'+key+'" value="'+Number(m.quantita||0)+'"></label>' +
+      '<label>Posizione<input id="mat_pos_'+key+'" value="'+escapeHtml(m.posizione||"")+'"></label>' +
+      '<label>Stato<select id="mat_stato_'+key+'">'+stati.map(s=>'<option '+(s===(m.stato||"")?'selected':'')+'>'+escapeHtml(s)+'</option>').join("")+'</select></label>' +
+      '<label>Prezzo listino/acquisto €<input type="number" id="mat_listino_'+key+'" value="'+Number(m.prezzo_listino||0)+'"></label>' +
+      '<label>Prezzo reale pagato €<input type="number" id="mat_reale_'+key+'" value="'+Number(m.prezzo_reale||0)+'"></label>' +
+      '<label>Prezzo noleggio €<input type="number" id="mat_noleggio_'+key+'" value="'+Number(m.prezzo_noleggio||0)+'"></label>' +
+    '</div>' +
+    (m.foto_url?'<img src="'+escapeHtml(m.foto_url)+'">':'') +
+    '<label>Note<textarea id="mat_note_'+key+'">'+escapeHtml(m.note||"")+'</textarea></label>' +
+    '<div class="actions">' +
+      '<button class="green" onclick="salvaModificaMateriale(&quot;'+key+'&quot;)">Salva modifiche materiale</button>' +
+      '<button class="danger" onclick="eliminaLocaleMateriale(&quot;'+key+'&quot;)">Elimina</button>' +
+    '</div>' +
+    (m._pending?'<span class="status">da sincronizzare</span>':'') +
+  '</div>';
+}
+async function salvaModificaMateriale(key){
+  let m=materiali.find(x=>(x.local_id||x.id)===key);
+  if(!m)return;
+  const updated={
+    codice_inventario:$("mat_cod_"+key).value,
+    nome:$("mat_nome_"+key).value,
+    categoria:$("mat_cat_"+key).value,
+    marca:$("mat_marca_"+key).value,
+    modello:$("mat_modello_"+key).value,
+    seriale:$("mat_seriale_"+key).value,
+    quantita:Number($("mat_qta_"+key).value||0),
+    posizione:$("mat_pos_"+key).value,
+    stato:$("mat_stato_"+key).value,
+    prezzo_listino:Number($("mat_listino_"+key).value||0),
+    prezzo_reale:Number($("mat_reale_"+key).value||0),
+    prezzo_noleggio:Number($("mat_noleggio_"+key).value||0),
+    note:$("mat_note_"+key).value
+  };
+  if(!updated.nome){playSound("error");alert("Il nome materiale è obbligatorio.");return}
+  Object.assign(m,updated);
+  if(online() && m.id){
+    const {error}=await sb.from("materiali").update(updated).eq("id",m.id);
+    if(error){playSound("error");alert(error.message);return}
+    playSound("success");
+    await caricaTutto();
+    return;
+  }
+  m._pending=true;
+  queue.push({type:"update_materiale",key,payload:updated});
+  saveCache();saveQueue();
+  playSound("success");
+  if(online())syncNow();
+}
+
 function render(){
 $("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));
-let search=(v("searchMateriale")||"").toLowerCase();$("listaMateriali").innerHTML=materiali.filter(m=>JSON.stringify(m).toLowerCase().includes(search)).map(m=>`<div class="item"><div class="item-head"><div><b>${m.nome}</b><div class="muted">Codice: ${m.codice_inventario||"-"} • ${m.categoria||""} • ${m.marca||""} ${m.modello||""} • q.tà ${m.quantita||0}</div><span class="status">${m.stato||""}</span>${m._pending?` <span class="status">da sincronizzare</span>`:""}</div><button class="danger" onclick="eliminaLocaleMateriale('${m.local_id||m.id}')">Elimina</button></div>${m.foto_url?`<img src="${m.foto_url}">`:""}<div class="muted">Listino: ${euro(m.prezzo_listino)} • Reale: ${euro(m.prezzo_reale)} • Noleggio: ${euro(m.prezzo_noleggio)}</div><p>${m.note||""}</p></div>`).join("");
+let search=(v("searchMateriale")||"").toLowerCase();$("listaMateriali").innerHTML=materiali.filter(m=>JSON.stringify(m).toLowerCase().includes(search)).map(m=>renderMaterialeEdit(m)).join("");
 $("listaPreventivi").innerHTML=preventivi.map(p=>`<div class="item ${p.accettato?'accepted':''}"><div class="item-head"><div><b>${p.cliente||"Cliente"}</b><div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div><div class="total">${euro(p.totale)}</div><label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${p.local_id||p.id}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>${p._pending?`<span class="status">da sincronizzare</span>`:""}</div><button class="danger" onclick="eliminaLocalePreventivo('${p.local_id||p.id}')">Elimina</button></div></div>`).join("");
 const grouped={};
 eventi.forEach(e=>{
@@ -317,20 +381,18 @@ eventi.forEach(e=>{
   grouped[d].push(e);
 });
 const days=Object.keys(grouped).sort();
-$("listaCalendario").innerHTML=`<div class="calendar-list">`+days.map(day=>{
+$("listaCalendario").innerHTML = days.length ? '<div class="calendar-list">' + days.map(day=>{
   const list=grouped[day];
-  const label=day==="Senza data"?"Senza data":new Date(day+"T00:00:00").toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
-  return `<div>
-    <div class="calendar-day-row" onclick="toggleDayDetail('${day.replaceAll("'","\\'")}')">
-      <div><b>${label}</b><div class="muted">${list.length} impegno/i</div></div>
-      <div>${list.map(e=>`<span class="badge">${e.stato||"Evento"}</span>`).join("")}</div>
-    </div>
-    <div id="day_${safeId(day)}" class="calendar-detail hidden">
-      ${list.map(e=>renderEventoEdit(e)).join("")}
-    </div>
-  </div>`;
-}).join("")+`</div>`;
-$("listaEventiCompleta").innerHTML=eventi.length?eventi.map(e=>renderEventoEdit(e)).join(""):`<div class="notice">Nessun evento presente.</div>`;
+  const label=day==="Senza data" ? "Senza data" : new Date(day+"T00:00:00").toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
+  return '<div>' +
+    '<div class="calendar-day-row" onclick="toggleDayDetail(\'' + escapeAttr(day) + '\')">' +
+      '<div><b>' + escapeHtml(label) + '</b><div class="muted">' + list.length + ' impegno/i</div></div>' +
+      '<div>' + list.map(e=>'<span class="badge">' + escapeHtml(e.stato||"Evento") + '</span>').join("") + '</div>' +
+    '</div>' +
+    '<div id="day_' + safeId(day) + '" class="calendar-detail hidden">' + list.map(e=>renderEventoEdit(e)).join("") + '</div>' +
+  '</div>';
+}).join("") + '</div>' : '<div class="notice">Nessun impegno presente. Premi Aggiungi impegno.</div>';
+$("listaEventiCompleta").innerHTML = eventi.length ? eventi.map(e=>renderEventoEdit(e)).join("") : '<div class="notice">Nessun evento presente.</div>';
 $("listaUtenti").innerHTML=utenti.map(u=>`<div class="item ${u.blocked?'blocked':''}"><div class="item-head"><div><b>${u.username||"-"}</b><div class="muted">${u.email}</div><span class="status">${u.role}</span><div class="muted">Ultimo accesso: ${u.last_login||"-"}</div></div>${u.id!==user.id?`<button class="${u.blocked?'green':'danger'}" onclick="toggleUser('${u.id}',${!u.blocked})">${u.blocked?'Sblocca':'Blocca'}</button>`:""}</div></div>`).join("");
 }
 function fileToDataURL(file){
@@ -455,6 +517,10 @@ async function syncNow(){
         let e=eventi.find(x=>(x.local_id||x.id)===item.key);
         if(e?.id)await sb.from("eventi").update(item.payload).eq("id",e.id);
         else if(e?.local_id)await sb.from("eventi").update(item.payload).eq("local_id",e.local_id);
+      }else if(item.type==="update_materiale"){
+        let m=materiali.find(x=>(x.local_id||x.id)===item.key);
+        if(m?.id)await sb.from("materiali").update(item.payload).eq("id",m.id);
+        else if(m?.local_id)await sb.from("materiali").update(item.payload).eq("local_id",m.local_id);
       }
     }catch(e){
       newQueue.push(item);
@@ -471,6 +537,7 @@ async function syncNow(){
   updateNet();
 }
 function eliminaLocaleMateriale(key){
+  if(!confirm("Vuoi davvero eliminare questo materiale?")) return;
   let item=materiali.find(x=>(x.local_id||x.id)===key);
   materiali=materiali.filter(x=>(x.local_id||x.id)!==key);
   queue=queue.filter(q=>!(q.payload&&(q.payload.local_id===key||q.payload.id===key)));
@@ -522,31 +589,39 @@ async function salvaModificaEvento(key){
   playSound("success");
   if(online())syncNow();
 }
-function safeId(str){return String(str||"").replace(/[^a-zA-Z0-9]/g,"_")}
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+function escapeAttr(value){
+  return String(value ?? "").replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+}
+function safeId(str){
+  return String(str||"").replace(/[^a-zA-Z0-9]/g,"_");
+}
 function toggleDayDetail(day){
   const el=$("day_"+safeId(day));
   if(el) el.classList.toggle("hidden");
 }
 function renderEventoEdit(e){
   const key=e.local_id||e.id;
-  return `<div class="item calendar-day">
-    <div class="row">
-      <label>Titolo<input id="ev_t_${key}" value="${(e.titolo||"").replaceAll('"',"&quot;")}"></label>
-      <label>Cliente<input id="ev_c_${key}" value="${(e.cliente||"").replaceAll('"',"&quot;")}"></label>
-      <label>Data<input type="date" id="ev_d_${key}" value="${e.data_evento||""}"></label>
-      <label>Luogo<input id="ev_l_${key}" value="${(e.luogo||"").replaceAll('"',"&quot;")}"></label>
-      <label>Stato<select id="ev_s_${key}">
-        ${["Richiesta","Preventivo","Confermato","Montato","Smontato","Pagato"].map(st=>`<option ${st===(e.stato||"")?"selected":""}>${st}</option>`).join("")}
-      </select></label>
-      <label>Totale €<input type="number" id="ev_tot_${key}" value="${e.totale||0}"></label>
-    </div>
-    <label>Note<textarea id="ev_n_${key}">${e.note||""}</textarea></label>
-    <div class="actions">
-      <button class="green" onclick="salvaModificaEvento('${key}')">Salva modifiche</button>
-      <button class="danger" onclick="eliminaLocaleEvento('${key}')">Elimina</button>
-    </div>
-    ${e._pending?`<span class="status">da sincronizzare</span>`:""}
-  </div>`;
+  const stati=["Richiesta","Preventivo","Confermato","Montato","Smontato","Pagato"];
+  const options=stati.map(st=>'<option '+(st===(e.stato||"")?'selected':'')+'>'+escapeHtml(st)+'</option>').join("");
+  return '<div class="item calendar-day">' +
+    '<div class="row">' +
+      '<label>Titolo<input id="ev_t_'+key+'" value="'+escapeHtml(e.titolo||"")+'"></label>' +
+      '<label>Cliente<input id="ev_c_'+key+'" value="'+escapeHtml(e.cliente||"")+'"></label>' +
+      '<label>Data<input type="date" id="ev_d_'+key+'" value="'+escapeHtml(e.data_evento||"")+'"></label>' +
+      '<label>Luogo<input id="ev_l_'+key+'" value="'+escapeHtml(e.luogo||"")+'"></label>' +
+      '<label>Stato<select id="ev_s_'+key+'">'+options+'</select></label>' +
+      '<label>Totale €<input type="number" id="ev_tot_'+key+'" value="'+Number(e.totale||0)+'"></label>' +
+    '</div>' +
+    '<label>Note<textarea id="ev_n_'+key+'">'+escapeHtml(e.note||"")+'</textarea></label>' +
+    '<div class="actions">' +
+      '<button class="green" onclick="salvaModificaEvento(&quot;'+key+'&quot;)">Salva modifiche</button>' +
+      '<button class="danger" onclick="eliminaLocaleEvento(&quot;'+key+'&quot;)">Elimina</button>' +
+    '</div>' +
+    (e._pending?'<span class="status">da sincronizzare</span>':'') +
+  '</div>';
 }
 function mostraNuovoEvento(show=true){
   const box=$("formNuovoEvento");
@@ -567,7 +642,8 @@ async function creaEventoManuale(){
   if(!confirmPastDate(row.data_evento)) return;
   eventi.push(row);
   queue.push({type:"insert",table:"eventi",payload:{...row}});
-  saveCache();saveQueue();
+  saveCache();
+  saveQueue();
   mostraNuovoEvento(false);
   playSound("success");
   if(online()) await syncNow();
@@ -595,7 +671,8 @@ async function salvaModificaEvento(key){
   }
   e._pending=true;
   queue.push({type:"update_evento",key,payload:updated});
-  saveCache();saveQueue();
+  saveCache();
+  saveQueue();
   playSound("success");
   if(online())syncNow();
 }
