@@ -257,6 +257,17 @@ function $(id){return document.getElementById(id)} function v(id){return $(id).v
 function online(){return navigator.onLine}
 function uid(){return "local_"+Date.now()+"_"+Math.random().toString(16).slice(2)}
 function updateNet(){let s=$("netStatus");if(!s)return;s.textContent=online()?"Online":"Offline";s.className="pill "+(online()?"online":"offline");}
+function cleanForDb(obj){
+  const x={...obj};
+  delete x._pending;
+  delete x.foto_data;
+  return x;
+}
+function showSyncError(error){
+  playSound("error");
+  console.error("ERRORE SYNC:", error);
+  alert("Errore sincronizzazione: " + (error?.message || JSON.stringify(error)));
+}
 window.addEventListener("online",()=>{updateNet();syncNow()});window.addEventListener("offline",updateNet);updateNet();
 function saveQueue(){localStorage.setItem("k38_queue",JSON.stringify(queue));render()}
 function saveCache(){localStorage.setItem(cacheKey,JSON.stringify({materiali,preventivi,eventi,utenti}))}
@@ -418,23 +429,87 @@ function fileToDataURL(file){
     reader.readAsDataURL(file);
   });
 }
-async function salvaMateriale(){msg("m_msg","salvataggio...");let foto_url="";let foto_data="";let file=$("m_foto").files[0];if(file){foto_data=await fileToDataURL(file);foto_url=foto_data}
-let row={local_id:uid(),codice_inventario:v("m_codice"),nome:v("m_nome"),categoria:v("m_categoria"),marca:v("m_marca"),modello:v("m_modello"),seriale:v("m_seriale"),quantita:n("m_quantita"),posizione:v("m_posizione"),stato:v("m_stato"),prezzo_listino:n("m_listino"),prezzo_reale:n("m_reale"),prezzo_noleggio:n("m_noleggio"),foto_url,note:v("m_note"),_pending:true};
-materiali.unshift(row);queue.push({type:"insert",table:"materiali",payload:{...row},foto_data});saveCache();saveQueue();msg("m_msg",online()?"salvato, sincronizzo...":"salvato offline");if(online())syncNow()}
+async function salvaMateriale(){
+  msg("m_msg","salvataggio...");
+  let foto_url="";
+  let foto_data="";
+  let file=$("m_foto").files[0];
+
+  if(file){
+    foto_data=await fileToDataURL(file);
+    foto_url=foto_data;
+  }
+
+  let row={
+    local_id:uid(),
+    codice_inventario:v("m_codice"),
+    nome:v("m_nome"),
+    categoria:v("m_categoria"),
+    marca:v("m_marca"),
+    modello:v("m_modello"),
+    seriale:v("m_seriale"),
+    quantita:n("m_quantita"),
+    posizione:v("m_posizione"),
+    stato:v("m_stato"),
+    prezzo_listino:n("m_listino"),
+    prezzo_reale:n("m_reale"),
+    prezzo_noleggio:n("m_noleggio"),
+    foto_url,
+    note:v("m_note")
+  };
+
+  if(!row.nome){ playSound("error"); alert("Il nome materiale è obbligatorio."); return; }
+
+  if(online()){
+    if(file){
+      let blob=await (await fetch(foto_data)).blob();
+      let path=`${Date.now()}-${row.nome||"foto"}.jpg`;
+      let up=await sb.storage.from("foto-materiali").upload(path,blob,{upsert:true});
+      if(up.error){ showSyncError(up.error); return; }
+      row.foto_url=sb.storage.from("foto-materiali").getPublicUrl(path).data.publicUrl;
+    }
+    const ins=await sb.from("materiali").insert(cleanForDb(row)).select().single();
+    if(ins.error){ showSyncError(ins.error); return; }
+    materiali.unshift(ins.data);
+    saveCache();
+    render();
+    playSound("success");
+    msg("m_msg","materiale salvato online");
+    return;
+  }
+
+  row._pending=true;
+  materiali.unshift(row);
+  queue.push({type:"insert",table:"materiali",payload:{...row},foto_data});
+  saveCache();
+  saveQueue();
+  msg("m_msg","salvato offline");
+}
 function datiPreventivo(){let o={local_id:uid(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,luogo:v("p_luogo"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),accettato:false};o.totale=totaleP(o);return o}
 function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
 async function salvaPreventivo(){
   const row=datiPreventivo();
   if(!row.cliente && !row.evento){ playSound("error"); alert("Inserisci almeno cliente o evento prima di salvare il preventivo."); return; }
   if(!confirmPastDate(row.data_evento)) return;
+
+  if(online()){
+    const ins=await sb.from("preventivi").insert(cleanForDb(row)).select().single();
+    if(ins.error){ showSyncError(ins.error); return; }
+    preventivi.unshift(ins.data);
+    saveCache();
+    render();
+    playSound("success");
+    msg("p_msg","preventivo salvato online");
+    return;
+  }
+
   row._pending=true;
   preventivi.unshift(row);
   queue.push({type:"insert",table:"preventivi",payload:{...row}});
   saveCache();
   saveQueue();
   playSound("success");
-  msg("p_msg",online()?"salvato, sincronizzo...":"salvato offline");
-  if(online())syncNow();
+  msg("p_msg","salvato offline");
 }
 async function toggleAccettato(key,checked){
   let p=preventivi.find(x=>(x.local_id||x.id)===key);
@@ -508,11 +583,13 @@ async function syncNow(){
       }
 
       if(item.type==="insert"){
-        const inserted = await sb.from(item.table).insert(payload);
+        const cleanPayload=cleanForDb(payload);
+        const inserted = await sb.from(item.table).insert(cleanPayload);
         if(inserted.error){
           const msg = inserted.error.message || "";
           if(msg.toLowerCase().includes("duplicate") && payload.local_id){
-            await sb.from(item.table).update(payload).eq("local_id", payload.local_id);
+            const upd=await sb.from(item.table).update(cleanPayload).eq("local_id", payload.local_id);
+            if(upd.error) throw upd.error;
           }else{
             throw inserted.error;
           }
@@ -531,8 +608,12 @@ async function syncNow(){
         else if(m?.local_id)await sb.from("materiali").update(item.payload).eq("local_id",m.local_id);
       }
     }catch(e){
+      console.error("Errore elemento sync", item, e);
       newQueue.push(item);
     }
+  }
+  if(newQueue.length>0 && newQueue.length===queue.length){
+    console.warn("Alcuni elementi non sono stati sincronizzati. Controlla Console.");
   }
   queue=newQueue;
   saveQueue();
@@ -569,32 +650,6 @@ function eliminaLocaleEvento(key){
   queue=queue.filter(q=>!(q.payload&&(q.payload.local_id===key||q.payload.id===key)));
   if(item?.id)queue.push({type:"delete",table:"eventi",remote_id:item.id});
   saveCache();saveQueue();
-  if(online())syncNow();
-}
-async function salvaModificaEvento(key){
-  let e=eventi.find(x=>(x.local_id||x.id)===key);
-  if(!e)return;
-  const updated={
-    titolo:$("ev_t_"+key).value,
-    cliente:$("ev_c_"+key).value,
-    data_evento:$("ev_d_"+key).value||null,
-    luogo:$("ev_l_"+key).value,
-    stato:$("ev_s_"+key).value,
-    note:$("ev_n_"+key).value
-  };
-  if(!confirmPastDate(updated.data_evento)) return;
-  Object.assign(e,updated);
-  if(online() && e.id){
-    const {error}=await sb.from("eventi").update(updated).eq("id",e.id);
-    if(error){playSound("error");alert(error.message);return}
-    playSound("success");
-    await caricaTutto();
-    return;
-  }
-  e._pending=true;
-  queue.push({type:"update_evento",key,payload:updated});
-  saveCache();saveQueue();
-  playSound("success");
   if(online())syncNow();
 }
 function escapeHtml(value){
@@ -644,17 +699,28 @@ async function creaEventoManuale(){
     luogo:v("new_ev_luogo"),
     stato:v("new_ev_stato")||"Richiesta",
     totale:n("new_ev_totale"),
-    note:v("new_ev_note"),
-    _pending:true
+    note:v("new_ev_note")
   };
   if(!confirmPastDate(row.data_evento)) return;
+
+  if(online()){
+    const ins=await sb.from("eventi").insert(cleanForDb(row)).select().single();
+    if(ins.error){ showSyncError(ins.error); return; }
+    eventi.push(ins.data);
+    saveCache();
+    render();
+    mostraNuovoEvento(false);
+    playSound("success");
+    return;
+  }
+
+  row._pending=true;
   eventi.push(row);
   queue.push({type:"insert",table:"eventi",payload:{...row}});
   saveCache();
   saveQueue();
   mostraNuovoEvento(false);
   playSound("success");
-  if(online()) await syncNow();
 }
 async function salvaModificaEvento(key){
   let e=eventi.find(x=>(x.local_id||x.id)===key);
