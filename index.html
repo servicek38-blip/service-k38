@@ -49,6 +49,16 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
   button{white-space:normal}
   .calendar-day-row{align-items:flex-start;flex-direction:column}
 }
+
+.material-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px}
+.material-pick{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:8px}
+.checklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.checkitem{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:8px}
+.warning-soft{background:#3b2f10;border-left:4px solid var(--yellow);padding:10px;border-radius:12px;margin-top:8px}
+.past-event{opacity:.45;filter:grayscale(.35)}
+.archive-box{background:#0b1220;border:1px dashed var(--line);border-radius:16px;padding:12px;margin-top:12px}
+.money-good{color:#22c55e;font-weight:900}
+.money-warn{color:#facc15;font-weight:900}
 </style>
 </head>
 <body>
@@ -58,7 +68,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
       <div class="logo-box"><img class="logo" src="logo-k38.png" alt="Service K38"></div>
       <div style="min-width:0">
         <h1>Gestionale Service K38</h1>
-        <div class="muted">Magazzino • Preventivi • Eventi • Calendario • Offline</div>
+        <div class="muted">Magazzino • Preventivi • Eventi • Calendario</div>
         <div class="brandline"></div>
       </div>
     </div>
@@ -102,6 +112,8 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <div class="card"><h3>Preventivi</h3><div class="stat" id="statPreventivi">0</div></div>
         <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
         <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
+        <div class="card"><h3>Incassato anno</h3><div class="stat money-good" id="statIncassatoAnno">0 €</div></div>
+        <div class="card"><h3>Da riscuotere</h3><div class="stat money-warn" id="statDaRiscuotere">0 €</div></div>
       </div>
       <div class="card"><button class="green" onclick="tabFromHome('calendario')">Apri eventi / calendario</button></div>
       <div class="card notice">
@@ -116,7 +128,8 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <div class="row">
           <label>Codice inventario<input id="m_codice" placeholder="Es. K38-AUD-001"></label>
           <label>Nome<input id="m_nome"></label>
-          <label>Categoria<select id="m_categoria"><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
+          <label>Categoria<select id="m_categoria" onchange="aggiornaSottocategorie(\'m\')"><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
+          <label>Sottocategoria<select id="m_sottocategoria"></select></label>
           <label>Marca<input id="m_marca"></label><label>Modello<input id="m_modello"></label><label>Seriale<input id="m_seriale"></label>
           <label>Quantità<input id="m_quantita" type="number" value="1"></label><label>Posizione<input id="m_posizione"></label>
           <label>Stato<select id="m_stato"><option>Disponibile</option><option>Impegnato</option><option>In manutenzione</option><option>Da controllare</option><option>Fuori servizio</option></select></label>
@@ -128,16 +141,30 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <label>Note<textarea id="m_note"></textarea></label>
         <div class="actions"><button onclick="salvaMateriale()">Salva materiale</button><span id="m_msg" class="muted"></span></div>
       </div>
-      <div class="card"><h2>Materiali inventariati</h2><input id="searchMateriale" placeholder="Cerca materiale..." oninput="render()"><div id="listaMateriali"></div></div>
+      <div class="card"><h2>Materiali inventariati</h2>
+        <div class="row">
+          <label>Cerca<input id="searchMateriale" placeholder="Cerca materiale..." oninput="render()"></label>
+          <label>Filtra categoria<select id="filterCategoria" onchange="aggiornaSottocategorie('filter');render()"><option value="">Tutte</option><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
+          <label>Filtra sottocategoria<select id="filter_sottocategoria" onchange="render()"><option value="">Tutte</option></select></label>
+        </div>
+        <div id="listaMateriali"></div></div>
     </section>
 
     <section id="preventivi" class="page hidden">
       <div class="card">
         <h2>Crea preventivo</h2>
         <div class="row">
-          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data evento<input id="p_data" type="date"></label><label>Luogo<input id="p_luogo"></label>
+          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data evento<input id="p_data" type="date"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente(\'p\')"></select></label><label>Telefono referente<input id="p_telefono"></label>
           <label>Audio €<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci €<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video €<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label><label>Trasporto €<input id="p_trasporto" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Ore tecnico<input id="p_ore" type="number" value="0" oninput="aggiornaTotale()"></label><label>Tariffa tecnico €<input id="p_tariffa" type="number" value="0" oninput="aggiornaTotale()"></label><label>Montaggio €<input id="p_montaggio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Sconto €<input id="p_sconto" type="number" value="0" oninput="aggiornaTotale()"></label><label>IVA/Maggiorazione %<input id="p_iva" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <label>Stato pagamento<select id="p_stato_pagamento">
+            <option>Da saldare</option>
+            <option>Acconto ricevuto</option>
+            <option>Pagato</option>
+            <option>Annullato</option>
+          </select></label>
+          <label>Importo incassato €<input id="p_incassato" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <label>Data pagamento<input id="p_data_pagamento" type="date"></label>
         </div>
         <label>Note<textarea id="p_note"></textarea></label>
         <h3>Totale: <span class="total" id="totalePreventivo">0,00 €</span></h3>
@@ -161,12 +188,17 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
           <div class="row">
             <label>Titolo<input id="new_ev_titolo" placeholder="Es. Matrimonio / Service live"></label>
             <label>Cliente<input id="new_ev_cliente" placeholder="Cliente"></label>
+            <label>Referente/Tecnico<select id="new_ev_referente" onchange="aggiornaTelefonoReferente(\'new_ev\')"></select></label>
+            <label>Telefono referente<input id="new_ev_telefono"></label>
             <label>Data<input id="new_ev_data" type="date"></label>
             <label>Luogo<input id="new_ev_luogo" placeholder="Luogo"></label>
             <label>Stato<select id="new_ev_stato"><option>Richiesta</option><option>Preventivo</option><option>Confermato</option><option>Montato</option><option>Smontato</option><option>Pagato</option></select></label>
             <label>Totale €<input id="new_ev_totale" type="number" value="0"></label>
+            <label>Ora montaggio<input id="new_ev_montaggio" placeholder="Es. 16:00"></label>
+            <label>Ora smontaggio<input id="new_ev_smontaggio" placeholder="Es. 01:00"></label>
           </div>
           <label>Note<textarea id="new_ev_note"></textarea></label>
+          <div class="notice">Materiale e checklist si possono assegnare/modificare dopo aver salvato l’impegno.</div>
           <div class="actions">
             <button onclick="creaEventoManuale()">Salva impegno</button>
             <button class="secondary" onclick="mostraNuovoEvento(false)">Annulla</button>
@@ -253,6 +285,58 @@ document.addEventListener("click", e => {
 });
 
 const cacheKey="k38_cache_v1";
+const referentiK38 = [
+  {nome:"Gianluca Rallo", telefono:"3284218233"},
+  {nome:"Mirko Dorchini", telefono:""}
+];
+function opzioniReferenti(selected=""){
+  return referentiK38.map(r=>`<option value="${r.nome}" ${r.nome===selected?"selected":""}>${r.nome}</option>`).join("") + `<option value="Altro" ${selected==="Altro"?"selected":""}>Altro</option>`;
+}
+function telefonoReferente(nome){
+  return (referentiK38.find(r=>r.nome===nome)||{}).telefono || "";
+}
+function aggiornaTelefonoEvento(key,value){
+  const tel=$("ev_tel_"+key);
+  if(tel && !tel.value) tel.value=telefonoReferente(value);
+}
+function aggiornaTelefonoReferente(prefix){
+  const ref=$(prefix+"_referente")?.value;
+  const tel=$(prefix+"_telefono");
+  if(tel && !tel.value) tel.value=telefonoReferente(ref);
+}
+const categorieMateriale = {
+  "Audio":["Diffusori","Subwoofer","Monitor spia","Mixer","Finali","DSP","Microfoni","Radiomicrofoni","DI Box","Player","Controller DJ","Cuffie","Altro audio"],
+  "Luci":["Teste mobili","Barre LED","PAR LED","Strobo","Laser","Blinder","Sagomatori","Dimmer","Centraline DMX","Effetti speciali","Altro luci"],
+  "Video":["TV","Videoproiettori","LED wall","Switch video","Convertitori","Telecamere","Streaming","Altro video"],
+  "Cavi":["XLR","Speakon","PowerCON","DMX","RCA","Jack","HDMI","Ethernet","Prolunghe","Adattatori","Altro cavi"],
+  "Strutture":["Americane","Elevatori","Pedane","Tralicci","Flight case","Supporti casse","Supporti luci","Altro strutture"],
+  "Accessori":["Stand","Clamp","Ganci","Borse","Custodie","Telecomandi","Materiale consumo","Altro accessori"],
+  "Ricambi":["Driver","Woofer","Tweeter","Connettori","Schede elettroniche","Alimentatori","Altro ricambi"],
+  "Utensili":["Tester","Saldatori","Trapani","Avvitatori","Batterie","Attrezzi manuali","Altro utensili"]
+};
+function opzioniCategorie(selected=""){
+  return Object.keys(categorieMateriale).map(c=>`<option ${c===selected?"selected":""}>${c}</option>`).join("");
+}
+function opzioniSottocategorie(cat,selected=""){
+  return (categorieMateriale[cat]||["Altro"]).map(s=>`<option ${s===selected?"selected":""}>${s}</option>`).join("");
+}
+function aggiornaSottocategorie(prefix){
+  let cat=$(prefix+"_categoria")?.value || $(prefix+"_cat")?.value;
+  let sub=$(prefix+"_sottocategoria") || $(prefix+"_sub");
+  if(!cat && prefix.startsWith("mat_")){
+    const key=prefix.replace("mat_","");
+    cat=$("mat_cat_"+key)?.value;
+    sub=$("mat_sub_"+key);
+  }
+  if(prefix==="filter"){
+    cat=$("filterCategoria")?.value;
+    sub=$("filter_sottocategoria");
+    const current=sub?.value || "";
+    if(sub) sub.innerHTML='<option value="">Tutte</option>'+opzioniSottocategorie(cat||"Audio",current);
+    return;
+  }
+  if(sub) sub.innerHTML=opzioniSottocategorie(cat||"Audio", sub.value);
+}
 function $(id){return document.getElementById(id)} function v(id){return $(id).value} function n(id){return Number(v(id)||0)} function euro(x){return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(Number(x||0))} function msg(id,t){$(id).textContent=" "+t}
 function online(){return navigator.onLine}
 function uid(){return "local_"+Date.now()+"_"+Math.random().toString(16).slice(2)}
@@ -273,7 +357,7 @@ function saveQueue(){localStorage.setItem("k38_queue",JSON.stringify(queue));ren
 function saveCache(){localStorage.setItem(cacheKey,JSON.stringify({materiali,preventivi,eventi,utenti}))}
 function loadCache(){let c=JSON.parse(localStorage.getItem(cacheKey)||"{}");materiali=c.materiali||[];preventivi=c.preventivi||[];eventi=c.eventi||[];utenti=c.utenti||[]}
 function initDati(){ $("d_partner").value=datiPDF.partner||"Partner BENOW";$("d_ragione").value=datiPDF.ragione||"Service K38";$("d_benow").value=datiPDF.benow||"BeNow s.c.p.a.";$("d_cf").value=datiPDF.cf||"01516270137";$("d_piva").value=datiPDF.piva||"03080310174";$("d_univoco").value=datiPDF.univoco||"M5UXCR1";$("d_tel").value=datiPDF.tel||"3284218233";$("d_email").value=datiPDF.email||"servicek38@gmail.com";$("d_footer").value=datiPDF.footer||"Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilità e conferma."} initDati();
-window.addEventListener("load",async()=>{updateSoundButton();sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
+window.addEventListener("load",async()=>{updateSoundButton();aggiornaSottocategorie("m");$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
 async function signup(){
   if(!online())return msg("loginMsg","per creare utente serve internet");
   msg("loginMsg","creazione...");
@@ -318,16 +402,52 @@ function confirmPastDate(dateStr){
   playSound("error");
   return confirm("ATTENZIONE: hai selezionato una data già trascorsa. Vuoi continuare comunque?");
 }
+function annoCorrenteShort(){return String(new Date().getFullYear()).slice(-2)}
+function progressivoPreventivo(){
+  const yy=annoCorrenteShort();
+  const nums=preventivi
+    .map(p=>String(p.numero_preventivo||""))
+    .map(s=>s.match(/N(\d+)\/${yy}/))
+    .filter(Boolean)
+    .map(m=>Number(m[1]||0));
+  const next=(nums.length?Math.max(...nums):0)+1;
+  return `Preventivo N${next}/${yy}`;
+}
+function dataPassata(dateStr){
+  if(!dateStr)return false;
+  const today=new Date();today.setHours(0,0,0,0);
+  const d=new Date(dateStr+"T00:00:00");
+  return d<today;
+}
+function preventivoArchiviato(p){
+  return !!p.archiviato || dataPassata(p.data_evento);
+}
+function incassatoAnno(){
+  const y=new Date().getFullYear();
+  return preventivi.reduce((s,p)=>{
+    const data=p.data_pagamento||p.data_evento||p.created_at;
+    if(!data)return s;
+    const yy=new Date(String(data)).getFullYear();
+    return yy===y ? s+Number(p.importo_incassato||0) : s;
+  },0);
+}
+function daRiscuotereTotale(){
+  return preventivi.reduce((s,p)=>{
+    if((p.stato_pagamento||"")==="Pagato" || (p.stato_pagamento||"")==="Annullato") return s;
+    return s + Math.max(0, Number(p.totale||0)-Number(p.importo_incassato||0));
+  },0);
+}
 function totaleP(o){let sub=Number(o.audio||0)+Number(o.luci||0)+Number(o.video||0)+Number(o.trasporto||0)+Number(o.ore_tecnico||0)*Number(o.tariffa_tecnico||0)+Number(o.montaggio||0)-Number(o.sconto||0);return sub+sub*Number(o.iva||0)/100}
 function renderMaterialeEdit(m){
   const key=m.local_id||m.id;
   const stati=["Disponibile","Impegnato","In manutenzione","Da controllare","Fuori servizio"];
-  const categorie=["Audio","Luci","Video","Cavi","Strutture","Accessori","Ricambi","Utensili"];
+  const categorie=Object.keys(categorieMateriale);
   return '<div class="item">' +
     '<div class="row">' +
       '<label>Codice inventario<input id="mat_cod_'+key+'" value="'+escapeHtml(m.codice_inventario||"")+'"></label>' +
       '<label>Nome<input id="mat_nome_'+key+'" value="'+escapeHtml(m.nome||"")+'"></label>' +
-      '<label>Categoria<select id="mat_cat_'+key+'">'+categorie.map(c=>'<option '+(c===(m.categoria||"")?'selected':'')+'>'+escapeHtml(c)+'</option>').join("")+'</select></label>' +
+      '<label>Categoria<select id="mat_cat_'+key+'" onchange="aggiornaSottocategorie(&quot;mat_'+key+'&quot;)">'+categorie.map(c=>'<option '+(c===(m.categoria||"")?'selected':'')+'>'+escapeHtml(c)+'</option>').join("")+'</select></label>' +
+      '<label>Sottocategoria<select id="mat_sub_'+key+'">'+opzioniSottocategorie(m.categoria||"Audio",m.sottocategoria||"")+'</select></label>' +
       '<label>Marca<input id="mat_marca_'+key+'" value="'+escapeHtml(m.marca||"")+'"></label>' +
       '<label>Modello<input id="mat_modello_'+key+'" value="'+escapeHtml(m.modello||"")+'"></label>' +
       '<label>Seriale<input id="mat_seriale_'+key+'" value="'+escapeHtml(m.seriale||"")+'"></label>' +
@@ -354,6 +474,7 @@ async function salvaModificaMateriale(key){
     codice_inventario:$("mat_cod_"+key).value,
     nome:$("mat_nome_"+key).value,
     categoria:$("mat_cat_"+key).value,
+    sottocategoria:$("mat_sub_"+key).value,
     marca:$("mat_marca_"+key).value,
     modello:$("mat_modello_"+key).value,
     seriale:$("mat_seriale_"+key).value,
@@ -382,9 +503,60 @@ async function salvaModificaMateriale(key){
 }
 
 function render(){
-$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));
-let search=(v("searchMateriale")||"").toLowerCase();$("listaMateriali").innerHTML=materiali.filter(m=>JSON.stringify(m).toLowerCase().includes(search)).map(m=>renderMaterialeEdit(m)).join("");
-$("listaPreventivi").innerHTML=preventivi.map(p=>`<div class="item ${p.accettato?'accepted':''}"><div class="item-head"><div><b>${p.cliente||"Cliente"}</b><div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div><div class="total">${euro(p.totale)}</div><label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${p.local_id||p.id}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>${p._pending?`<span class="status">da sincronizzare</span>`:""}</div><button class="danger" onclick="eliminaLocalePreventivo('${p.local_id||p.id}')">Elimina</button></div></div>`).join("");
+$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
+let search=(v("searchMateriale")||"").toLowerCase();
+let fcat=$("filterCategoria")?.value||"";
+let fsub=$("filter_sottocategoria")?.value||"";
+$("listaMateriali").innerHTML=materiali
+  .filter(m=>JSON.stringify(m).toLowerCase().includes(search))
+  .filter(m=>!fcat || m.categoria===fcat)
+  .filter(m=>!fsub || m.sottocategoria===fsub)
+  .map(m=>renderMaterialeEdit(m)).join("");
+var preventiviAttivi=preventivi.filter(p=>!preventivoArchiviato(p));
+var preventiviArchivio=preventivi.filter(p=>preventivoArchiviato(p));
+var renderPreventivoCard=function(p){
+  const key=p.local_id||p.id;
+  return `<div class="item ${p.accettato?'accepted':''}">
+    <div class="item-head">
+      <div>
+        <b>${p.numero_preventivo||"Preventivo"} — ${p.cliente||"Cliente"}</b>
+        <div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div>
+        <div class="total">${euro(p.totale)}</div>
+        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(Math.max(0,Number(p.totale||0)-Number(p.importo_incassato||0)))}</div>
+        <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
+        <label><input type="checkbox" ${p.archiviato?"checked":""} onchange="toggleArchivioPreventivo('${key}',this.checked)"> Archiviato</label>
+        ${p._pending?`<span class="status">da sincronizzare</span>`:""}
+      </div>
+      <button class="danger" onclick="eliminaLocalePreventivo('${key}')">Elimina</button>
+    </div>
+  </div>`;
+}
+var preventiviAttivi=preventivi.filter(p=>!preventivoArchiviato(p));
+var preventiviArchivio=preventivi.filter(p=>preventivoArchiviato(p));
+var renderPreventivoCard=function(p){
+  const key=p.local_id||p.id;
+  const daRiscuotere=Math.max(0,Number(p.totale||0)-Number(p.importo_incassato||0));
+  return `<div class="item ${p.accettato?'accepted':''}">
+    <div class="item-head">
+      <div>
+        <b>${p.numero_preventivo||"Preventivo"} — ${p.cliente||"Cliente"}</b>
+        <div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div>
+        <div class="total">${euro(p.totale)}</div>
+        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(daRiscuotere)}</div>
+        <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
+        <label><input type="checkbox" ${p.archiviato?"checked":""} onchange="toggleArchivioPreventivo('${key}',this.checked)"> Archiviato</label>
+        ${p._pending?`<span class="status">da sincronizzare</span>`:""}
+      </div>
+      <button class="danger" onclick="eliminaLocalePreventivo('${key}')">Elimina</button>
+    </div>
+  </div>`;
+};
+$("listaPreventivi").innerHTML=
+  `<h3>Preventivi attivi</h3>`+
+  (preventiviAttivi.length?preventiviAttivi.map(renderPreventivoCard).join(""):`<div class="notice">Nessun preventivo attivo.</div>`)+
+  `<div class="archive-box"><h3>Archivio preventivi</h3>`+
+  (preventiviArchivio.length?preventiviArchivio.map(renderPreventivoCard).join(""):`<div class="muted">Nessun preventivo archiviato.</div>`)+
+  `</div>`;
 const grouped={};
 eventi.forEach(e=>{
   const d=e.data_evento||"Senza data";
@@ -445,6 +617,7 @@ async function salvaMateriale(){
     codice_inventario:v("m_codice"),
     nome:v("m_nome"),
     categoria:v("m_categoria"),
+    sottocategoria:v("m_sottocategoria"),
     marca:v("m_marca"),
     modello:v("m_modello"),
     seriale:v("m_seriale"),
@@ -485,7 +658,7 @@ async function salvaMateriale(){
   saveQueue();
   msg("m_msg","salvato offline");
 }
-function datiPreventivo(){let o={local_id:uid(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,luogo:v("p_luogo"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),accettato:false};o.totale=totaleP(o);return o}
+function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,accettato:false};o.totale=totaleP(o);return o}
 function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
 async function salvaPreventivo(){
   const row=datiPreventivo();
@@ -511,6 +684,21 @@ async function salvaPreventivo(){
   playSound("success");
   msg("p_msg","salvato offline");
 }
+async function toggleArchivioPreventivo(key,checked){
+  let p=preventivi.find(x=>(x.local_id||x.id)===key);
+  if(!p)return;
+  p.archiviato=checked;
+  const payload={archiviato:checked};
+  if(online() && p.id){
+    const {error}=await sb.from("preventivi").update(payload).eq("id",p.id);
+    if(error){showSyncError(error);return}
+    await caricaTutto();
+    return;
+  }
+  p._pending=true;
+  queue.push({type:"update_preventivo",key,payload});
+  saveCache();saveQueue();
+}
 async function toggleAccettato(key,checked){
   let p=preventivi.find(x=>(x.local_id||x.id)===key);
   if(!p)return;
@@ -526,13 +714,23 @@ async function toggleAccettato(key,checked){
     if(checked){
       const ev={
         titolo:p.evento||"Evento da preventivo",
+        numero_preventivo:p.numero_preventivo||"",
+        numero_preventivo:p.numero_preventivo||"",
         cliente:p.cliente,
+        referente:p.referente||"",
+        tecnico:p.referente||"",
+        telefono_referente:p.telefono_referente||"",
         data_evento:p.data_evento,
         luogo:p.luogo,
         stato:"Confermato",
         preventivo_id:p.id,
         note:p.note,
-        totale:p.totale
+        totale:p.totale,
+        stato_pagamento:p.stato_pagamento||"Da saldare",
+        importo_incassato:p.importo_incassato||0,
+        data_pagamento:p.data_pagamento||null,
+        materiali:p.materiali||[],
+        checklist:p.checklist||{}
       };
       const ins=await sb.from("eventi").insert(ev).select().single();
       if(ins.error){ playSound("error"); alert(ins.error.message); render(); return; }
@@ -548,7 +746,7 @@ async function toggleAccettato(key,checked){
   }
 
   if(checked){
-    let ev={local_id:uid(),titolo:p.evento||"Evento da preventivo",cliente:p.cliente,data_evento:p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,_pending:true};
+    let ev={local_id:uid(),titolo:p.evento||"Evento da preventivo",numero_preventivo:p.numero_preventivo||"",cliente:p.cliente,referente:p.referente||"",tecnico:p.referente||"",telefono_referente:p.telefono_referente||"",data_evento:p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,stato_pagamento:p.stato_pagamento||"Da saldare",importo_incassato:p.importo_incassato||0,data_pagamento:p.data_pagamento||null,materiali:p.materiali||[],checklist:p.checklist||{},_pending:true};
     eventi.push(ev);
     p.evento_id=ev.local_id;
     queue.push({type:"insert",table:"eventi",payload:{...ev}});
@@ -595,6 +793,10 @@ async function syncNow(){
           }
         }
       }else if(item.type==="update_preventivo_accettato"){
+        let p=preventivi.find(x=>(x.local_id||x.id)===item.key);
+        if(p?.id)await sb.from("preventivi").update(item.payload).eq("id",p.id);
+        else if(p?.local_id)await sb.from("preventivi").update(item.payload).eq("local_id",p.local_id);
+      }else if(item.type==="update_preventivo"){
         let p=preventivi.find(x=>(x.local_id||x.id)===item.key);
         if(p?.id)await sb.from("preventivi").update(item.payload).eq("id",p.id);
         else if(p?.local_id)await sb.from("preventivi").update(item.payload).eq("local_id",p.local_id);
@@ -665,22 +867,93 @@ function toggleDayDetail(day){
   const el=$("day_"+safeId(day));
   if(el) el.classList.toggle("hidden");
 }
+function parseJsonField(value, fallback){
+  if(!value) return fallback;
+  if(typeof value === "object") return value;
+  try{return JSON.parse(value)}catch(e){return fallback}
+}
+function checklistEvento(e){
+  const c=parseJsonField(e.checklist,{});
+  return {
+    caricato:!!c.caricato,
+    montato:!!c.montato,
+    testato:!!c.testato,
+    smontato:!!c.smontato,
+    rientrato:!!c.rientrato
+  };
+}
+function materialiEvento(e){
+  return parseJsonField(e.materiali,[]);
+}
+function nomeMaterialeById(key){
+  const m=materiali.find(x=>(x.local_id||x.id)===key);
+  return m ? `${m.codice_inventario||""} ${m.nome||""}`.trim() : key;
+}
+function eventiStessaData(data, excludeKey=""){
+  return eventi.filter(ev=>(ev.local_id||ev.id)!==excludeKey && ev.data_evento===data);
+}
+function conflittoTecnico(data, tecnico, excludeKey=""){
+  if(!data || !tecnico) return null;
+  return eventiStessaData(data,excludeKey).find(ev=>(ev.tecnico||ev.referente||"")===tecnico);
+}
+function conflittiMateriale(data, selectedKeys, excludeKey=""){
+  if(!data || !selectedKeys?.length) return [];
+  const conflicts=[];
+  eventiStessaData(data,excludeKey).forEach(ev=>{
+    const mats=materialiEvento(ev);
+    selectedKeys.forEach(k=>{
+      if(mats.includes(k)) conflicts.push({materiale:k, evento:ev.titolo||"Evento"});
+    });
+  });
+  return conflicts;
+}
+function renderMaterialPicker(e){
+  const key=e.local_id||e.id;
+  const selected=materialiEvento(e);
+  if(!materiali.length) return '<div class="muted">Nessun materiale inventariato.</div>';
+  return '<div class="material-picker">' + materiali.map(m=>{
+    const mid=m.local_id||m.id;
+    return '<label class="material-pick"><input type="checkbox" class="ev_mat_'+key+'" value="'+escapeHtml(mid)+'" '+(selected.includes(mid)?'checked':'')+'> '+escapeHtml((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Materiale"))+'<div class="muted">'+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div></label>';
+  }).join("") + '</div>';
+}
+function getSelectedMaterialiEvento(key){
+  return [...document.querySelectorAll(".ev_mat_"+CSS.escape(key))].filter(x=>x.checked).map(x=>x.value);
+}
+
 function renderEventoEdit(e){
   const key=e.local_id||e.id;
   const stati=["Richiesta","Preventivo","Confermato","Montato","Smontato","Pagato"];
   const options=stati.map(st=>'<option '+(st===(e.stato||"")?'selected':'')+'>'+escapeHtml(st)+'</option>').join("");
-  return '<div class="item calendar-day">' +
+  const c=checklistEvento(e);
+  const selectedMats=materialiEvento(e);
+  return '<div class="item calendar-day '+(dataPassata(e.data_evento)?'past-event':'')+'">' +
     '<div class="row">' +
       '<label>Titolo<input id="ev_t_'+key+'" value="'+escapeHtml(e.titolo||"")+'"></label>' +
       '<label>Cliente<input id="ev_c_'+key+'" value="'+escapeHtml(e.cliente||"")+'"></label>' +
+      '<label>Referente/Tecnico<select id="ev_ref_'+key+'" onchange="aggiornaTelefonoEvento(&quot;'+key+'&quot;,this.value)">'+opzioniReferenti(e.tecnico||e.referente||"")+'</select></label>' +
+      '<label>Telefono<input id="ev_tel_'+key+'" value="'+escapeHtml(e.telefono_referente||"")+'"></label>' +
       '<label>Data<input type="date" id="ev_d_'+key+'" value="'+escapeHtml(e.data_evento||"")+'"></label>' +
       '<label>Luogo<input id="ev_l_'+key+'" value="'+escapeHtml(e.luogo||"")+'"></label>' +
       '<label>Stato<select id="ev_s_'+key+'">'+options+'</select></label>' +
       '<label>Totale €<input type="number" id="ev_tot_'+key+'" value="'+Number(e.totale||0)+'"></label>' +
+      '<label>Ora montaggio<input id="ev_mont_'+key+'" value="'+escapeHtml(e.ora_montaggio||"")+'"></label>' +
+      '<label>Ora smontaggio<input id="ev_smont_'+key+'" value="'+escapeHtml(e.ora_smontaggio||"")+'"></label>' +
     '</div>' +
     '<label>Note<textarea id="ev_n_'+key+'">'+escapeHtml(e.note||"")+'</textarea></label>' +
+    '<h3>Materiale assegnato</h3>' +
+    renderMaterialPicker(e) +
+    (selectedMats.length?'<div class="muted">Distinta: '+selectedMats.map(nomeMaterialeById).map(escapeHtml).join(" • ")+'</div>':'') +
+    '<h3>Checklist operativa</h3>' +
+    '<div class="checklist">' +
+      '<label class="checkitem"><input type="checkbox" id="ev_ck_caricato_'+key+'" '+(c.caricato?'checked':'')+'> Caricato</label>' +
+      '<label class="checkitem"><input type="checkbox" id="ev_ck_montato_'+key+'" '+(c.montato?'checked':'')+'> Montato</label>' +
+      '<label class="checkitem"><input type="checkbox" id="ev_ck_testato_'+key+'" '+(c.testato?'checked':'')+'> Testato</label>' +
+      '<label class="checkitem"><input type="checkbox" id="ev_ck_smontato_'+key+'" '+(c.smontato?'checked':'')+'> Smontato</label>' +
+      '<label class="checkitem"><input type="checkbox" id="ev_ck_rientrato_'+key+'" '+(c.rientrato?'checked':'')+'> Rientrato</label>' +
+    '</div>' +
     '<div class="actions">' +
       '<button class="green" onclick="salvaModificaEvento(&quot;'+key+'&quot;)">Salva modifiche</button>' +
+      '<button class="secondary" onclick="scaricaDistintaEvento(&quot;'+key+'&quot;)">PDF distinta</button>' +
       '<button class="danger" onclick="eliminaLocaleEvento(&quot;'+key+'&quot;)">Elimina</button>' +
     '</div>' +
     (e._pending?'<span class="status">da sincronizzare</span>':'') +
@@ -691,17 +964,27 @@ function mostraNuovoEvento(show=true){
   if(box) box.classList.toggle("hidden", !show);
 }
 async function creaEventoManuale(){
+  const ref=v("new_ev_referente")||"Gianluca Rallo";
   const row={
     local_id:uid(),
     titolo:v("new_ev_titolo")||"Nuovo impegno",
     cliente:v("new_ev_cliente"),
+    referente:ref,
+    tecnico:ref,
+    telefono_referente:v("new_ev_telefono")||telefonoReferente(ref),
     data_evento:v("new_ev_data")||null,
     luogo:v("new_ev_luogo"),
     stato:v("new_ev_stato")||"Richiesta",
     totale:n("new_ev_totale"),
-    note:v("new_ev_note")
+    ora_montaggio:v("new_ev_montaggio"),
+    ora_smontaggio:v("new_ev_smontaggio"),
+    note:v("new_ev_note"),
+    materiali:[],
+    checklist:{}
   };
   if(!confirmPastDate(row.data_evento)) return;
+  const ctec=conflittoTecnico(row.data_evento,row.tecnico);
+  if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha già un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?")) return;
 
   if(online()){
     const ins=await sb.from("eventi").insert(cleanForDb(row)).select().single();
@@ -725,16 +1008,43 @@ async function creaEventoManuale(){
 async function salvaModificaEvento(key){
   let e=eventi.find(x=>(x.local_id||x.id)===key);
   if(!e)return;
+  const selectedMats=getSelectedMaterialiEvento(key);
+  const checklist={
+    caricato:$("ev_ck_caricato_"+key).checked,
+    montato:$("ev_ck_montato_"+key).checked,
+    testato:$("ev_ck_testato_"+key).checked,
+    smontato:$("ev_ck_smontato_"+key).checked,
+    rientrato:$("ev_ck_rientrato_"+key).checked
+  };
+  const tecnico=$("ev_ref_"+key).value;
   const updated={
     titolo:$("ev_t_"+key).value,
     cliente:$("ev_c_"+key).value,
+    referente:tecnico,
+    tecnico:tecnico,
+    telefono_referente:$("ev_tel_"+key).value || telefonoReferente(tecnico),
     data_evento:$("ev_d_"+key).value||null,
     luogo:$("ev_l_"+key).value,
     stato:$("ev_s_"+key).value,
     totale:Number($("ev_tot_"+key).value||0),
-    note:$("ev_n_"+key).value
+    ora_montaggio:$("ev_mont_"+key).value,
+    ora_smontaggio:$("ev_smont_"+key).value,
+    note:$("ev_n_"+key).value,
+    materiali:selectedMats,
+    checklist
   };
   if(!confirmPastDate(updated.data_evento)) return;
+
+  const ctec=conflittoTecnico(updated.data_evento,updated.tecnico,key);
+  if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha già un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?")) return;
+
+  const cmats=conflittiMateriale(updated.data_evento,selectedMats,key);
+  if(cmats.length){
+    const txt=cmats.map(c=>nomeMaterialeById(c.materiale)+" gia assegnato a "+c.evento).join("\n");
+    const message="ATTENZIONE: alcuni materiali risultano gia assegnati nella stessa data:\n"+txt+"\n\nVuoi continuare comunque?";
+    if(!confirm(message)) return;
+  }
+
   Object.assign(e,updated);
   if(online() && e.id){
     const {error}=await sb.from("eventi").update(updated).eq("id",e.id);
@@ -750,11 +1060,39 @@ async function salvaModificaEvento(key){
   playSound("success");
   if(online())syncNow();
 }
-
 async function toggleUser(id,blocked){if(!online())return alert("serve internet");await sb.from("app_users").update({blocked}).eq("id",id);await caricaTutto()}
+function scaricaDistintaEvento(key){
+  const e=eventi.find(x=>(x.local_id||x.id)===key);
+  if(!e)return;
+  let {jsPDF}=window.jspdf;
+  let doc=new jsPDF();
+  let y=16;
+  doc.setFontSize(16);doc.text("DISTINTA OPERATIVA EVENTO",12,y);y+=10;
+  doc.setFontSize(11);
+  [
+    ["Evento",e.titolo||""],
+    ["Cliente",e.cliente||""],
+    ["Referente/Tecnico",e.tecnico||e.referente||""],
+    ["Telefono",e.telefono_referente||""],
+    ["Data",e.data_evento||""],
+    ["Luogo",e.luogo||""],
+    ["Montaggio",e.ora_montaggio||""],
+    ["Smontaggio",e.ora_smontaggio||""]
+  ].forEach(r=>{doc.text(r[0]+": "+r[1],12,y);y+=7});
+  y+=4;doc.setFontSize(13);doc.text("Materiale assegnato",12,y);y+=8;doc.setFontSize(10);
+  const mats=materialiEvento(e);
+  if(!mats.length){doc.text("- Nessun materiale assegnato",12,y);y+=6}
+  mats.forEach(k=>{doc.text("- "+nomeMaterialeById(k),12,y);y+=6;if(y>275){doc.addPage();y=15}});
+  y+=4;doc.setFontSize(13);doc.text("Checklist",12,y);y+=8;doc.setFontSize(10);
+  const c=checklistEvento(e);
+  Object.keys(c).forEach(k=>{doc.text((c[k]?"[X] ":"[ ] ")+k,12,y);y+=6});
+  y+=4;doc.text("Note:",12,y);y+=6;
+  doc.text(doc.splitTextToSize(e.note||"",180),12,y);
+  doc.save("Distinta-"+(e.titolo||"evento")+".pdf");
+}
 function salvaDatiPDF(){datiPDF={partner:v("d_partner"),ragione:v("d_ragione"),benow:v("d_benow"),cf:v("d_cf"),piva:v("d_piva"),univoco:v("d_univoco"),tel:v("d_tel"),email:v("d_email"),footer:v("d_footer")};localStorage.setItem("k38_dati_pdf",JSON.stringify(datiPDF));playSound("success");alert("Dati salvati")}
 function scaricaPDF(){salvaDatiPDF();let q=datiPreventivo();let {jsPDF}=window.jspdf;let doc=new jsPDF();let img=new Image();img.src="logo-k38.png";img.onload=()=>pdf(doc,q,img);img.onerror=()=>pdf(doc,q,null)}
-function pdf(doc,q,img){if(img)doc.addImage(img,"PNG",12,10,42,30);doc.setFontSize(18);doc.text("PREVENTIVO SERVICE K38",62,18);doc.setFontSize(10);doc.text(datiPDF.ragione||"Service K38",62,26);doc.text(`${datiPDF.partner||"Partner BENOW"} • ${datiPDF.benow||"BeNow s.c.p.a."}`,62,32);doc.text(`CF ${datiPDF.cf||"01516270137"} • P.IVA ${datiPDF.piva||"03080310174"} • CU ${datiPDF.univoco||"M5UXCR1"}`,62,38);doc.text(`${datiPDF.tel||""}${datiPDF.email?" • "+datiPDF.email:""}`,62,44);doc.line(12,52,198,52);let y=64;doc.setFontSize(12);[["Cliente",q.cliente],["Evento",q.evento],["Data",q.data_evento||""],["Luogo",q.luogo]].forEach(r=>{doc.text(`${r[0]}: ${r[1]||""}`,12,y);y+=8});y+=4;[["Audio",q.audio],["Luci",q.luci],["Video",q.video],["Trasporto",q.trasporto],["Tecnico",q.ore_tecnico*q.tariffa_tecnico],["Montaggio",q.montaggio],["Sconto",-q.sconto]].forEach(r=>{doc.text(r[0],12,y);doc.text(euro(r[1]),185,y,{align:"right"});y+=8});doc.line(12,y,198,y);y+=10;doc.setFontSize(16);doc.text("Totale",12,y);doc.text(euro(q.totale),185,y,{align:"right"});y+=14;doc.setFontSize(10);doc.text("Note:",12,y);y+=6;doc.text(doc.splitTextToSize(q.note||"",180),12,y);doc.setFontSize(9);doc.text(doc.splitTextToSize(datiPDF.footer||"",180),12,282);doc.save(`Preventivo-${q.cliente||"Service-K38"}.pdf`)}
+function pdf(doc,q,img){if(img)doc.addImage(img,"PNG",12,10,42,30);doc.setFontSize(18);doc.text(q.numero_preventivo||"PREVENTIVO SERVICE K38",62,18);doc.setFontSize(10);doc.text(datiPDF.ragione||"Service K38",62,26);doc.text(`${datiPDF.partner||"Partner BENOW"} • ${datiPDF.benow||"BeNow s.c.p.a."}`,62,32);doc.text(`CF ${datiPDF.cf||"01516270137"} • P.IVA ${datiPDF.piva||"03080310174"} • CU ${datiPDF.univoco||"M5UXCR1"}`,62,38);doc.text(`${datiPDF.tel||""}${datiPDF.email?" • "+datiPDF.email:""}`,62,44);doc.line(12,52,198,52);let y=64;doc.setFontSize(12);[["Cliente",q.cliente],["Evento",q.evento],["Referente",q.referente||""],["Telefono referente",q.telefono_referente||""],["Data",q.data_evento||""],["Luogo",q.luogo],["Pagamento",q.stato_pagamento||"Da saldare"],["Incassato",euro(q.importo_incassato||0)]].forEach(r=>{doc.text(`${r[0]}: ${r[1]||""}`,12,y);y+=8});y+=4;[["Audio",q.audio],["Luci",q.luci],["Video",q.video],["Trasporto",q.trasporto],["Tecnico",q.ore_tecnico*q.tariffa_tecnico],["Montaggio",q.montaggio],["Sconto",-q.sconto]].forEach(r=>{doc.text(r[0],12,y);doc.text(euro(r[1]),185,y,{align:"right"});y+=8});doc.line(12,y,198,y);y+=10;doc.setFontSize(16);doc.text("Totale",12,y);doc.text(euro(q.totale),185,y,{align:"right"});y+=14;doc.setFontSize(10);doc.text("Note:",12,y);y+=6;doc.text(doc.splitTextToSize(q.note||"",180),12,y);doc.setFontSize(9);doc.text(doc.splitTextToSize(datiPDF.footer||"",180),12,282);doc.save(`Preventivo-${q.cliente||"Service-K38"}.pdf`)}
 </script>
 </body>
 </html>
