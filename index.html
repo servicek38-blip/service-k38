@@ -62,6 +62,16 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
 .finance-hidden-box{display:none}
 .finance-hidden-box.show{display:grid}
 .privacy-money{letter-spacing:.08em}
+.quote-material-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px}
+.quote-material-pick{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:8px}
+.category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0}
+.category-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer}
+.category-card:hover{border-color:var(--yellow)}
+.compact-material{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:10px;margin-top:8px}
+.compact-material img{width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.compact-material .placeholder-img{width:64px;height:64px;border-radius:10px;background:#0b1220;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px}
+.full-card-hidden{display:none}
+.full-card-hidden.show{display:block}
 </style>
 </head>
 <body>
@@ -175,6 +185,11 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
           <label>Data pagamento<input id="p_data_pagamento" type="date"></label>
         </div>
         <label>Note<textarea id="p_note"></textarea></label>
+        <div class="item">
+          <h3>Materiale da inventario</h3>
+          <div class="muted">Seleziona il materiale che vuoi collegare al preventivo. Verrà riportato anche nell’evento quando il preventivo viene accettato.</div>
+          <div id="p_materiali_picker" class="quote-material-picker"></div>
+        </div>
         <h3>Totale: <span class="total" id="totalePreventivo">0,00 €</span></h3>
         <div class="actions"><button onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDFCliente()">PDF Cliente Professionale</button><button class="secondary" onclick="scaricaPDFTecnico()">Distinta Tecnica</button><span id="p_msg" class="muted"></span></div>
       </div>
@@ -258,6 +273,8 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
 
 let sb,user,profile,materiali=[],preventivi=[],eventi=[],utenti=[];
+let inventarioCategoriaAttiva="";
+let inventarioSottocategoriaAttiva="";
 let queue=JSON.parse(localStorage.getItem("k38_queue")||"[]");
 let datiPDF=JSON.parse(localStorage.getItem("k38_dati_pdf")||"{}");
 let soundsEnabled = localStorage.getItem("k38_sounds") !== "off";
@@ -453,7 +470,62 @@ function daRiscuotereTotale(){
     return s + Math.max(0, Number(p.totale||0)-Number(p.importo_incassato||0));
   },0);
 }
-function totaleP(o){let sub=Number(o.audio||0)+Number(o.luci||0)+Number(o.video||0)+Number(o.trasporto||0)+Number(o.ore_tecnico||0)*Number(o.tariffa_tecnico||0)+Number(o.montaggio||0)-Number(o.sconto||0);return sub+sub*Number(o.iva||0)/100}
+function totaleP(o){let mat=totaleMaterialiPreventivo(o.materiali||getSelectedPreventivoMateriali());let sub=mat+Number(o.audio||0)+Number(o.luci||0)+Number(o.video||0)+Number(o.trasporto||0)+Number(o.ore_tecnico||0)*Number(o.tariffa_tecnico||0)+Number(o.montaggio||0)-Number(o.sconto||0);return sub+sub*Number(o.iva||0)/100}
+function contaMaterialiCategoria(cat){
+  return materiali.filter(m=>m.categoria===cat).reduce((s,m)=>s+Number(m.quantita||1),0);
+}
+function contaMaterialiSottocategoria(cat,sub){
+  return materiali.filter(m=>m.categoria===cat && m.sottocategoria===sub).reduce((s,m)=>s+Number(m.quantita||1),0);
+}
+function selezionaCategoriaInventario(cat){
+  inventarioCategoriaAttiva=cat;
+  inventarioSottocategoriaAttiva="";
+  render();
+}
+function selezionaSottocategoriaInventario(sub){
+  inventarioSottocategoriaAttiva=sub;
+  render();
+}
+function tornaCategorieInventario(){
+  inventarioCategoriaAttiva="";
+  inventarioSottocategoriaAttiva="";
+  render();
+}
+function tornaSottocategorieInventario(){
+  inventarioSottocategoriaAttiva="";
+  render();
+}
+function toggleSchedaMateriale(key){
+  const el=$("full_mat_"+key);
+  if(el)el.classList.toggle("show");
+}
+function renderMaterialeCompatto(m){
+  const key=m.local_id||m.id;
+  const img=m.foto_url?'<img src="'+escapeHtml(m.foto_url)+'">':'<div class="placeholder-img">NO FOTO</div>';
+  return '<div class="compact-material">'+
+    img+
+    '<div><b>'+escapeHtml(m.nome||"Materiale")+'</b>'+
+    '<div class="muted">'+escapeHtml(m.codice_inventario||"Senza codice")+' • '+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div>'+
+    '<div class="muted">'+escapeHtml((m.marca||"")+(m.modello?" / "+m.modello:""))+' • Stato: '+escapeHtml(m.stato||"-")+' • Q.tà '+Number(m.quantita||0)+'</div>'+
+    '<div class="muted">Noleggio: '+euro(m.prezzo_noleggio||0)+'</div></div>'+
+    '<button class="secondary" onclick="toggleSchedaMateriale(&quot;'+key+'&quot;)">Apri scheda</button>'+
+    '</div><div id="full_mat_'+key+'" class="full-card-hidden">'+renderMaterialeEdit(m)+'</div>';
+}
+function renderInventarioOrganizzato(lista){
+  if(!inventarioCategoriaAttiva){
+    return '<div class="category-grid">'+Object.keys(categorieMateriale).map(cat=>
+      '<div class="category-card" onclick="selezionaCategoriaInventario(&quot;'+cat+'&quot;)"><h3>'+escapeHtml(cat)+'</h3><div class="stat">'+contaMaterialiCategoria(cat)+'</div><div class="muted">elementi</div></div>'
+    ).join("")+'</div>';
+  }
+  const subs=[...new Set(lista.filter(m=>m.categoria===inventarioCategoriaAttiva).map(m=>m.sottocategoria||"Altro"))].sort();
+  if(!inventarioSottocategoriaAttiva){
+    return '<div class="actions"><button class="secondary" onclick="tornaCategorieInventario()">← Categorie</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+'</h3><div class="category-grid">'+subs.map(sub=>
+      '<div class="category-card" onclick="selezionaSottocategoriaInventario(&quot;'+escapeHtml(sub)+'&quot;)"><h3>'+escapeHtml(sub)+'</h3><div class="stat">'+contaMaterialiSottocategoria(inventarioCategoriaAttiva,sub)+'</div><div class="muted">elementi</div></div>'
+    ).join("")+'</div>';
+  }
+  const mats=lista.filter(m=>m.categoria===inventarioCategoriaAttiva && (m.sottocategoria||"Altro")===inventarioSottocategoriaAttiva);
+  return '<div class="actions"><button class="secondary" onclick="tornaSottocategorieInventario()">← Sottocategorie</button><button class="secondary" onclick="tornaCategorieInventario()">Categorie</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+' / '+escapeHtml(inventarioSottocategoriaAttiva)+'</h3>'+(mats.length?mats.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale in questa sottocategoria.</div>');
+}
 function renderMaterialeEdit(m){
   const key=m.local_id||m.id;
   const stati=["Disponibile","Impegnato","In manutenzione","Da controllare","Fuori servizio"];
@@ -519,15 +591,16 @@ async function salvaModificaMateriale(key){
 }
 
 function render(){
+if($("p_materiali_picker")) {renderPreventivoMaterialPicker(getSelectedPreventivoMateriali());aggiornaTotaleMaterialiPreventivo();}
 $("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
 let search=(v("searchMateriale")||"").toLowerCase();
 let fcat=$("filterCategoria")?.value||"";
 let fsub=$("filter_sottocategoria")?.value||"";
-$("listaMateriali").innerHTML=materiali
+const listaFiltrata=materiali
   .filter(m=>JSON.stringify(m).toLowerCase().includes(search))
   .filter(m=>!fcat || m.categoria===fcat)
-  .filter(m=>!fsub || m.sottocategoria===fsub)
-  .map(m=>renderMaterialeEdit(m)).join("");
+  .filter(m=>!fsub || m.sottocategoria===fsub);
+$("listaMateriali").innerHTML=renderInventarioOrganizzato(listaFiltrata);
 var preventiviAttivi=preventivi.filter(p=>!preventivoArchiviato(p));
 var preventiviArchivio=preventivi.filter(p=>preventivoArchiviato(p));
 var renderPreventivoCard=function(p){
@@ -539,7 +612,7 @@ var renderPreventivoCard=function(p){
         <b>${p.numero_preventivo||"Preventivo"} — ${p.cliente||"Cliente"}</b>
         <div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div>
         <div class="total">${euro(p.totale)}</div>
-        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(daRiscuotere)}</div>
+        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(daRiscuotere)}</div><div class="muted">Materiali collegati: ${(p.materiali||[]).length||0}</div>
         <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
         <label><input type="checkbox" ${(p.stato_pagamento||"")==="Pagato"?"checked":""} onchange="togglePagamentoRiscosso('${key}',this.checked)"> Pagamento riscosso</label>
         <label><input type="checkbox" ${p.archiviato?"checked":""} onchange="toggleArchivioPreventivo('${key}',this.checked)"> Archiviato</label>
@@ -656,7 +729,55 @@ async function salvaMateriale(){
   saveQueue();
   msg("m_msg","salvato offline");
 }
-function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,accettato:false};o.totale=totaleP(o);return o}
+function renderPreventivoMaterialPicker(selected=[]){
+  const box=$("p_materiali_picker");
+  if(!box)return;
+  if(!materiali.length){
+    box.innerHTML='<div class="muted">Nessun materiale inventariato.</div>';
+    return;
+  }
+  box.innerHTML=materiali.map(m=>{
+    const key=m.local_id||m.id;
+    const label=((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Materiale"));
+    const sub=(m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:"");
+    return `<label class="quote-material-pick">
+      <input type="checkbox" class="p_mat" value="${escapeHtml(key)}" onchange="aggiornaTotaleMaterialiPreventivo()" ${selected.includes(key)?"checked":""}>
+      ${escapeHtml(label)}
+      <div class="muted">${escapeHtml(sub)}</div>
+    </label>`;
+  }).join("");
+}
+function getSelectedPreventivoMateriali(){
+  return [...document.querySelectorAll(".p_mat")].filter(x=>x.checked).map(x=>x.value);
+}
+function materialiPreventivoConDettaglio(keys=[]){
+  return keys.map(k=>materiali.find(m=>(m.local_id||m.id)===k)).filter(Boolean);
+}
+function valoreCaricoAcquisto(keys=[]){
+  return materialiPreventivoConDettaglio(keys).reduce((s,m)=>s+(Number(m.prezzo_reale||m.prezzo_listino||0)*Number(m.quantita||1)),0);
+}
+function totaleMaterialiPreventivo(keys=[]){
+  return materialiPreventivoConDettaglio(keys).reduce((s,m)=>s+Number(m.prezzo_noleggio||0),0);
+}
+function totaliMaterialiPerCategoria(keys=[]){
+  const out={};
+  materialiPreventivoConDettaglio(keys).forEach(m=>{
+    const cat=m.categoria||"Altro";
+    if(!out[cat])out[cat]={totale:0,items:[]};
+    out[cat].totale+=Number(m.prezzo_noleggio||0);
+    out[cat].items.push(m);
+  });
+  return out;
+}
+function aggiornaTotaleMaterialiPreventivo(){
+  const box=$("p_materiali_totale");
+  if(box)box.textContent=euro(totaleMaterialiPreventivo(getSelectedPreventivoMateriali()));
+  aggiornaTotale();
+}
+function materialiPreventivoNomi(keys=[]){
+  return keys.map(k=>nomeMaterialeById(k)).filter(Boolean);
+}
+function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),accettato:false};o.totale=totaleP(o);return o}
 function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
 async function salvaPreventivo(){
   const row=datiPreventivo();
@@ -1221,8 +1342,28 @@ function pdf(doc,q,img){
   doc.text(q.stato_pagamento||"Da saldare",147,y+30);
   doc.text(euro(q.importo_incassato||0),147,y+40);
 
-  // Services table
+  // Equipment table
   y+=58;
+  doc.setFontSize(13);
+  doc.setTextColor(20,20,20);
+  doc.text("ATTREZZATURA FORNITA",12,y);
+  y+=8;
+
+  const catsAtt=totaliMaterialiPerCategoria(q.materiali||[]);
+  doc.setFontSize(9);
+  const catsKeys=Object.keys(catsAtt);
+  if(catsKeys.length){
+    catsKeys.forEach((cat,i)=>{
+      const desc=catsAtt[cat].items.map(m=>m.nome||"Materiale").join(", ");
+      tableRow(doc,cat,desc+" — "+euro(catsAtt[cat].totale),y,i%2===0);
+      y+=9;
+    });
+  }else{
+    tableRow(doc,"Materiale","Come da accordi / disponibilita magazzino",y,true);
+    y+=9;
+  }
+
+  y+=8;
   doc.setFontSize(13);
   doc.setTextColor(20,20,20);
   doc.text("RIEPILOGO SERVIZI",12,y);
@@ -1237,10 +1378,12 @@ function pdf(doc,q,img){
   doc.setTextColor(20,20,20);
   y+=10;
 
+  const catTotals=totaliMaterialiPerCategoria(q.materiali||[]);
   const righe=[
-    ["Service audio",q.audio],
-    ["Service luci",q.luci],
-    ["Service video",q.video],
+    ...Object.keys(catTotals).map(cat=>["Noleggio "+cat,catTotals[cat].totale]),
+    ["Service audio extra",q.audio],
+    ["Service luci extra",q.luci],
+    ["Service video extra",q.video],
     ["Trasporto",q.trasporto],
     ["Tecnico / personale",q.ore_tecnico*q.tariffa_tecnico],
     ["Montaggio / smontaggio",q.montaggio],
@@ -1327,6 +1470,24 @@ function scaricaPDFTecnico(){
     doc.text(r[0]+": "+r[1],12,y);
     y+=9;
   });
+
+  y+=8;
+  doc.setFontSize(15);
+  doc.text("MATERIALE DA PREVENTIVO",12,y);
+  y+=10;
+  const mats=materialiPreventivoNomi(q.materiali||[]);
+  const valoreCarico=valoreCaricoAcquisto(q.materiali||[]);
+  doc.setFontSize(11);
+  doc.text("VALORE CARICO FURGONE: "+euro(valoreCarico),12,y);
+  y+=10;
+  doc.setFontSize(10);
+  if(mats.length){
+    mats.forEach(m=>{doc.text("- [ ] "+m,16,y);y+=7;if(y>270){doc.addPage();y=15}});
+    y+=6;doc.setFontSize(15);doc.text("CHECKLIST MATERIALE",12,y);y+=10;doc.setFontSize(10);
+    mats.forEach(m=>{doc.text("[ ] Caricato  [ ] Montato  [ ] Rientrato  - "+m,16,y);y+=7;if(y>270){doc.addPage();y=15}});
+  }else{
+    doc.text("- Nessun materiale selezionato dal preventivo",16,y);y+=7;
+  }
 
   y+=8;
   doc.setFontSize(15);
