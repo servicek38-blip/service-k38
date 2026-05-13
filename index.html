@@ -59,6 +59,9 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
 .archive-box{background:#0b1220;border:1px dashed var(--line);border-radius:16px;padding:12px;margin-top:12px}
 .money-good{color:#22c55e;font-weight:900}
 .money-warn{color:#facc15;font-weight:900}
+.finance-hidden-box{display:none}
+.finance-hidden-box.show{display:grid}
+.privacy-money{letter-spacing:.08em}
 </style>
 </head>
 <body>
@@ -112,8 +115,13 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <div class="card"><h3>Preventivi</h3><div class="stat" id="statPreventivi">0</div></div>
         <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
         <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
-        <div class="card"><h3>Incassato anno</h3><div class="stat money-good" id="statIncassatoAnno">0 €</div></div>
-        <div class="card"><h3>Da riscuotere</h3><div class="stat money-warn" id="statDaRiscuotere">0 €</div></div>
+      </div>
+      <div class="card">
+        <button class="secondary" id="toggleFinanceBtn" onclick="toggleFinanceCounters()">Mostra dati economici</button>
+        <div id="financeCounters" class="grid finance-hidden-box" style="margin-top:14px">
+          <div class="card"><h3>Incassato anno</h3><div class="stat money-good privacy-money" id="statIncassatoAnno">0 €</div></div>
+          <div class="card"><h3>Da riscuotere</h3><div class="stat money-warn privacy-money" id="statDaRiscuotere">0 €</div></div>
+        </div>
       </div>
       <div class="card"><button class="green" onclick="tabFromHome('calendario')">Apri eventi / calendario</button></div>
       <div class="card notice">
@@ -128,7 +136,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         <div class="row">
           <label>Codice inventario<input id="m_codice" placeholder="Es. K38-AUD-001"></label>
           <label>Nome<input id="m_nome"></label>
-          <label>Categoria<select id="m_categoria" onchange="aggiornaSottocategorie(\'m\')"><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
+          <label>Categoria<select id="m_categoria" onchange="aggiornaSottocategorie('m')"><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
           <label>Sottocategoria<select id="m_sottocategoria"></select></label>
           <label>Marca<input id="m_marca"></label><label>Modello<input id="m_modello"></label><label>Seriale<input id="m_seriale"></label>
           <label>Quantità<input id="m_quantita" type="number" value="1"></label><label>Posizione<input id="m_posizione"></label>
@@ -154,7 +162,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
       <div class="card">
         <h2>Crea preventivo</h2>
         <div class="row">
-          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data evento<input id="p_data" type="date"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente(\'p\')"></select></label><label>Telefono referente<input id="p_telefono"></label>
+          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data evento<input id="p_data" type="date"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente('p')"></select></label><label>Telefono referente<input id="p_telefono"></label>
           <label>Audio €<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci €<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video €<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label><label>Trasporto €<input id="p_trasporto" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Ore tecnico<input id="p_ore" type="number" value="0" oninput="aggiornaTotale()"></label><label>Tariffa tecnico €<input id="p_tariffa" type="number" value="0" oninput="aggiornaTotale()"></label><label>Montaggio €<input id="p_montaggio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Sconto €<input id="p_sconto" type="number" value="0" oninput="aggiornaTotale()"></label><label>IVA/Maggiorazione %<input id="p_iva" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Stato pagamento<select id="p_stato_pagamento">
@@ -168,7 +176,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         </div>
         <label>Note<textarea id="p_note"></textarea></label>
         <h3>Totale: <span class="total" id="totalePreventivo">0,00 €</span></h3>
-        <div class="actions"><button onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDF()">Scarica PDF</button><span id="p_msg" class="muted"></span></div>
+        <div class="actions"><button onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDFCliente()">PDF Cliente Professionale</button><button class="secondary" onclick="scaricaPDFTecnico()">Distinta Tecnica</button><span id="p_msg" class="muted"></span></div>
       </div>
       <div class="card"><h2>Preventivi salvati</h2><div id="listaPreventivi"></div></div>
     </section>
@@ -188,7 +196,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
           <div class="row">
             <label>Titolo<input id="new_ev_titolo" placeholder="Es. Matrimonio / Service live"></label>
             <label>Cliente<input id="new_ev_cliente" placeholder="Cliente"></label>
-            <label>Referente/Tecnico<select id="new_ev_referente" onchange="aggiornaTelefonoReferente(\'new_ev\')"></select></label>
+            <label>Referente/Tecnico<select id="new_ev_referente" onchange="aggiornaTelefonoReferente('new_ev')"></select></label>
             <label>Telefono referente<input id="new_ev_telefono"></label>
             <label>Data<input id="new_ev_data" type="date"></label>
             <label>Luogo<input id="new_ev_luogo" placeholder="Luogo"></label>
@@ -275,6 +283,14 @@ function toggleSounds(){
   localStorage.setItem("k38_sounds", soundsEnabled ? "on" : "off");
   updateSoundButton();
   playSound("success");
+}
+function toggleFinanceCounters(){
+  const box=$("financeCounters");
+  const btn=$("toggleFinanceBtn");
+  if(!box || !btn)return;
+  const show=!box.classList.contains("show");
+  box.classList.toggle("show",show);
+  btn.textContent=show?"Nascondi dati economici":"Mostra dati economici";
 }
 function updateSoundButton(){
   const b = document.getElementById("soundToggle");
@@ -407,7 +423,7 @@ function progressivoPreventivo(){
   const yy=annoCorrenteShort();
   const nums=preventivi
     .map(p=>String(p.numero_preventivo||""))
-    .map(s=>s.match(/N(\d+)\/${yy}/))
+    .map(s=>s.match(new RegExp("N(\\d+)/"+yy)))
     .filter(Boolean)
     .map(m=>Number(m[1]||0));
   const next=(nums.length?Math.max(...nums):0)+1;
@@ -503,7 +519,7 @@ async function salvaModificaMateriale(key){
 }
 
 function render(){
-$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
+$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
 let search=(v("searchMateriale")||"").toLowerCase();
 let fcat=$("filterCategoria")?.value||"";
 let fsub=$("filter_sottocategoria")?.value||"";
@@ -512,25 +528,6 @@ $("listaMateriali").innerHTML=materiali
   .filter(m=>!fcat || m.categoria===fcat)
   .filter(m=>!fsub || m.sottocategoria===fsub)
   .map(m=>renderMaterialeEdit(m)).join("");
-var preventiviAttivi=preventivi.filter(p=>!preventivoArchiviato(p));
-var preventiviArchivio=preventivi.filter(p=>preventivoArchiviato(p));
-var renderPreventivoCard=function(p){
-  const key=p.local_id||p.id;
-  return `<div class="item ${p.accettato?'accepted':''}">
-    <div class="item-head">
-      <div>
-        <b>${p.numero_preventivo||"Preventivo"} — ${p.cliente||"Cliente"}</b>
-        <div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div>
-        <div class="total">${euro(p.totale)}</div>
-        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(Math.max(0,Number(p.totale||0)-Number(p.importo_incassato||0)))}</div>
-        <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
-        <label><input type="checkbox" ${p.archiviato?"checked":""} onchange="toggleArchivioPreventivo('${key}',this.checked)"> Archiviato</label>
-        ${p._pending?`<span class="status">da sincronizzare</span>`:""}
-      </div>
-      <button class="danger" onclick="eliminaLocalePreventivo('${key}')">Elimina</button>
-    </div>
-  </div>`;
-}
 var preventiviAttivi=preventivi.filter(p=>!preventivoArchiviato(p));
 var preventiviArchivio=preventivi.filter(p=>preventivoArchiviato(p));
 var renderPreventivoCard=function(p){
@@ -544,6 +541,7 @@ var renderPreventivoCard=function(p){
         <div class="total">${euro(p.totale)}</div>
         <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(daRiscuotere)}</div>
         <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
+        <label><input type="checkbox" ${(p.stato_pagamento||"")==="Pagato"?"checked":""} onchange="togglePagamentoRiscosso('${key}',this.checked)"> Pagamento riscosso</label>
         <label><input type="checkbox" ${p.archiviato?"checked":""} onchange="toggleArchivioPreventivo('${key}',this.checked)"> Archiviato</label>
         ${p._pending?`<span class="status">da sincronizzare</span>`:""}
       </div>
@@ -684,6 +682,24 @@ async function salvaPreventivo(){
   playSound("success");
   msg("p_msg","salvato offline");
 }
+function oggiISO(){return new Date().toISOString().slice(0,10)}
+async function togglePagamentoRiscosso(key,checked){
+  let p=preventivi.find(x=>(x.local_id||x.id)===key);
+  if(!p)return;
+  const payload=checked
+    ? {stato_pagamento:"Pagato",importo_incassato:Number(p.totale||0),data_pagamento:oggiISO()}
+    : {stato_pagamento:"Da saldare",importo_incassato:0,data_pagamento:null};
+  Object.assign(p,payload);
+  if(online() && p.id){
+    const {error}=await sb.from("preventivi").update(payload).eq("id",p.id);
+    if(error){showSyncError(error);return}
+    await caricaTutto();
+    return;
+  }
+  p._pending=true;
+  queue.push({type:"update_preventivo",key,payload});
+  saveCache();saveQueue();
+}
 async function toggleArchivioPreventivo(key,checked){
   let p=preventivi.find(x=>(x.local_id||x.id)===key);
   if(!p)return;
@@ -714,7 +730,6 @@ async function toggleAccettato(key,checked){
     if(checked){
       const ev={
         titolo:p.evento||"Evento da preventivo",
-        numero_preventivo:p.numero_preventivo||"",
         numero_preventivo:p.numero_preventivo||"",
         cliente:p.cliente,
         referente:p.referente||"",
@@ -1091,8 +1106,258 @@ function scaricaDistintaEvento(key){
   doc.save("Distinta-"+(e.titolo||"evento")+".pdf");
 }
 function salvaDatiPDF(){datiPDF={partner:v("d_partner"),ragione:v("d_ragione"),benow:v("d_benow"),cf:v("d_cf"),piva:v("d_piva"),univoco:v("d_univoco"),tel:v("d_tel"),email:v("d_email"),footer:v("d_footer")};localStorage.setItem("k38_dati_pdf",JSON.stringify(datiPDF));playSound("success");alert("Dati salvati")}
-function scaricaPDF(){salvaDatiPDF();let q=datiPreventivo();let {jsPDF}=window.jspdf;let doc=new jsPDF();let img=new Image();img.src="logo-k38.png";img.onload=()=>pdf(doc,q,img);img.onerror=()=>pdf(doc,q,null)}
-function pdf(doc,q,img){if(img)doc.addImage(img,"PNG",12,10,42,30);doc.setFontSize(18);doc.text(q.numero_preventivo||"PREVENTIVO SERVICE K38",62,18);doc.setFontSize(10);doc.text(datiPDF.ragione||"Service K38",62,26);doc.text(`${datiPDF.partner||"Partner BENOW"} • ${datiPDF.benow||"BeNow s.c.p.a."}`,62,32);doc.text(`CF ${datiPDF.cf||"01516270137"} • P.IVA ${datiPDF.piva||"03080310174"} • CU ${datiPDF.univoco||"M5UXCR1"}`,62,38);doc.text(`${datiPDF.tel||""}${datiPDF.email?" • "+datiPDF.email:""}`,62,44);doc.line(12,52,198,52);let y=64;doc.setFontSize(12);[["Cliente",q.cliente],["Evento",q.evento],["Referente",q.referente||""],["Telefono referente",q.telefono_referente||""],["Data",q.data_evento||""],["Luogo",q.luogo],["Pagamento",q.stato_pagamento||"Da saldare"],["Incassato",euro(q.importo_incassato||0)]].forEach(r=>{doc.text(`${r[0]}: ${r[1]||""}`,12,y);y+=8});y+=4;[["Audio",q.audio],["Luci",q.luci],["Video",q.video],["Trasporto",q.trasporto],["Tecnico",q.ore_tecnico*q.tariffa_tecnico],["Montaggio",q.montaggio],["Sconto",-q.sconto]].forEach(r=>{doc.text(r[0],12,y);doc.text(euro(r[1]),185,y,{align:"right"});y+=8});doc.line(12,y,198,y);y+=10;doc.setFontSize(16);doc.text("Totale",12,y);doc.text(euro(q.totale),185,y,{align:"right"});y+=14;doc.setFontSize(10);doc.text("Note:",12,y);y+=6;doc.text(doc.splitTextToSize(q.note||"",180),12,y);doc.setFontSize(9);doc.text(doc.splitTextToSize(datiPDF.footer||"",180),12,282);doc.save(`Preventivo-${q.cliente||"Service-K38"}.pdf`)}
+function scaricaPDFCliente(){salvaDatiPDF();let q=datiPreventivo();let {jsPDF}=window.jspdf;let doc=new jsPDF();let img=new Image();img.src="logo-k38.png";img.onload=()=>pdf(doc,q,img);img.onerror=()=>pdf(doc,q,null)}
+
+function pdfMoney(doc,label,value,y,highlight=false){
+  if(highlight){
+    doc.setFillColor(9,31,77);
+    doc.roundedRect(118,y-7,80,13,2,2,"F");
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(11);
+    doc.text(label,122,y+1);
+    doc.setFontSize(14);
+    doc.text(euro(value),194,y+1,{align:"right"});
+    doc.setTextColor(20,20,20);
+  }else{
+    doc.setFontSize(10);
+    doc.setTextColor(70,70,70);
+    doc.text(label,122,y);
+    doc.setTextColor(20,20,20);
+    doc.text(euro(value),194,y,{align:"right"});
+  }
+}
+function statoBadge(doc,status,x,y){
+  const s=(status||"BOZZA").toUpperCase();
+  if(s.includes("PAG")) doc.setFillColor(22,163,74);
+  else if(s.includes("ACCONTO")) doc.setFillColor(234,179,8);
+  else if(s.includes("ANNULL")) doc.setFillColor(185,28,28);
+  else doc.setFillColor(18,184,238);
+  doc.roundedRect(x,y,38,9,2,2,"F");
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(9);
+  doc.text(s,x+19,y+6,{align:"center"});
+  doc.setTextColor(20,20,20);
+}
+function tableRow(doc,label,value,y,shade=false){
+  if(shade){doc.setFillColor(245,247,250);doc.rect(12,y-6,186,9,"F");}
+  doc.setDrawColor(220,226,235);
+  doc.line(12,y+3,198,y+3);
+  doc.setFontSize(9);
+  doc.setTextColor(80,90,110);
+  doc.text(label,16,y);
+  doc.setTextColor(20,20,20);
+  doc.text(String(value||"-"),68,y);
+}
+function pdf(doc,q,img){
+  const navy=[9,31,77];
+  const light=[245,247,250];
+  const border=[220,226,235];
+
+  // Background
+  doc.setFillColor(255,255,255);
+  doc.rect(0,0,210,297,"F");
+
+  // Header
+  doc.setFillColor(...navy);
+  doc.rect(0,0,210,44,"F");
+
+  if(img){
+    try{doc.addImage(img,"PNG",12,9,30,24);}catch(e){}
+  }
+
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(19);
+  doc.text("PREVENTIVO",50,17);
+  doc.setFontSize(11);
+  doc.text(q.numero_preventivo||"Preventivo",50,26);
+  doc.setFontSize(9);
+  doc.text("Service K38 • Audio Video Luci • Noleggio e Service",50,34);
+
+  // Right document box
+  doc.setFillColor(255,255,255);
+  doc.roundedRect(150,9,48,24,2,2,"F");
+  doc.setTextColor(9,31,77);
+  doc.setFontSize(8);
+  doc.text("DOCUMENTO",174,16,{align:"center"});
+  doc.setFontSize(10);
+  doc.text(q.numero_preventivo||"-",174,23,{align:"center"});
+  statoBadge(doc,q.stato_pagamento||"BOZZA",155,26);
+
+  // Company / client two boxes
+  let y=56;
+  doc.setTextColor(20,20,20);
+  doc.setFontSize(13);
+  doc.text("DATI CLIENTE / EVENTO",12,y);
+  doc.text("REFERENTE",112,y);
+  y+=6;
+
+  doc.setDrawColor(...border);
+  doc.setFillColor(...light);
+  doc.roundedRect(12,y,88,44,3,3,"FD");
+  doc.roundedRect(112,y,86,44,3,3,"FD");
+
+  doc.setFontSize(9);
+  doc.setTextColor(80,90,110);
+  doc.text("Cliente",18,y+10);
+  doc.text("Evento",18,y+20);
+  doc.text("Luogo",18,y+30);
+  doc.text("Data evento",18,y+40);
+
+  doc.setTextColor(20,20,20);
+  doc.text(q.cliente||"-",43,y+10);
+  doc.text(q.evento||"-",43,y+20);
+  doc.text(q.luogo||"-",43,y+30);
+  doc.text(q.data_evento||"-",43,y+40);
+
+  doc.setTextColor(80,90,110);
+  doc.text("Nome",118,y+10);
+  doc.text("Telefono",118,y+20);
+  doc.text("Pagamento",118,y+30);
+  doc.text("Incassato",118,y+40);
+
+  doc.setTextColor(20,20,20);
+  doc.text(q.referente||"-",147,y+10);
+  doc.text(q.telefono_referente||"-",147,y+20);
+  doc.text(q.stato_pagamento||"Da saldare",147,y+30);
+  doc.text(euro(q.importo_incassato||0),147,y+40);
+
+  // Services table
+  y+=58;
+  doc.setFontSize(13);
+  doc.setTextColor(20,20,20);
+  doc.text("RIEPILOGO SERVIZI",12,y);
+  y+=8;
+
+  doc.setFillColor(9,31,77);
+  doc.roundedRect(12,y-6,186,10,2,2,"F");
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(9);
+  doc.text("Descrizione",16,y);
+  doc.text("Importo",194,y,{align:"right"});
+  doc.setTextColor(20,20,20);
+  y+=10;
+
+  const righe=[
+    ["Service audio",q.audio],
+    ["Service luci",q.luci],
+    ["Service video",q.video],
+    ["Trasporto",q.trasporto],
+    ["Tecnico / personale",q.ore_tecnico*q.tariffa_tecnico],
+    ["Montaggio / smontaggio",q.montaggio],
+    ["Sconto",-q.sconto]
+  ].filter(r=>Number(r[1]||0)!==0);
+
+  if(!righe.length){
+    tableRow(doc,"Servizi concordati","Come da accordi",y,true);
+    y+=10;
+  }else{
+    righe.forEach((r,i)=>{
+      tableRow(doc,r[0],euro(r[1]),y,i%2===0);
+      doc.text(euro(r[1]),194,y,{align:"right"});
+      y+=10;
+    });
+  }
+
+  y+=6;
+  const imponibile = Number(q.totale||0);
+  pdfMoney(doc,"TOTALE",imponibile,y,true);
+
+  // Notes / conditions
+  y+=24;
+  doc.setTextColor(20,20,20);
+  doc.setFontSize(13);
+  doc.text("NOTE E CONDIZIONI",12,y);
+  y+=8;
+
+  doc.setFillColor(245,247,250);
+  doc.roundedRect(12,y,186,42,3,3,"FD");
+  doc.setFontSize(9);
+  doc.setTextColor(60,70,85);
+  const noteText = q.note || "Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilita e conferma.";
+  doc.text(doc.splitTextToSize(noteText,174),18,y+9);
+
+  // Acceptance area
+  y+=54;
+  doc.setFontSize(10);
+  doc.setTextColor(20,20,20);
+  doc.text("Accettazione cliente",12,y);
+  doc.line(52,y,112,y);
+  doc.text("Data",124,y);
+  doc.line(138,y,198,y);
+
+  // Footer
+  doc.setDrawColor(9,31,77);
+  doc.line(12,276,198,276);
+  doc.setFontSize(8);
+  doc.setTextColor(80,90,110);
+  doc.text("Service K38 - Noleggio, vendita, installazione impianti audio video e luci",12,283);
+  doc.text("Tel. 3284218233 - servicek38@gmail.com",12,288);
+  doc.text("Partner BeNow s.c.p.a. - CF 01516270137 - P.IVA 03080310174 - CU M5UXCR1",12,293);
+
+  doc.save(`${q.numero_preventivo||"Preventivo"}-${q.cliente||"Service-K38"}.pdf`);
+}
+
+function scaricaPDFTecnico(){
+  let q=datiPreventivo();
+  let {jsPDF}=window.jspdf;
+  let doc=new jsPDF();
+
+  doc.setFillColor(17,24,39);
+  doc.rect(0,0,210,297,"F");
+
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(20);
+  doc.text("DISTINTA TECNICA",12,18);
+
+  doc.setFontSize(11);
+  const righe=[
+    ["Numero",q.numero_preventivo||"-"],
+    ["Cliente",q.cliente||"-"],
+    ["Evento",q.evento||"-"],
+    ["Referente",q.referente||"-"],
+    ["Telefono",q.telefono_referente||"-"],
+    ["Luogo",q.luogo||"-"],
+    ["Data",q.data_evento||"-"],
+    ["Pagamento",q.stato_pagamento||"-"],
+    ["Incassato",euro(q.importo_incassato||0)]
+  ];
+
+  let y=34;
+  righe.forEach(r=>{
+    doc.text(r[0]+": "+r[1],12,y);
+    y+=9;
+  });
+
+  y+=8;
+  doc.setFontSize(15);
+  doc.text("CHECKLIST OPERATIVA",12,y);
+  y+=12;
+
+  const checks=[
+    "[ ] Carico materiale",
+    "[ ] Montaggio",
+    "[ ] Test impianto",
+    "[ ] Smontaggio",
+    "[ ] Rientro magazzino"
+  ];
+
+  doc.setFontSize(11);
+  checks.forEach(c=>{
+    doc.text(c,16,y);
+    y+=10;
+  });
+
+  y+=10;
+  doc.setFontSize(15);
+  doc.text("NOTE TECNICHE",12,y);
+  y+=10;
+
+  doc.setFontSize(10);
+  doc.text(doc.splitTextToSize(q.note||"",180),12,y);
+
+  doc.save(`Distinta-Tecnica-${q.cliente||"evento"}.pdf`);
+}
+
 </script>
 </body>
 </html>
