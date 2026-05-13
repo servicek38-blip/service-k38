@@ -122,6 +122,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
     <section id="dashboard" class="page">
       <div class="grid">
         <div class="card"><h3>Materiali</h3><div class="stat" id="statMateriali">0</div></div>
+        <div class="card"><h3>Da manutenzione</h3><div class="stat" id="statManutenzioni">0</div></div>
         <div class="card"><h3>Preventivi</h3><div class="stat" id="statPreventivi">0</div></div>
         <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
         <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
@@ -165,6 +166,10 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
           <label>Filtra categoria<select id="filterCategoria" onchange="aggiornaSottocategorie('filter');render()"><option value="">Tutte</option><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
           <label>Filtra sottocategoria<select id="filter_sottocategoria" onchange="render()"><option value="">Tutte</option></select></label>
         </div>
+        <div class="actions">
+          <button class="secondary" onclick="mostraMaterialiManutenzione()">Mostra manutenzioni</button>
+          <button class="secondary" onclick="tornaCategorieInventario()">Torna a categorie</button>
+        </div>
         <div id="listaMateriali"></div></div>
     </section>
 
@@ -172,7 +177,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
       <div class="card">
         <h2>Crea preventivo</h2>
         <div class="row">
-          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data evento<input id="p_data" type="date"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente('p')"></select></label><label>Telefono referente<input id="p_telefono"></label>
+          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data inizio<input id="p_data" type="date"></label><label>Data fine<input id="p_data_fine" type="date"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente('p')"></select></label><label>Telefono referente<input id="p_telefono"></label>
           <label>Audio €<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci €<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video €<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label><label>Trasporto €<input id="p_trasporto" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Ore tecnico<input id="p_ore" type="number" value="0" oninput="aggiornaTotale()"></label><label>Tariffa tecnico €<input id="p_tariffa" type="number" value="0" oninput="aggiornaTotale()"></label><label>Montaggio €<input id="p_montaggio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Sconto €<input id="p_sconto" type="number" value="0" oninput="aggiornaTotale()"></label><label>IVA/Maggiorazione %<input id="p_iva" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Stato pagamento<select id="p_stato_pagamento">
@@ -213,7 +218,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
             <label>Cliente<input id="new_ev_cliente" placeholder="Cliente"></label>
             <label>Referente/Tecnico<select id="new_ev_referente" onchange="aggiornaTelefonoReferente('new_ev')"></select></label>
             <label>Telefono referente<input id="new_ev_telefono"></label>
-            <label>Data<input id="new_ev_data" type="date"></label>
+            <label>Data inizio<input id="new_ev_data" type="date"></label><label>Data fine<input id="new_ev_data_fine" type="date"></label>
             <label>Luogo<input id="new_ev_luogo" placeholder="Luogo"></label>
             <label>Stato<select id="new_ev_stato"><option>Richiesta</option><option>Preventivo</option><option>Confermato</option><option>Montato</option><option>Smontato</option><option>Pagato</option></select></label>
             <label>Totale €<input id="new_ev_totale" type="number" value="0"></label>
@@ -275,6 +280,7 @@ if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-wo
 let sb,user,profile,materiali=[],preventivi=[],eventi=[],utenti=[];
 let inventarioCategoriaAttiva="";
 let inventarioSottocategoriaAttiva="";
+let mostraSoloManutenzioni=false;
 let queue=JSON.parse(localStorage.getItem("k38_queue")||"[]");
 let datiPDF=JSON.parse(localStorage.getItem("k38_dati_pdf")||"{}");
 let soundsEnabled = localStorage.getItem("k38_sounds") !== "off";
@@ -446,6 +452,17 @@ function progressivoPreventivo(){
   const next=(nums.length?Math.max(...nums):0)+1;
   return `Preventivo N${next}/${yy}`;
 }
+
+function formatRangeDate(start,end){
+  if(!start)return "-";
+  if(!end || end===start)return start;
+  return start+" → "+end;
+}
+function eventoTerminato(e){
+  const end=e.data_fine_evento||e.data_evento;
+  return dataPassata(end);
+}
+
 function dataPassata(dateStr){
   if(!dateStr)return false;
   const today=new Date();today.setHours(0,0,0,0);
@@ -471,6 +488,26 @@ function daRiscuotereTotale(){
   },0);
 }
 function totaleP(o){let mat=totaleMaterialiPreventivo(o.materiali||getSelectedPreventivoMateriali());let sub=mat+Number(o.audio||0)+Number(o.luci||0)+Number(o.video||0)+Number(o.trasporto||0)+Number(o.ore_tecnico||0)*Number(o.tariffa_tecnico||0)+Number(o.montaggio||0)-Number(o.sconto||0);return sub+sub*Number(o.iva||0)/100}
+function materialeDaManutenzione(m){
+  return ["In manutenzione","Da controllare","Fuori servizio"].includes(m.stato||"");
+}
+function mostraMaterialiManutenzione(){
+  mostraSoloManutenzioni=true;
+  inventarioCategoriaAttiva="";
+  inventarioSottocategoriaAttiva="";
+  render();
+}
+function disattivaVistaManutenzione(){
+  mostraSoloManutenzioni=false;
+  render();
+}
+function renderManutenzioni(lista){
+  const manut=lista.filter(materialeDaManutenzione);
+  return '<div class="actions"><button class="secondary" onclick="disattivaVistaManutenzione()">← Torna inventario</button></div>'+
+    '<h3>Materiali da manutenzione / controllo</h3>'+
+    '<div class="muted">Elenco rapido di materiali con stato In manutenzione, Da controllare o Fuori servizio.</div>'+
+    (manut.length?manut.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale da manutenzione.</div>');
+}
 function contaMaterialiCategoria(cat){
   return materiali.filter(m=>m.categoria===cat).reduce((s,m)=>s+Number(m.quantita||1),0);
 }
@@ -487,6 +524,7 @@ function selezionaSottocategoriaInventario(sub){
   render();
 }
 function tornaCategorieInventario(){
+  mostraSoloManutenzioni=false;
   inventarioCategoriaAttiva="";
   inventarioSottocategoriaAttiva="";
   render();
@@ -592,7 +630,7 @@ async function salvaModificaMateriale(key){
 
 function render(){
 if($("p_materiali_picker")) {renderPreventivoMaterialPicker(getSelectedPreventivoMateriali());aggiornaTotaleMaterialiPreventivo();}
-$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
+$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;if($("statManutenzioni"))$("statManutenzioni").textContent=materiali.filter(materialeDaManutenzione).length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
 let search=(v("searchMateriale")||"").toLowerCase();
 let fcat=$("filterCategoria")?.value||"";
 let fsub=$("filter_sottocategoria")?.value||"";
@@ -600,7 +638,7 @@ const listaFiltrata=materiali
   .filter(m=>JSON.stringify(m).toLowerCase().includes(search))
   .filter(m=>!fcat || m.categoria===fcat)
   .filter(m=>!fsub || m.sottocategoria===fsub);
-$("listaMateriali").innerHTML=renderInventarioOrganizzato(listaFiltrata);
+$("listaMateriali").innerHTML=mostraSoloManutenzioni?renderManutenzioni(listaFiltrata):renderInventarioOrganizzato(listaFiltrata);
 var preventiviAttivi=preventivi.filter(p=>!preventivoArchiviato(p));
 var preventiviArchivio=preventivi.filter(p=>preventivoArchiviato(p));
 var renderPreventivoCard=function(p){
@@ -610,7 +648,7 @@ var renderPreventivoCard=function(p){
     <div class="item-head">
       <div>
         <b>${p.numero_preventivo||"Preventivo"} — ${p.cliente||"Cliente"}</b>
-        <div class="muted">${p.evento||""} • ${p.data_evento||""} • ${p.luogo||""}</div>
+        <div class="muted">${p.evento||""} • ${formatRangeDate(p.data_evento,p.data_fine_evento)} • ${p.luogo||""}</div>
         <div class="total">${euro(p.totale)}</div>
         <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(daRiscuotere)}</div><div class="muted">Materiali collegati: ${(p.materiali||[]).length||0}</div>
         <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
@@ -777,7 +815,7 @@ function aggiornaTotaleMaterialiPreventivo(){
 function materialiPreventivoNomi(keys=[]){
   return keys.map(k=>nomeMaterialeById(k)).filter(Boolean);
 }
-function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),accettato:false};o.totale=totaleP(o);return o}
+function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,data_fine_evento:v("p_data_fine")||v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),accettato:false};o.totale=totaleP(o);return o}
 function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
 async function salvaPreventivo(){
   const row=datiPreventivo();
@@ -856,7 +894,7 @@ async function toggleAccettato(key,checked){
         referente:p.referente||"",
         tecnico:p.referente||"",
         telefono_referente:p.telefono_referente||"",
-        data_evento:p.data_evento,
+        data_evento:p.data_evento,data_fine_evento:p.data_fine_evento||p.data_evento,
         luogo:p.luogo,
         stato:"Confermato",
         preventivo_id:p.id,
@@ -882,7 +920,7 @@ async function toggleAccettato(key,checked){
   }
 
   if(checked){
-    let ev={local_id:uid(),titolo:p.evento||"Evento da preventivo",numero_preventivo:p.numero_preventivo||"",cliente:p.cliente,referente:p.referente||"",tecnico:p.referente||"",telefono_referente:p.telefono_referente||"",data_evento:p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,stato_pagamento:p.stato_pagamento||"Da saldare",importo_incassato:p.importo_incassato||0,data_pagamento:p.data_pagamento||null,materiali:p.materiali||[],checklist:p.checklist||{},_pending:true};
+    let ev={local_id:uid(),titolo:p.evento||"Evento da preventivo",numero_preventivo:p.numero_preventivo||"",cliente:p.cliente,referente:p.referente||"",tecnico:p.referente||"",telefono_referente:p.telefono_referente||"",data_evento:p.data_evento,data_fine_evento:p.data_fine_evento||p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,stato_pagamento:p.stato_pagamento||"Da saldare",importo_incassato:p.importo_incassato||0,data_pagamento:p.data_pagamento||null,materiali:p.materiali||[],checklist:p.checklist||{},_pending:true};
     eventi.push(ev);
     p.evento_id=ev.local_id;
     queue.push({type:"insert",table:"eventi",payload:{...ev}});
@@ -1025,17 +1063,23 @@ function nomeMaterialeById(key){
   const m=materiali.find(x=>(x.local_id||x.id)===key);
   return m ? `${m.codice_inventario||""} ${m.nome||""}`.trim() : key;
 }
-function eventiStessaData(data, excludeKey=""){
-  return eventi.filter(ev=>(ev.local_id||ev.id)!==excludeKey && ev.data_evento===data);
+function rangeOverlap(a1,a2,b1,b2){
+  if(!a1 || !b1)return false;
+  const s1=new Date(a1), e1=new Date(a2||a1);
+  const s2=new Date(b1), e2=new Date(b2||b1);
+  return s1<=e2 && s2<=e1;
 }
-function conflittoTecnico(data, tecnico, excludeKey=""){
+function eventiStessaData(data, excludeKey="", dataFine=null){
+  return eventi.filter(ev=>(ev.local_id||ev.id)!==excludeKey && rangeOverlap(data,dataFine||data,ev.data_evento,ev.data_fine_evento||ev.data_evento));
+}
+function conflittoTecnico(data, tecnico, excludeKey="", dataFine=null){
   if(!data || !tecnico) return null;
-  return eventiStessaData(data,excludeKey).find(ev=>(ev.tecnico||ev.referente||"")===tecnico);
+  return eventiStessaData(data,excludeKey,dataFine).find(ev=>(ev.tecnico||ev.referente||"")===tecnico);
 }
-function conflittiMateriale(data, selectedKeys, excludeKey=""){
+function conflittiMateriale(data, selectedKeys, excludeKey="", dataFine=null){
   if(!data || !selectedKeys?.length) return [];
   const conflicts=[];
-  eventiStessaData(data,excludeKey).forEach(ev=>{
+  eventiStessaData(data,excludeKey,dataFine).forEach(ev=>{
     const mats=materialiEvento(ev);
     selectedKeys.forEach(k=>{
       if(mats.includes(k)) conflicts.push({materiale:k, evento:ev.titolo||"Evento"});
@@ -1062,13 +1106,14 @@ function renderEventoEdit(e){
   const options=stati.map(st=>'<option '+(st===(e.stato||"")?'selected':'')+'>'+escapeHtml(st)+'</option>').join("");
   const c=checklistEvento(e);
   const selectedMats=materialiEvento(e);
-  return '<div class="item calendar-day '+(dataPassata(e.data_evento)?'past-event':'')+'">' +
+  return '<div class="item calendar-day '+(eventoTerminato(e)?'past-event':'')+'">' +
     '<div class="row">' +
       '<label>Titolo<input id="ev_t_'+key+'" value="'+escapeHtml(e.titolo||"")+'"></label>' +
       '<label>Cliente<input id="ev_c_'+key+'" value="'+escapeHtml(e.cliente||"")+'"></label>' +
       '<label>Referente/Tecnico<select id="ev_ref_'+key+'" onchange="aggiornaTelefonoEvento(&quot;'+key+'&quot;,this.value)">'+opzioniReferenti(e.tecnico||e.referente||"")+'</select></label>' +
       '<label>Telefono<input id="ev_tel_'+key+'" value="'+escapeHtml(e.telefono_referente||"")+'"></label>' +
-      '<label>Data<input type="date" id="ev_d_'+key+'" value="'+escapeHtml(e.data_evento||"")+'"></label>' +
+      '<label>Data inizio<input type="date" id="ev_d_'+key+'" value="'+escapeHtml(e.data_evento||"")+'"></label>' +
+      '<label>Data fine<input type="date" id="ev_df_'+key+'" value="'+escapeHtml(e.data_fine_evento||e.data_evento||"")+'"></label>' +
       '<label>Luogo<input id="ev_l_'+key+'" value="'+escapeHtml(e.luogo||"")+'"></label>' +
       '<label>Stato<select id="ev_s_'+key+'">'+options+'</select></label>' +
       '<label>Totale €<input type="number" id="ev_tot_'+key+'" value="'+Number(e.totale||0)+'"></label>' +
@@ -1108,7 +1153,7 @@ async function creaEventoManuale(){
     referente:ref,
     tecnico:ref,
     telefono_referente:v("new_ev_telefono")||telefonoReferente(ref),
-    data_evento:v("new_ev_data")||null,
+    data_evento:v("new_ev_data")||null,data_fine_evento:v("new_ev_data_fine")||v("new_ev_data")||null,
     luogo:v("new_ev_luogo"),
     stato:v("new_ev_stato")||"Richiesta",
     totale:n("new_ev_totale"),
@@ -1119,7 +1164,7 @@ async function creaEventoManuale(){
     checklist:{}
   };
   if(!confirmPastDate(row.data_evento)) return;
-  const ctec=conflittoTecnico(row.data_evento,row.tecnico);
+  const ctec=conflittoTecnico(row.data_evento,row.tecnico,"",row.data_fine_evento);
   if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha già un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?")) return;
 
   if(online()){
@@ -1159,7 +1204,7 @@ async function salvaModificaEvento(key){
     referente:tecnico,
     tecnico:tecnico,
     telefono_referente:$("ev_tel_"+key).value || telefonoReferente(tecnico),
-    data_evento:$("ev_d_"+key).value||null,
+    data_evento:$("ev_d_"+key).value||null,data_fine_evento:$("ev_df_"+key).value||$("ev_d_"+key).value||null,
     luogo:$("ev_l_"+key).value,
     stato:$("ev_s_"+key).value,
     totale:Number($("ev_tot_"+key).value||0),
@@ -1171,10 +1216,10 @@ async function salvaModificaEvento(key){
   };
   if(!confirmPastDate(updated.data_evento)) return;
 
-  const ctec=conflittoTecnico(updated.data_evento,updated.tecnico,key);
+  const ctec=conflittoTecnico(updated.data_evento,updated.tecnico,key,updated.data_fine_evento);
   if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha già un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?")) return;
 
-  const cmats=conflittiMateriale(updated.data_evento,selectedMats,key);
+  const cmats=conflittiMateriale(updated.data_evento,selectedMats,key,updated.data_fine_evento);
   if(cmats.length){
     const txt=cmats.map(c=>nomeMaterialeById(c.materiale)+" gia assegnato a "+c.evento).join("\n");
     const message="ATTENZIONE: alcuni materiali risultano gia assegnati nella stessa data:\n"+txt+"\n\nVuoi continuare comunque?";

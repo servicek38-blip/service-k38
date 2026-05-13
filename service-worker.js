@@ -1,4 +1,4 @@
-const CACHE_NAME = "service-k38-v23";
+const CACHE_NAME = "service-k38-v25";
 const LOCAL_ASSETS = [
   "./",
   "./index.html",
