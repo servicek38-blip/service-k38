@@ -72,6 +72,52 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
 .compact-material .placeholder-img{width:64px;height:64px;border-radius:10px;background:#0b1220;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px}
 .full-card-hidden{display:none}
 .full-card-hidden.show{display:block}
+
+.compact-event{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
+.compact-event-detail{display:none}
+.compact-event-detail.show{display:block}
+
+.k38-secret-overlay{
+position:fixed;inset:0;
+background:rgba(0,0,0,.92);
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+z-index:99999;
+animation:k38fade .3s ease;
+}
+.k38-secret-box{
+text-align:center;
+padding:30px;
+border:2px solid var(--blue);
+border-radius:24px;
+background:#0b1220;
+box-shadow:0 0 40px rgba(18,184,238,.35);
+}
+.k38-secret-title{
+font-size:38px;
+font-weight:900;
+color:var(--yellow);
+margin-bottom:12px;
+animation:k38pulse 1s infinite alternate;
+}
+.k38-secret-sub{
+font-size:18px;
+color:#fff;
+}
+@keyframes k38pulse{
+from{transform:scale(1);opacity:.85}
+to{transform:scale(1.05);opacity:1}
+}
+@keyframes k38fade{
+from{opacity:0}
+to{opacity:1}
+}
+
+.signature-pad{background:#fff;border:2px dashed var(--line);border-radius:14px;width:100%;height:180px;touch-action:none}
+.signature-box{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
+.signature-preview{max-width:220px;background:#fff;border-radius:8px;padding:6px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -122,7 +168,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
     <section id="dashboard" class="page">
       <div class="grid">
         <div class="card"><h3>Materiali</h3><div class="stat" id="statMateriali">0</div></div>
-        <div class="card"><h3>Da manutenzione</h3><div class="stat" id="statManutenzioni">0</div></div>
+        <div class="card" style="cursor:pointer" onclick="apriManutenzioniDaHome()"><h3>Da manutentare</h3><div class="stat" id="statManutenzioni">0</div><div class="muted">Clicca per vedere la lista</div></div>
         <div class="card"><h3>Preventivi</h3><div class="stat" id="statPreventivi">0</div></div>
         <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
         <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
@@ -168,7 +214,6 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
         </div>
         <div class="actions">
           <button class="secondary" onclick="mostraMaterialiManutenzione()">Mostra manutenzioni</button>
-          <button class="secondary" onclick="tornaCategorieInventario()">Torna a categorie</button>
         </div>
         <div id="listaMateriali"></div></div>
     </section>
@@ -183,6 +228,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
           <label>Stato pagamento<select id="p_stato_pagamento">
             <option>Da saldare</option>
             <option>Acconto ricevuto</option>
+            <option>Firmato</option>
             <option>Pagato</option>
             <option>Annullato</option>
           </select></label>
@@ -196,6 +242,14 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
           <div id="p_materiali_picker" class="quote-material-picker"></div>
         </div>
         <h3>Totale: <span class="total" id="totalePreventivo">0,00 €</span></h3>
+        <div class="signature-box">
+          <h3>Firma cliente</h3>
+          <div class="muted">Firma con dito, mouse o tablet. Verrà salvata nel preventivo e inserita nel PDF Cliente.</div>
+          <canvas id="firmaCanvas" class="signature-pad"></canvas>
+          <div class="actions">
+            <button class="secondary" onclick="pulisciFirma()">Pulisci firma</button>
+          </div>
+        </div>
         <div class="actions"><button onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDFCliente()">PDF Cliente Professionale</button><button class="secondary" onclick="scaricaPDFTecnico()">Distinta Tecnica</button><span id="p_msg" class="muted"></span></div>
       </div>
       <div class="card"><h2>Preventivi salvati</h2><div id="listaPreventivi"></div></div>
@@ -274,6 +328,7 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
   </section>
 </div>
 
+<audio id="k38SecretAudio" preload="auto"><source src="https://actions.google.com/sounds/v1/cartoon/concussive_drum_hit.ogg" type="audio/ogg"></audio>
 <script>
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
 
@@ -284,11 +339,77 @@ let mostraSoloManutenzioni=false;
 let queue=JSON.parse(localStorage.getItem("k38_queue")||"[]");
 let datiPDF=JSON.parse(localStorage.getItem("k38_dati_pdf")||"{}");
 let soundsEnabled = localStorage.getItem("k38_sounds") !== "off";
+let firmaClienteData="";
+let firmaDrawing=false;
 let lastSoundAt = 0;
 const soundClick = new Audio("sound-click.wav");
 const soundSuccess = new Audio("sound-success.wav");
 const soundError = new Audio("sound-error.wav");
 [soundClick, soundSuccess, soundError].forEach(a => { a.volume = 0.35; a.preload = "auto"; });
+
+
+function initFirmaCanvas(){
+  const canvas=$("firmaCanvas");
+  if(!canvas)return;
+  const ctx=canvas.getContext("2d");
+  function resize(){
+    const oldData=firmaClienteData;
+    canvas.width=canvas.offsetWidth || 600;
+    canvas.height=180;
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    if(oldData){
+      const img=new Image();
+      img.onload=()=>ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      img.src=oldData;
+    }
+  }
+  setTimeout(resize,100);
+  window.addEventListener("resize",resize);
+  function pos(e){
+    const r=canvas.getBoundingClientRect();
+    const p=e.touches?e.touches[0]:e;
+    return {x:p.clientX-r.left,y:p.clientY-r.top};
+  }
+  function start(e){
+    e.preventDefault();
+    firmaDrawing=true;
+    const p=pos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x,p.y);
+  }
+  function move(e){
+    if(!firmaDrawing)return;
+    e.preventDefault();
+    const p=pos(e);
+    ctx.lineWidth=2.4;
+    ctx.lineCap="round";
+    ctx.strokeStyle="#111";
+    ctx.lineTo(p.x,p.y);
+    ctx.stroke();
+    firmaClienteData=canvas.toDataURL("image/png");
+  }
+  function end(){
+    if(!firmaDrawing)return;
+    firmaDrawing=false;
+    firmaClienteData=canvas.toDataURL("image/png");
+  }
+  canvas.addEventListener("mousedown",start);
+  canvas.addEventListener("mousemove",move);
+  canvas.addEventListener("mouseup",end);
+  canvas.addEventListener("mouseleave",end);
+  canvas.addEventListener("touchstart",start,{passive:false});
+  canvas.addEventListener("touchmove",move,{passive:false});
+  canvas.addEventListener("touchend",end);
+}
+function pulisciFirma(){
+  const canvas=$("firmaCanvas");
+  if(!canvas)return;
+  const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  firmaClienteData="";
+}
 
 function playSound(type="click"){
   if(!soundsEnabled) return;
@@ -322,11 +443,57 @@ function updateSoundButton(){
 document.addEventListener("click", e => {
   if(e.target.closest("button")) playSound("click");
 });
+let k38EggClicks=0;
+let k38EggTimer=null;
+
+function triggerK38Egg(){
+  const old=document.getElementById("k38_secret_overlay");
+  if(old) old.remove();
+
+  const overlay=document.createElement("div");
+  overlay.id="k38_secret_overlay";
+  overlay.className="k38-secret-overlay";
+  overlay.innerHTML=`
+    <div class="k38-secret-box">
+      <div class="k38-secret-title">K38 SYSTEM ONLINE</div>
+      <div class="k38-secret-sub">Modalità backstage attivata</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const a=document.getElementById("k38SecretAudio");
+  if(a){
+    a.currentTime=0;
+    a.play().catch(()=>{});
+  }
+
+  setTimeout(()=>{
+    overlay.remove();
+  },3000);
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  const logo=document.querySelector(".logo-box");
+  if(!logo) return;
+
+  logo.addEventListener("click",()=>{
+    k38EggClicks++;
+
+    clearTimeout(k38EggTimer);
+    k38EggTimer=setTimeout(()=>k38EggClicks=0,1800);
+
+    if(k38EggClicks>=5){
+      k38EggClicks=0;
+      triggerK38Egg();
+    }
+  });
+});
+
 
 const cacheKey="k38_cache_v1";
 const referentiK38 = [
   {nome:"Gianluca Rallo", telefono:"3284218233"},
-  {nome:"Mirko Dorchini", telefono:""}
+  {nome:"Mirco Duchini", telefono:"328 3163405"}
 ];
 function opzioniReferenti(selected=""){
   return referentiK38.map(r=>`<option value="${r.nome}" ${r.nome===selected?"selected":""}>${r.nome}</option>`).join("") + `<option value="Altro" ${selected==="Altro"?"selected":""}>Altro</option>`;
@@ -336,12 +503,12 @@ function telefonoReferente(nome){
 }
 function aggiornaTelefonoEvento(key,value){
   const tel=$("ev_tel_"+key);
-  if(tel && !tel.value) tel.value=telefonoReferente(value);
+  if(tel) tel.value=telefonoReferente(value);
 }
 function aggiornaTelefonoReferente(prefix){
   const ref=$(prefix+"_referente")?.value;
   const tel=$(prefix+"_telefono");
-  if(tel && !tel.value) tel.value=telefonoReferente(ref);
+  if(tel) tel.value=telefonoReferente(ref);
 }
 const categorieMateriale = {
   "Audio":["Diffusori","Subwoofer","Monitor spia","Mixer","Finali","DSP","Microfoni","Radiomicrofoni","DI Box","Player","Controller DJ","Cuffie","Altro audio"],
@@ -396,7 +563,7 @@ function saveQueue(){localStorage.setItem("k38_queue",JSON.stringify(queue));ren
 function saveCache(){localStorage.setItem(cacheKey,JSON.stringify({materiali,preventivi,eventi,utenti}))}
 function loadCache(){let c=JSON.parse(localStorage.getItem(cacheKey)||"{}");materiali=c.materiali||[];preventivi=c.preventivi||[];eventi=c.eventi||[];utenti=c.utenti||[]}
 function initDati(){ $("d_partner").value=datiPDF.partner||"Partner BENOW";$("d_ragione").value=datiPDF.ragione||"Service K38";$("d_benow").value=datiPDF.benow||"BeNow s.c.p.a.";$("d_cf").value=datiPDF.cf||"01516270137";$("d_piva").value=datiPDF.piva||"03080310174";$("d_univoco").value=datiPDF.univoco||"M5UXCR1";$("d_tel").value=datiPDF.tel||"3284218233";$("d_email").value=datiPDF.email||"servicek38@gmail.com";$("d_footer").value=datiPDF.footer||"Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilità e conferma."} initDati();
-window.addEventListener("load",async()=>{updateSoundButton();aggiornaSottocategorie("m");$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
+window.addEventListener("load",async()=>{updateSoundButton();initFirmaCanvas();aggiornaSottocategorie("m");$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
 async function signup(){
   if(!online())return msg("loginMsg","per creare utente serve internet");
   msg("loginMsg","creazione...");
@@ -491,6 +658,11 @@ function totaleP(o){let mat=totaleMaterialiPreventivo(o.materiali||getSelectedPr
 function materialeDaManutenzione(m){
   return ["In manutenzione","Da controllare","Fuori servizio"].includes(m.stato||"");
 }
+function apriManutenzioniDaHome(){
+  const btn=[...document.querySelectorAll(".tabs button")].find(b=>b.getAttribute("onclick")?.includes("'magazzino'"));
+  if(btn) tab("magazzino",btn);
+  mostraMaterialiManutenzione();
+}
 function mostraMaterialiManutenzione(){
   mostraSoloManutenzioni=true;
   inventarioCategoriaAttiva="";
@@ -504,9 +676,9 @@ function disattivaVistaManutenzione(){
 function renderManutenzioni(lista){
   const manut=lista.filter(materialeDaManutenzione);
   return '<div class="actions"><button class="secondary" onclick="disattivaVistaManutenzione()">← Torna inventario</button></div>'+
-    '<h3>Materiali da manutenzione / controllo</h3>'+
+    '<h3>Materiali da manutentare / controllare</h3>'+
     '<div class="muted">Elenco rapido di materiali con stato In manutenzione, Da controllare o Fuori servizio.</div>'+
-    (manut.length?manut.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale da manutenzione.</div>');
+    (manut.length?manut.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale da manutentare.</div>');
 }
 function contaMaterialiCategoria(cat){
   return materiali.filter(m=>m.categoria===cat).reduce((s,m)=>s+Number(m.quantita||1),0);
@@ -557,12 +729,12 @@ function renderInventarioOrganizzato(lista){
   }
   const subs=[...new Set(lista.filter(m=>m.categoria===inventarioCategoriaAttiva).map(m=>m.sottocategoria||"Altro"))].sort();
   if(!inventarioSottocategoriaAttiva){
-    return '<div class="actions"><button class="secondary" onclick="tornaCategorieInventario()">← Categorie</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+'</h3><div class="category-grid">'+subs.map(sub=>
+    return '<div class="actions"><button class="secondary" onclick="tornaCategorieInventario()">← Torna alle categorie</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+'</h3><div class="category-grid">'+subs.map(sub=>
       '<div class="category-card" onclick="selezionaSottocategoriaInventario(&quot;'+escapeHtml(sub)+'&quot;)"><h3>'+escapeHtml(sub)+'</h3><div class="stat">'+contaMaterialiSottocategoria(inventarioCategoriaAttiva,sub)+'</div><div class="muted">elementi</div></div>'
     ).join("")+'</div>';
   }
   const mats=lista.filter(m=>m.categoria===inventarioCategoriaAttiva && (m.sottocategoria||"Altro")===inventarioSottocategoriaAttiva);
-  return '<div class="actions"><button class="secondary" onclick="tornaSottocategorieInventario()">← Sottocategorie</button><button class="secondary" onclick="tornaCategorieInventario()">Categorie</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+' / '+escapeHtml(inventarioSottocategoriaAttiva)+'</h3>'+(mats.length?mats.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale in questa sottocategoria.</div>');
+  return '<div class="actions"><button class="secondary" onclick="tornaSottocategorieInventario()">← Torna alle sottocategorie</button><button class="secondary" onclick="tornaCategorieInventario()">Categorie principali</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+' / '+escapeHtml(inventarioSottocategoriaAttiva)+'</h3>'+(mats.length?mats.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale in questa sottocategoria.</div>');
 }
 function renderMaterialeEdit(m){
   const key=m.local_id||m.id;
@@ -654,7 +826,7 @@ var renderPreventivoCard=function(p){
         <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
         <label><input type="checkbox" ${(p.stato_pagamento||"")==="Pagato"?"checked":""} onchange="togglePagamentoRiscosso('${key}',this.checked)"> Pagamento riscosso</label>
         <label><input type="checkbox" ${p.archiviato?"checked":""} onchange="toggleArchivioPreventivo('${key}',this.checked)"> Archiviato</label>
-        ${p._pending?`<span class="status">da sincronizzare</span>`:""}
+        ${p.firmato?`<span class="status">Preventivo firmato</span>`:""} ${p._pending?`<span class="status">da sincronizzare</span>`:""}
       </div>
       <button class="danger" onclick="eliminaLocalePreventivo('${key}')">Elimina</button>
     </div>
@@ -681,10 +853,10 @@ $("listaCalendario").innerHTML = days.length ? '<div class="calendar-list">' + d
       '<div><b>' + escapeHtml(label) + '</b><div class="muted">' + list.length + ' impegno/i</div></div>' +
       '<div>' + list.map(e=>'<span class="badge">' + escapeHtml(e.stato||"Evento") + '</span>').join("") + '</div>' +
     '</div>' +
-    '<div id="day_' + safeId(day) + '" class="calendar-detail hidden">' + list.map(e=>renderEventoEdit(e)).join("") + '</div>' +
+    '<div id="day_' + safeId(day) + '" class="calendar-detail hidden">' + list.map(e=>renderEventoCompatto(e)).join("") + '</div>' +
   '</div>';
 }).join("") + '</div>' : '<div class="notice">Nessun impegno presente. Premi Aggiungi impegno.</div>';
-$("listaEventiCompleta").innerHTML = eventi.length ? eventi.map(e=>renderEventoEdit(e)).join("") : '<div class="notice">Nessun evento presente.</div>';
+$("listaEventiCompleta").innerHTML = eventi.length ? eventi.map(e=>renderEventoCompatto(e)).join("") : '<div class="notice">Nessun evento presente.</div>';
 $("listaUtenti").innerHTML=utenti.map(u=>`<div class="item ${u.blocked?'blocked':''}"><div class="item-head"><div><b>${u.username||"-"}</b><div class="muted">${u.email}</div><span class="status">${u.role}</span><div class="muted">Ultimo accesso: ${u.last_login||"-"}</div></div>${u.id!==user.id?`<button class="${u.blocked?'green':'danger'}" onclick="toggleUser('${u.id}',${!u.blocked})">${u.blocked?'Sblocca':'Blocca'}</button>`:""}</div></div>`).join("");
 }
 function fileToDataURL(file){
@@ -815,10 +987,11 @@ function aggiornaTotaleMaterialiPreventivo(){
 function materialiPreventivoNomi(keys=[]){
   return keys.map(k=>nomeMaterialeById(k)).filter(Boolean);
 }
-function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,data_fine_evento:v("p_data_fine")||v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),accettato:false};o.totale=totaleP(o);return o}
+function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,data_fine_evento:v("p_data_fine")||v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),firma_cliente:firmaClienteData||null,firmato:!!firmaClienteData,accettato:false};o.totale=totaleP(o);return o}
 function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
 async function salvaPreventivo(){
   const row=datiPreventivo();
+  if(row.firmato && row.stato_pagamento==="Da saldare") row.stato_pagamento="Firmato";
   if(!row.cliente && !row.evento){ playSound("error"); alert("Inserisci almeno cliente o evento prima di salvare il preventivo."); return; }
   if(!confirmPastDate(row.data_evento)) return;
 
@@ -1100,6 +1273,20 @@ function getSelectedMaterialiEvento(key){
   return [...document.querySelectorAll(".ev_mat_"+CSS.escape(key))].filter(x=>x.checked).map(x=>x.value);
 }
 
+function toggleEventoDettaglio(key){
+  const el=$("event_detail_"+key);
+  if(el)el.classList.toggle("show");
+}
+function renderEventoCompatto(e){
+  const key=e.local_id||e.id;
+  return '<div class="compact-event '+(eventoTerminato(e)?'past-event':'')+'">'+
+    '<div><b>'+escapeHtml(e.titolo||"Evento")+'</b>'+
+    '<div class="muted">'+escapeHtml(formatRangeDate(e.data_evento,e.data_fine_evento))+' • '+escapeHtml(e.luogo||"-")+'</div>'+
+    '<div class="muted">'+escapeHtml(e.cliente||"-")+' • '+escapeHtml(e.stato||"-")+'</div>'+
+    '<div class="muted">Tecnico: '+escapeHtml(e.tecnico||e.referente||"-")+'</div></div>'+
+    '<button class="secondary" onclick="toggleEventoDettaglio(&quot;'+key+'&quot;)">Apri evento</button>'+
+  '</div><div id="event_detail_'+key+'" class="compact-event-detail">'+renderEventoEdit(e)+'</div>';
+}
 function renderEventoEdit(e){
   const key=e.local_id||e.id;
   const stati=["Richiesta","Preventivo","Confermato","Montato","Smontato","Pagato"];
@@ -1124,14 +1311,6 @@ function renderEventoEdit(e){
     '<h3>Materiale assegnato</h3>' +
     renderMaterialPicker(e) +
     (selectedMats.length?'<div class="muted">Distinta: '+selectedMats.map(nomeMaterialeById).map(escapeHtml).join(" • ")+'</div>':'') +
-    '<h3>Checklist operativa</h3>' +
-    '<div class="checklist">' +
-      '<label class="checkitem"><input type="checkbox" id="ev_ck_caricato_'+key+'" '+(c.caricato?'checked':'')+'> Caricato</label>' +
-      '<label class="checkitem"><input type="checkbox" id="ev_ck_montato_'+key+'" '+(c.montato?'checked':'')+'> Montato</label>' +
-      '<label class="checkitem"><input type="checkbox" id="ev_ck_testato_'+key+'" '+(c.testato?'checked':'')+'> Testato</label>' +
-      '<label class="checkitem"><input type="checkbox" id="ev_ck_smontato_'+key+'" '+(c.smontato?'checked':'')+'> Smontato</label>' +
-      '<label class="checkitem"><input type="checkbox" id="ev_ck_rientrato_'+key+'" '+(c.rientrato?'checked':'')+'> Rientrato</label>' +
-    '</div>' +
     '<div class="actions">' +
       '<button class="green" onclick="salvaModificaEvento(&quot;'+key+'&quot;)">Salva modifiche</button>' +
       '<button class="secondary" onclick="scaricaDistintaEvento(&quot;'+key+'&quot;)">PDF distinta</button>' +
@@ -1190,13 +1369,7 @@ async function salvaModificaEvento(key){
   let e=eventi.find(x=>(x.local_id||x.id)===key);
   if(!e)return;
   const selectedMats=getSelectedMaterialiEvento(key);
-  const checklist={
-    caricato:$("ev_ck_caricato_"+key).checked,
-    montato:$("ev_ck_montato_"+key).checked,
-    testato:$("ev_ck_testato_"+key).checked,
-    smontato:$("ev_ck_smontato_"+key).checked,
-    rientrato:$("ev_ck_rientrato_"+key).checked
-  };
+  const checklist={};
   const tecnico=$("ev_ref_"+key).value;
   const updated={
     titolo:$("ev_t_"+key).value,
@@ -1473,6 +1646,13 @@ function pdf(doc,q,img){
   doc.text("Data",124,y);
   doc.line(138,y,198,y);
 
+  if(q.firma_cliente){
+    y+=12;
+    doc.setFontSize(11);
+    doc.text("FIRMA CLIENTE",12,y);
+    try{doc.addImage(q.firma_cliente,"PNG",12,y+4,70,28);}catch(e){}
+  }
+
   // Footer
   doc.setDrawColor(9,31,77);
   doc.line(12,276,198,276);
@@ -1507,6 +1687,7 @@ function scaricaPDFTecnico(){
     ["Luogo",q.luogo||"-"],
     ["Data",q.data_evento||"-"],
     ["Pagamento",q.stato_pagamento||"-"],
+    ["Firma cliente",q.firma_cliente?"Firma cliente presente":"Non firmato"],
     ["Incassato",euro(q.importo_incassato||0)]
   ];
 
@@ -1528,30 +1709,29 @@ function scaricaPDFTecnico(){
   doc.setFontSize(10);
   if(mats.length){
     mats.forEach(m=>{doc.text("- [ ] "+m,16,y);y+=7;if(y>270){doc.addPage();y=15}});
-    y+=6;doc.setFontSize(15);doc.text("CHECKLIST MATERIALE",12,y);y+=10;doc.setFontSize(10);
-    mats.forEach(m=>{doc.text("[ ] Caricato  [ ] Montato  [ ] Rientrato  - "+m,16,y);y+=7;if(y>270){doc.addPage();y=15}});
+    y+=6;doc.setFontSize(15);doc.text("CHECKLIST CARICO / SCARICO",12,y);y+=10;doc.setFontSize(10);
+    mats.forEach(m=>{doc.text("[ ] Caricato  [ ] Scaricato/Rientrato  - "+m,16,y);y+=7;if(y>270){doc.addPage();y=15}});
   }else{
     doc.text("- Nessun materiale selezionato dal preventivo",16,y);y+=7;
   }
 
   y+=8;
   doc.setFontSize(15);
-  doc.text("CHECKLIST OPERATIVA",12,y);
+  doc.text("CHECKLIST CARICO / SCARICO",12,y);
   y+=12;
 
-  const checks=[
-    "[ ] Carico materiale",
-    "[ ] Montaggio",
-    "[ ] Test impianto",
-    "[ ] Smontaggio",
-    "[ ] Rientro magazzino"
-  ];
-
-  doc.setFontSize(11);
-  checks.forEach(c=>{
-    doc.text(c,16,y);
-    y+=10;
-  });
+  const matsChecklist=materialiPreventivoNomi(q.materiali||[]);
+  doc.setFontSize(10);
+  if(matsChecklist.length){
+    matsChecklist.forEach(m=>{
+      doc.text("[ ] Caricato   [ ] Scaricato/Rientrato   - "+m,16,y);
+      y+=7;
+      if(y>270){doc.addPage();y=15;}
+    });
+  }else{
+    doc.text("[ ] Carico materiale",16,y);y+=8;
+    doc.text("[ ] Scarico / rientro materiale",16,y);y+=8;
+  }
 
   y+=10;
   doc.setFontSize(15);
