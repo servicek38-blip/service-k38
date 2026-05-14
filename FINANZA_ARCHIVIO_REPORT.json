@@ -1,0 +1,12 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "progressivo": true,
+  "payment_status": true,
+  "dashboard_money": true,
+  "archive": true,
+  "past_events_opacity": true,
+  "accepted_quote_full_event": true,
+  "sql_finance": true,
+  "service_worker_v15": true
+}

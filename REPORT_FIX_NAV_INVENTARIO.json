@@ -1,0 +1,8 @@
+{
+  "js_ok": true,
+  "stderr": "",
+  "removed_global_back_button": true,
+  "category_back_button": true,
+  "subcategory_back_button": true,
+  "service_worker_v28": true
+}

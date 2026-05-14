@@ -1,0 +1,7 @@
+{
+  "sound_files": true,
+  "sound_toggle_ui": true,
+  "click_listener": true,
+  "sound_cache": true,
+  "service_worker_v4": true
+}

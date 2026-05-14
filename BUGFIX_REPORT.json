@@ -1,0 +1,11 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "calendar_button": true,
+  "past_date_warning": true,
+  "confirm_delete_quote": true,
+  "calendar_editable": true,
+  "toggle_robust_online": true,
+  "service_worker_v6": true,
+  "sql_migration": true
+}

@@ -1,0 +1,16 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "counter_incassato_anno": true,
+  "counter_da_riscuotere": true,
+  "progressivo": true,
+  "stato_pagamento": true,
+  "importo_incassato": true,
+  "data_pagamento": true,
+  "archivio": true,
+  "archivio_automatico": true,
+  "eventi_passati_opachi": true,
+  "preventivo_accettato_evento_completo": true,
+  "sql_columns": true,
+  "service_worker_v16": true
+}

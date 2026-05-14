@@ -1,0 +1,10 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "has_event_tab": true,
+  "has_manual_event": true,
+  "has_calendar_list": true,
+  "has_unique_indexes_sql": true,
+  "service_worker_v9": true,
+  "sync_keeps_pending": true
+}

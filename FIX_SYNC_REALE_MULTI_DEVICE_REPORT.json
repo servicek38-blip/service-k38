@@ -1,0 +1,11 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "clean_for_db": true,
+  "direct_insert_eventi": true,
+  "direct_insert_preventivi": true,
+  "direct_insert_materiali": true,
+  "service_worker_v12": true,
+  "no_on_conflict": true,
+  "sql_reload_schema": true
+}

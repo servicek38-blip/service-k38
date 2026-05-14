@@ -1,0 +1,16 @@
+{
+  "missing_files": [],
+  "icon_192_exists": true,
+  "icon_512_exists": true,
+  "apple_icon_dedicated": true,
+  "manifest_uses_dedicated_icons": true,
+  "service_worker_v2": true,
+  "offline_delete_queue": true,
+  "codice_inventario_ui": true,
+  "codice_inventario_db": true,
+  "benow": true,
+  "password_reset": true,
+  "admin_panel": true,
+  "calendar_from_quote": true,
+  "foto_materiale": true
+}

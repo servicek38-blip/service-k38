@@ -1,0 +1,9 @@
+{
+  "js_ok": true,
+  "stderr": "",
+  "signature_canvas": true,
+  "signature_save": true,
+  "signature_pdf": true,
+  "sql_signature": true,
+  "service_worker_v31": true
+}

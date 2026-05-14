@@ -1,0 +1,11 @@
+{
+  "js_ok": true,
+  "stderr": "",
+  "vehicle_select": true,
+  "km_fields": true,
+  "auto_transport": true,
+  "defaults": true,
+  "saved_fields": true,
+  "sql_fields": true,
+  "service_worker_v32": true
+}

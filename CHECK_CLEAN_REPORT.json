@@ -1,0 +1,14 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "critical_duplicate_functions": true,
+  "duplicates_found": {},
+  "direct_insert_eventi": true,
+  "direct_insert_preventivi": true,
+  "direct_insert_materiali": true,
+  "no_on_conflict": true,
+  "modifica_materiale": true,
+  "calendario_eventi": true,
+  "sql_reload_schema": true,
+  "service_worker_v12": true
+}

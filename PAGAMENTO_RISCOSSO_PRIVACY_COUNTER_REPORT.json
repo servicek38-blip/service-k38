@@ -1,0 +1,9 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "pagamento_riscosso_checkbox": true,
+  "riscosso_sets_paid": true,
+  "finance_hidden": true,
+  "finance_hide_button": true,
+  "service_worker_v18": true
+}

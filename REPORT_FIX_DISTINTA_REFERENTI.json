@@ -1,0 +1,10 @@
+{
+  "js_ok": true,
+  "stderr": "",
+  "mirco_name": true,
+  "mirco_phone": true,
+  "no_mirko_old": true,
+  "checklist_load_unload": true,
+  "no_generic_checklist_items": true,
+  "service_worker_v26": true
+}

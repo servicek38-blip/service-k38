@@ -1,0 +1,11 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "sottocategoria_sql": true,
+  "categoria_map": true,
+  "new_material_subcategory": true,
+  "edit_material_subcategory": true,
+  "filter_category": true,
+  "filter_subcategory": true,
+  "service_worker_v13": true
+}

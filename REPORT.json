@@ -1,0 +1,7 @@
+{
+  "js_ok": true,
+  "compact_event": true,
+  "event_toggle": true,
+  "no_checklist_ui": true,
+  "sw": true
+}

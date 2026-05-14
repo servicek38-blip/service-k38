@@ -1,0 +1,10 @@
+{
+  "service_worker_v3": true,
+  "service_worker_local_only": true,
+  "photo_compression": true,
+  "offline_queue": true,
+  "delete_queue": true,
+  "codice_inventario": true,
+  "benow": true,
+  "manifest_icons": true
+}

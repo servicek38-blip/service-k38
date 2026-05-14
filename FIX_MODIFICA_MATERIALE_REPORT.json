@@ -1,0 +1,9 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "edit_material_function": true,
+  "render_material_edit": true,
+  "sync_update_materiale": true,
+  "confirm_delete_material": true,
+  "service_worker_v10": true
+}

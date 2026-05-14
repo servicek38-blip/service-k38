@@ -1,0 +1,11 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "inventory_categories": true,
+  "compact_material_view": true,
+  "auto_material_prices": true,
+  "quote_total_includes_materials": true,
+  "pdf_by_category": true,
+  "technical_checklist_materials": true,
+  "service_worker_v22": true
+}

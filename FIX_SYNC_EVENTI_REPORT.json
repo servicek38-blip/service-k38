@@ -1,0 +1,7 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "sql_unique_indexes": true,
+  "sync_does_not_hide_pending_items": true,
+  "service_worker_v8": false
+}

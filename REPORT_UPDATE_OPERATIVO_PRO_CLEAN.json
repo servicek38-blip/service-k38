@@ -1,0 +1,11 @@
+{
+  "js_ok": true,
+  "stderr": "",
+  "no_duplicate_contract": true,
+  "duplicate_functions": [],
+  "multi_vehicle": true,
+  "signature": true,
+  "customer_history": true,
+  "contract_pdf": true,
+  "service_worker_v35": true
+}

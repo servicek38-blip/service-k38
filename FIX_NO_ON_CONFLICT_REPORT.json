@@ -1,0 +1,10 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "on_conflict_removed": true,
+  "insert_used": true,
+  "duplicate_fallback": true,
+  "service_worker_v11": true,
+  "modifica_materiale": true,
+  "calendario": true
+}

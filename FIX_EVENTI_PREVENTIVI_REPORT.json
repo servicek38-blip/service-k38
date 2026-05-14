@@ -1,0 +1,12 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "eventi_tab": true,
+  "calendar_list": true,
+  "manual_event": true,
+  "event_edit": true,
+  "save_quote_validation": true,
+  "past_date_warning": true,
+  "service_worker_v7": true,
+  "sql_migration": true
+}

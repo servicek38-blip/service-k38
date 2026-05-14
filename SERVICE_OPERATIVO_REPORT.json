@@ -1,0 +1,15 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "header_no_offline": true,
+  "referenti": true,
+  "preventivo_referente": true,
+  "evento_referente": true,
+  "material_assignment": true,
+  "material_conflict": true,
+  "tech_conflict": true,
+  "checklist": true,
+  "pdf_distinta": true,
+  "sql_operativo": true,
+  "service_worker_v14": true
+}

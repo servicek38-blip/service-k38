@@ -1,0 +1,10 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "picker_preventivo": true,
+  "save_materiali_preventivo": true,
+  "pdf_cliente_attrezzatura": true,
+  "pdf_tecnico_materiali": true,
+  "sql_preventivi_materiali": true,
+  "service_worker_v21": true
+}

@@ -1,0 +1,12 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "header_counters": true,
+  "payment_fields": true,
+  "archive": true,
+  "past_events": true,
+  "progressivo_fixed": true,
+  "no_bad_escaped_attrs": true,
+  "no_duplicate_numero": true,
+  "service_worker_v17": true
+}

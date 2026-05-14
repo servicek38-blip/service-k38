@@ -7,9 +7,18 @@
 <link rel="icon" href="logo-k38.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <link rel="manifest" href="manifest.webmanifest" />
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js">
+
+
+</script>
+<script src="config.js">
+
+
+</script>
 <style>
 :root{--bg:#070b14;--panel:#111827;--panel2:#0d1423;--line:#26354f;--text:#fff;--muted:#a8b3c5;--yellow:#ffd400;--blue:#12b8ee;--pink:#ec1688;--red:#b91c1c;--green:#16a34a}
 *{box-sizing:border-box}
@@ -118,6 +127,11 @@ to{opacity:1}
 .signature-pad{background:#fff;border:2px dashed var(--line);border-radius:14px;width:100%;height:180px;touch-action:none}
 .signature-box{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
 .signature-preview{max-width:220px;background:#fff;border-radius:8px;padding:6px;margin-top:8px}
+.mezzo-row{background:#0b1220;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px}
+.availability-warning{background:#3b2f10;border-left:4px solid var(--yellow);padding:10px;border-radius:12px;margin-top:8px;color:#fff}
+.availability-block{background:#3b1010;border-left:4px solid var(--red);padding:10px;border-radius:12px;margin-top:8px;color:#fff}
+.customer-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
+.dashboard-mini{font-size:13px;color:var(--muted);margin-top:6px}
 </style>
 </head>
 <body>
@@ -160,6 +174,7 @@ to{opacity:1}
       <button class="secondary" onclick="tab('calendario',this)">Calendario</button>
       <button class="secondary" onclick="tab('eventiPage',this)">Eventi</button>
       <button class="secondary" onclick="tab('dati',this)">Dati PDF</button>
+      <button class="secondary" onclick="tab('clientiPage',this)">Clienti</button>
       <button id="adminTab" class="secondary hidden" onclick="tab('admin',this)">Admin</button>
       <button class="secondary" onclick="syncNow()">Sincronizza ora</button>
       <button id="soundToggle" class="secondary" onclick="toggleSounds()">Suoni ON</button>
@@ -171,7 +186,9 @@ to{opacity:1}
         <div class="card" style="cursor:pointer" onclick="apriManutenzioniDaHome()"><h3>Da manutentare</h3><div class="stat" id="statManutenzioni">0</div><div class="muted">Clicca per vedere la lista</div></div>
         <div class="card"><h3>Preventivi</h3><div class="stat" id="statPreventivi">0</div></div>
         <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
+        <div class="card"><h3>Eventi mese</h3><div class="stat" id="statEventiMese">0</div><div class="dashboard-mini">lavori nel mese corrente</div></div>
         <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
+        <div class="card"><h3>Fatturato mese</h3><div class="stat" id="statFatturatoMese">0 €</div><div class="dashboard-mini">preventivi/eventi del mese</div></div>
       </div>
       <div class="card">
         <button class="secondary" id="toggleFinanceBtn" onclick="toggleFinanceCounters()">Mostra dati economici</button>
@@ -197,7 +214,7 @@ to{opacity:1}
           <label>Sottocategoria<select id="m_sottocategoria"></select></label>
           <label>Marca<input id="m_marca"></label><label>Modello<input id="m_modello"></label><label>Seriale<input id="m_seriale"></label>
           <label>Quantità<input id="m_quantita" type="number" value="1"></label><label>Posizione<input id="m_posizione"></label>
-          <label>Stato<select id="m_stato"><option>Disponibile</option><option>Impegnato</option><option>In manutenzione</option><option>Da controllare</option><option>Fuori servizio</option></select></label>
+          <label>Stato<select id="m_stato"><option>Disponibile</option><option>Impegnato</option><option>In manutenzione</option><option>Da manutentare</option><option>Da controllare</option><option>Fuori servizio</option></select></label>
           <label>Prezzo listino/acquisto €<input id="m_listino" type="number" value="0"></label>
           <label>Prezzo reale pagato €<input id="m_reale" type="number" value="0"></label>
           <label>Prezzo noleggio €<input id="m_noleggio" type="number" value="0"></label>
@@ -223,7 +240,14 @@ to{opacity:1}
         <h2>Crea preventivo</h2>
         <div class="row">
           <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data inizio<input id="p_data" type="date"></label><label>Data fine<input id="p_data_fine" type="date"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente('p')"></select></label><label>Telefono referente<input id="p_telefono"></label>
-          <label>Audio €<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci €<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video €<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label><label>Trasporto €<input id="p_trasporto" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <label>Audio €<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci €<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video €<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <div class="item" style="grid-column:1/-1">
+            <h3>Mezzi / trasporto</h3>
+            <div class="muted">Puoi aggiungere più mezzi. Il trasporto viene calcolato automaticamente sommando tutte le righe.</div>
+            <div id="mezziTrasportoBox"></div>
+            <div class="actions"><button class="secondary" type="button" onclick="aggiungiMezzoTrasporto()">Aggiungi mezzo</button></div>
+          </div>
+          <label>Trasporto €<input id="p_trasporto" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Ore tecnico<input id="p_ore" type="number" value="0" oninput="aggiornaTotale()"></label><label>Tariffa tecnico €<input id="p_tariffa" type="number" value="0" oninput="aggiornaTotale()"></label><label>Montaggio €<input id="p_montaggio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Sconto €<input id="p_sconto" type="number" value="0" oninput="aggiornaTotale()"></label><label>IVA/Maggiorazione %<input id="p_iva" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Stato pagamento<select id="p_stato_pagamento">
             <option>Da saldare</option>
@@ -250,7 +274,7 @@ to{opacity:1}
             <button class="secondary" onclick="pulisciFirma()">Pulisci firma</button>
           </div>
         </div>
-        <div class="actions"><button onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDFCliente()">PDF Cliente Professionale</button><button class="secondary" onclick="scaricaPDFTecnico()">Distinta Tecnica</button><span id="p_msg" class="muted"></span></div>
+        <div class="actions"><button onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDFCliente()">PDF Cliente Professionale</button><button class="secondary" onclick="scaricaPDFTecnico()">Distinta Tecnica</button><button class="secondary" onclick="scaricaContrattoPDF()">Contratto</button><span id="p_msg" class="muted"></span></div>
       </div>
       <div class="card"><h2>Preventivi salvati</h2><div id="listaPreventivi"></div></div>
     </section>
@@ -301,6 +325,15 @@ to{opacity:1}
           <button class="green" onclick="tabFromHome('calendario'); mostraNuovoEvento()">Aggiungi evento</button>
         </div>
         <div id="listaEventiCompleta"></div>
+      </div>
+    </section>
+
+    <section id="clientiPage" class="page hidden">
+      <div class="card">
+        <h2>Storico clienti</h2>
+        <div class="muted">Riepilogo automatico basato sui preventivi salvati.</div>
+        <input id="searchCliente" placeholder="Cerca cliente..." oninput="render()">
+        <div id="listaClientiStorico"></div>
       </div>
     </section>
 
@@ -563,7 +596,7 @@ function saveQueue(){localStorage.setItem("k38_queue",JSON.stringify(queue));ren
 function saveCache(){localStorage.setItem(cacheKey,JSON.stringify({materiali,preventivi,eventi,utenti}))}
 function loadCache(){let c=JSON.parse(localStorage.getItem(cacheKey)||"{}");materiali=c.materiali||[];preventivi=c.preventivi||[];eventi=c.eventi||[];utenti=c.utenti||[]}
 function initDati(){ $("d_partner").value=datiPDF.partner||"Partner BENOW";$("d_ragione").value=datiPDF.ragione||"Service K38";$("d_benow").value=datiPDF.benow||"BeNow s.c.p.a.";$("d_cf").value=datiPDF.cf||"01516270137";$("d_piva").value=datiPDF.piva||"03080310174";$("d_univoco").value=datiPDF.univoco||"M5UXCR1";$("d_tel").value=datiPDF.tel||"3284218233";$("d_email").value=datiPDF.email||"servicek38@gmail.com";$("d_footer").value=datiPDF.footer||"Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilità e conferma."} initDati();
-window.addEventListener("load",async()=>{updateSoundButton();initFirmaCanvas();aggiornaSottocategorie("m");$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
+window.addEventListener("load",async()=>{updateSoundButton();initFirmaCanvas();setTimeout(()=>{if($("mezziTrasportoBox") && !document.querySelector("#mezziTrasportoBox .mezzo-row")) aggiungiMezzoTrasporto();},150);aggiornaSottocategorie("m");$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
 async function signup(){
   if(!online())return msg("loginMsg","per creare utente serve internet");
   msg("loginMsg","creazione...");
@@ -654,9 +687,150 @@ function daRiscuotereTotale(){
     return s + Math.max(0, Number(p.totale||0)-Number(p.importo_incassato||0));
   },0);
 }
+function costoKmMezzo(mezzo){
+  if(mezzo==="Macchina") return 0.55;
+  if(mezzo==="Furgone") return 0.60;
+  return 0;
+}
+function aggiungiMezzoTrasporto(data){
+  const box=$("mezziTrasportoBox");
+  if(!box)return;
+  data=data||{};
+  const mezzo=data.mezzo||"Furgone";
+  const custom=data.custom||"";
+  const km=Number(data.km||0);
+  const costo=Number(data.costo_km ?? costoKmMezzo(mezzo));
+  const row=document.createElement("div");
+  row.className="mezzo-row";
+  row.innerHTML=[
+    '<div class="row">',
+    '<label>Mezzo<select class="mezzo_tipo" onchange="aggiornaRigaMezzo(this)">',
+    '<option '+(mezzo==="Furgone"?"selected":"")+'>Furgone</option>',
+    '<option '+(mezzo==="Macchina"?"selected":"")+'>Macchina</option>',
+    '<option '+(mezzo==="Altro"?"selected":"")+'>Altro</option>',
+    '</select></label>',
+    '<label>Mezzo personalizzato<input class="mezzo_custom" value="'+escapeHtml(custom)+'" placeholder="Se Altro"></label>',
+    '<label>Km<input class="mezzo_km" type="number" value="'+km+'" oninput="calcolaTrasportoDaKm()"></label>',
+    '<label>Costo €/km<input class="mezzo_costo" type="number" step="0.01" value="'+costo.toFixed(2)+'" oninput="calcolaTrasportoDaKm()"></label>',
+    '<label>Totale riga<input class="mezzo_totale" type="number" value="'+(km*costo).toFixed(2)+'" readonly></label>',
+    '</div>',
+    '<div class="actions"><button class="danger" type="button" onclick="rimuoviRigaMezzo(this)">Rimuovi mezzo</button></div>'
+  ].join("");
+  box.appendChild(row);
+  calcolaTrasportoDaKm();
+}
+function rimuoviRigaMezzo(btn){
+  const row=btn.closest(".mezzo-row");
+  if(row) row.remove();
+  calcolaTrasportoDaKm();
+}
+function aggiornaRigaMezzo(sel){
+  const row=sel.closest(".mezzo-row");
+  const costo=row.querySelector(".mezzo_costo");
+  if(sel.value==="Furgone") costo.value="0.60";
+  else if(sel.value==="Macchina") costo.value="0.55";
+  calcolaTrasportoDaKm();
+}
+function getMezziTrasporto(){
+  return [...document.querySelectorAll("#mezziTrasportoBox .mezzo-row")].map(row=>{
+    const mezzo=row.querySelector(".mezzo_tipo").value;
+    const custom=row.querySelector(".mezzo_custom").value;
+    const km=Number(row.querySelector(".mezzo_km").value||0);
+    const costo_km=Number(row.querySelector(".mezzo_costo").value||0);
+    const totale=km*costo_km;
+    row.querySelector(".mezzo_totale").value=totale.toFixed(2);
+    return {mezzo,custom,km,costo_km,totale};
+  });
+}
+function calcolaTrasportoDaKm(){
+  const totale=getMezziTrasporto().reduce((s,m)=>s+Number(m.totale||0),0);
+  if($("p_trasporto")) $("p_trasporto").value=totale.toFixed(2);
+  aggiornaTotale();
+}
+function nomeMezzoPreventivo(q){
+  const mezzi=q.mezzi_trasporto||[];
+  if(Array.isArray(mezzi) && mezzi.length){
+    return mezzi.map(m=>m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo).join(", ");
+  }
+  return q.mezzo_trasporto==="Altro" ? (q.mezzo_custom||"Altro") : (q.mezzo_trasporto||"-");
+}
+function descrizioneMezziPreventivo(q){
+  const mezzi=q.mezzi_trasporto||[];
+  if(Array.isArray(mezzi) && mezzi.length){
+    return mezzi.map(m=>{
+      const nome=m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo;
+      return nome+": "+(m.km||0)+" km x "+euro(m.costo_km||0)+" = "+euro(m.totale||0);
+    }).join(" • ");
+  }
+  return nomeMezzoPreventivo(q)+": "+(q.km_trasporto||0)+" km x "+euro(q.costo_km||0);
+}
+function inizioMeseCorrente(){
+  const d=new Date();
+  return new Date(d.getFullYear(),d.getMonth(),1);
+}
+function fineMeseCorrente(){
+  const d=new Date();
+  return new Date(d.getFullYear(),d.getMonth()+1,0,23,59,59);
+}
+function dataNelMeseCorrente(dateStr){
+  if(!dateStr)return false;
+  const d=new Date(dateStr+"T00:00:00");
+  return d>=inizioMeseCorrente() && d<=fineMeseCorrente();
+}
+function fatturatoMese(){
+  return preventivi.reduce((s,p)=>dataNelMeseCorrente(p.data_evento)?s+Number(p.totale||0):s,0);
+}
+function eventiMese(){
+  return eventi.filter(e=>dataNelMeseCorrente(e.data_evento)).length;
+}
+function statoMaterialeCritico(m){
+  const s=m.stato||"";
+  if(s==="Fuori servizio") return "bloccato";
+  if(["Da manutentare","Da controllare","In manutenzione"].includes(s)) return "warning";
+  return "ok";
+}
+function materialeSelezionabilePreventivo(m){
+  return statoMaterialeCritico(m)!=="bloccato";
+}
+function messaggioStatoMateriale(m){
+  const st=statoMaterialeCritico(m);
+  if(st==="bloccato") return "NON selezionabile: materiale fuori servizio.";
+  if(st==="warning") return "ATTENZIONE: materiale da controllare/manutentare.";
+  return "";
+}
+function storicoClienti(){
+  const map={};
+  preventivi.forEach(p=>{
+    const nome=(p.cliente||"Senza cliente").trim()||"Senza cliente";
+    if(!map[nome]) map[nome]={cliente:nome,preventivi:0,accettati:0,totale:0,incassato:0,ultime:[]};
+    map[nome].preventivi++;
+    if(p.accettato) map[nome].accettati++;
+    map[nome].totale+=Number(p.totale||0);
+    map[nome].incassato+=Number(p.importo_incassato||0);
+    map[nome].ultime.push(p);
+  });
+  return Object.values(map).sort((a,b)=>b.totale-a.totale);
+}
+function renderStoricoClienti(){
+  const box=$("listaClientiStorico");
+  if(!box)return;
+  const q=($("searchCliente")?.value||"").toLowerCase();
+  const list=storicoClienti().filter(c=>c.cliente.toLowerCase().includes(q));
+  box.innerHTML=list.length?list.map(c=>{
+    const last=c.ultime.slice(0,3).map(p=>`<div class="muted">${p.numero_preventivo||"Preventivo"} • ${p.evento||""} • ${p.data_evento||""} • ${euro(p.totale||0)}</div>`).join("");
+    return `<div class="customer-card">
+      <h3>${escapeHtml(c.cliente)}</h3>
+      <div class="muted">Preventivi: ${c.preventivi} • Accettati: ${c.accettati}</div>
+      <div class="total">${euro(c.totale)}</div>
+      <div class="muted">Incassato: ${euro(c.incassato)} • Da riscuotere: ${euro(Math.max(0,c.totale-c.incassato))}</div>
+      ${last}
+    </div>`;
+  }).join(""):'<div class="notice">Nessun cliente trovato.</div>';
+}
+
 function totaleP(o){let mat=totaleMaterialiPreventivo(o.materiali||getSelectedPreventivoMateriali());let sub=mat+Number(o.audio||0)+Number(o.luci||0)+Number(o.video||0)+Number(o.trasporto||0)+Number(o.ore_tecnico||0)*Number(o.tariffa_tecnico||0)+Number(o.montaggio||0)-Number(o.sconto||0);return sub+sub*Number(o.iva||0)/100}
 function materialeDaManutenzione(m){
-  return ["In manutenzione","Da controllare","Fuori servizio"].includes(m.stato||"");
+  return ["Da manutentare","In manutenzione","Da controllare","Fuori servizio"].includes(m.stato||"");
 }
 function apriManutenzioniDaHome(){
   const btn=[...document.querySelectorAll(".tabs button")].find(b=>b.getAttribute("onclick")?.includes("'magazzino'"));
@@ -802,7 +976,7 @@ async function salvaModificaMateriale(key){
 
 function render(){
 if($("p_materiali_picker")) {renderPreventivoMaterialPicker(getSelectedPreventivoMateriali());aggiornaTotaleMaterialiPreventivo();}
-$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;if($("statManutenzioni"))$("statManutenzioni").textContent=materiali.filter(materialeDaManutenzione).length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
+$("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;if($("statManutenzioni"))$("statManutenzioni").textContent=materiali.filter(materialeDaManutenzione).length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;if($("statEventiMese"))$("statEventiMese").textContent=eventiMese();$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statFatturatoMese"))$("statFatturatoMese").textContent=euro(fatturatoMese());if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
 let search=(v("searchMateriale")||"").toLowerCase();
 let fcat=$("filterCategoria")?.value||"";
 let fsub=$("filter_sottocategoria")?.value||"";
@@ -822,7 +996,7 @@ var renderPreventivoCard=function(p){
         <b>${p.numero_preventivo||"Preventivo"} — ${p.cliente||"Cliente"}</b>
         <div class="muted">${p.evento||""} • ${formatRangeDate(p.data_evento,p.data_fine_evento)} • ${p.luogo||""}</div>
         <div class="total">${euro(p.totale)}</div>
-        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(daRiscuotere)}</div><div class="muted">Materiali collegati: ${(p.materiali||[]).length||0}</div>
+        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(daRiscuotere)}</div><div class="muted">Mezzi: ${descrizioneMezziPreventivo(p)}</div><div class="muted">Materiali collegati: ${(p.materiali||[]).length||0}</div>
         <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
         <label><input type="checkbox" ${(p.stato_pagamento||"")==="Pagato"?"checked":""} onchange="togglePagamentoRiscosso('${key}',this.checked)"> Pagamento riscosso</label>
         <label><input type="checkbox" ${p.archiviato?"checked":""} onchange="toggleArchivioPreventivo('${key}',this.checked)"> Archiviato</label>
@@ -857,6 +1031,7 @@ $("listaCalendario").innerHTML = days.length ? '<div class="calendar-list">' + d
   '</div>';
 }).join("") + '</div>' : '<div class="notice">Nessun impegno presente. Premi Aggiungi impegno.</div>';
 $("listaEventiCompleta").innerHTML = eventi.length ? eventi.map(e=>renderEventoCompatto(e)).join("") : '<div class="notice">Nessun evento presente.</div>';
+renderStoricoClienti();
 $("listaUtenti").innerHTML=utenti.map(u=>`<div class="item ${u.blocked?'blocked':''}"><div class="item-head"><div><b>${u.username||"-"}</b><div class="muted">${u.email}</div><span class="status">${u.role}</span><div class="muted">Ultimo accesso: ${u.last_login||"-"}</div></div>${u.id!==user.id?`<button class="${u.blocked?'green':'danger'}" onclick="toggleUser('${u.id}',${!u.blocked})">${u.blocked?'Sblocca':'Blocca'}</button>`:""}</div></div>`).join("");
 }
 function fileToDataURL(file){
@@ -957,6 +1132,11 @@ function renderPreventivoMaterialPicker(selected=[]){
     </label>`;
   }).join("");
 }
+function materialiBloccatiPreventivo(){
+  return getSelectedPreventivoMateriali()
+    .map(k=>materiali.find(m=>(m.local_id||m.id)===k))
+    .filter(m=>m && statoMaterialeCritico(m)==="bloccato");
+}
 function getSelectedPreventivoMateriali(){
   return [...document.querySelectorAll(".p_mat")].filter(x=>x.checked).map(x=>x.value);
 }
@@ -987,11 +1167,13 @@ function aggiornaTotaleMaterialiPreventivo(){
 function materialiPreventivoNomi(keys=[]){
   return keys.map(k=>nomeMaterialeById(k)).filter(Boolean);
 }
-function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,data_fine_evento:v("p_data_fine")||v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),firma_cliente:firmaClienteData||null,firmato:!!firmaClienteData,accettato:false};o.totale=totaleP(o);return o}
+function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,data_fine_evento:v("p_data_fine")||v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),mezzi_trasporto:getMezziTrasporto(),mezzo_trasporto:(getMezziTrasporto()[0]?.mezzo||""),mezzo_custom:(getMezziTrasporto()[0]?.custom||""),km_trasporto:(getMezziTrasporto()[0]?.km||0),costo_km:(getMezziTrasporto()[0]?.costo_km||0),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),firma_cliente:firmaClienteData||null,firmato:!!firmaClienteData,accettato:false};o.totale=totaleP(o);return o}
 function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
 async function salvaPreventivo(){
   const row=datiPreventivo();
   if(row.firmato && row.stato_pagamento==="Da saldare") row.stato_pagamento="Firmato";
+  const bloccati=materialiBloccatiPreventivo();
+  if(bloccati.length){playSound("error");alert("Hai selezionato materiale fuori servizio: "+bloccati.map(m=>m.nome).join(", "));return;}
   if(!row.cliente && !row.evento){ playSound("error"); alert("Inserisci almeno cliente o evento prima di salvare il preventivo."); return; }
   if(!confirmPastDate(row.data_evento)) return;
 
@@ -1067,6 +1249,11 @@ async function toggleAccettato(key,checked){
         referente:p.referente||"",
         tecnico:p.referente||"",
         telefono_referente:p.telefono_referente||"",
+        mezzi_trasporto:p.mezzi_trasporto||[],
+        mezzo_trasporto:p.mezzo_trasporto||"",
+        mezzo_custom:p.mezzo_custom||"",
+        km_trasporto:p.km_trasporto||0,
+        costo_km:p.costo_km||0,
         data_evento:p.data_evento,data_fine_evento:p.data_fine_evento||p.data_evento,
         luogo:p.luogo,
         stato:"Confermato",
@@ -1093,7 +1280,7 @@ async function toggleAccettato(key,checked){
   }
 
   if(checked){
-    let ev={local_id:uid(),titolo:p.evento||"Evento da preventivo",numero_preventivo:p.numero_preventivo||"",cliente:p.cliente,referente:p.referente||"",tecnico:p.referente||"",telefono_referente:p.telefono_referente||"",data_evento:p.data_evento,data_fine_evento:p.data_fine_evento||p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,stato_pagamento:p.stato_pagamento||"Da saldare",importo_incassato:p.importo_incassato||0,data_pagamento:p.data_pagamento||null,materiali:p.materiali||[],checklist:p.checklist||{},_pending:true};
+    let ev={local_id:uid(),titolo:p.evento||"Evento da preventivo",numero_preventivo:p.numero_preventivo||"",cliente:p.cliente,referente:p.referente||"",tecnico:p.referente||"",telefono_referente:p.telefono_referente||"",mezzi_trasporto:p.mezzi_trasporto||[],mezzo_trasporto:p.mezzo_trasporto||"",mezzo_custom:p.mezzo_custom||"",km_trasporto:p.km_trasporto||0,costo_km:p.costo_km||0,data_evento:p.data_evento,data_fine_evento:p.data_fine_evento||p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,stato_pagamento:p.stato_pagamento||"Da saldare",importo_incassato:p.importo_incassato||0,data_pagamento:p.data_pagamento||null,materiali:p.materiali||[],checklist:p.checklist||{},_pending:true};
     eventi.push(ev);
     p.evento_id=ev.local_id;
     queue.push({type:"insert",table:"eventi",payload:{...ev}});
@@ -1685,10 +1872,12 @@ function scaricaPDFTecnico(){
     ["Referente",q.referente||"-"],
     ["Telefono",q.telefono_referente||"-"],
     ["Luogo",q.luogo||"-"],
+    ["Mezzi trasporto",nomeMezzoPreventivo(q)],
+    ["Dettaglio trasporto",descrizioneMezziPreventivo(q)],
     ["Data",q.data_evento||"-"],
     ["Pagamento",q.stato_pagamento||"-"],
     ["Firma cliente",q.firma_cliente?"Firma cliente presente":"Non firmato"],
-    ["Incassato",euro(q.importo_incassato||0)]
+    ["Incassato",euro(q.importo_incassato||0)],["Mezzi",nomeMezzoPreventivo(q)],["Dettaglio trasporto",descrizioneMezziPreventivo(q)]
   ];
 
   let y=34;
@@ -1742,6 +1931,53 @@ function scaricaPDFTecnico(){
   doc.text(doc.splitTextToSize(q.note||"",180),12,y);
 
   doc.save(`Distinta-Tecnica-${q.cliente||"evento"}.pdf`);
+}
+
+
+function scaricaContrattoPDF(){
+  const q=datiPreventivo();
+  let {jsPDF}=window.jspdf;
+  let doc=new jsPDF();
+  let y=16;
+  doc.setFontSize(18);
+  doc.text("CONTRATTO DI SERVIZIO",12,y); y+=10;
+  doc.setFontSize(11);
+  [
+    ["Preventivo",q.numero_preventivo||""],
+    ["Cliente",q.cliente||""],
+    ["Evento",q.evento||""],
+    ["Periodo",formatRangeDate(q.data_evento,q.data_fine_evento)],
+    ["Luogo",q.luogo||""],
+    ["Referente",q.referente||""],
+    ["Telefono",q.telefono_referente||""],
+    ["Totale",euro(q.totale||0)]
+  ].forEach(r=>{doc.text(r[0]+": "+r[1],12,y);y+=7;});
+  y+=6;
+  doc.setFontSize(14);
+  doc.text("Condizioni principali",12,y); y+=8;
+  doc.setFontSize(9);
+  const clausole=[
+    "Il cliente conferma dati, luogo, periodo e condizioni economiche indicate nel preventivo.",
+    "Eventuali ritardi, variazioni tecniche o richieste extra potranno comportare costi aggiuntivi.",
+    "Il cliente garantisce accesso, spazi adeguati e alimentazione elettrica idonea al servizio richiesto.",
+    "Danni causati da terzi, pubblico, incuria o condizioni non imputabili a Service K38 saranno a carico del cliente.",
+    "In caso di annullamento, eventuali acconti o costi gia sostenuti potranno essere trattenuti a copertura delle spese.",
+    "Materiali e personale sono soggetti a disponibilita fino a conferma definitiva."
+  ];
+  clausole.forEach((c,i)=>{
+    const lines=doc.splitTextToSize((i+1)+". "+c,180);
+    doc.text(lines,12,y);
+    y+=lines.length*5+4;
+    if(y>255){doc.addPage();y=16;}
+  });
+  y+=8;
+  doc.setFontSize(11);
+  doc.text("Firma cliente",12,y); doc.line(45,y,105,y);
+  doc.text("Firma Service K38",118,y); doc.line(158,y,198,y);
+  if(q.firma_cliente){
+    try{doc.addImage(q.firma_cliente,"PNG",12,y+4,70,28);}catch(e){}
+  }
+  doc.save(`Contratto-${q.cliente||"Service-K38"}.pdf`);
 }
 
 </script>

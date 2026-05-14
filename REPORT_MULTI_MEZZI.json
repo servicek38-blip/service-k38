@@ -1,0 +1,11 @@
+{
+  "js_ok": true,
+  "stderr": "",
+  "multi_vehicle_ui": true,
+  "multi_vehicle_save": true,
+  "multi_vehicle_calc": true,
+  "remove_vehicle_row": true,
+  "pdf_multi_vehicle": true,
+  "sql_multi_vehicle": true,
+  "service_worker_v33": true
+}

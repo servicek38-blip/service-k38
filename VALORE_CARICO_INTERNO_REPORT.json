@@ -1,0 +1,9 @@
+{
+  "js_syntax": true,
+  "js_error": "",
+  "valore_carico_helper": true,
+  "technical_pdf_value": true,
+  "uses_purchase_value": true,
+  "client_pdf_no_label_before_technical": true,
+  "service_worker_v23": true
+}

@@ -1,0 +1,44 @@
+SERVICE K38 - VERSIONE DEFINITIVA RIFINITA
+
+CARICARE SU GITHUB:
+1. index.html
+2. config.js
+3. logo-k38.png
+4. icon-192.png
+5. icon-512.png
+6. manifest.webmanifest
+7. service-worker.js
+
+NON CARICARE SU GITHUB:
+- setup_supabase.sql
+- README.txt
+- ISTRUZIONI_INSTALLAZIONE.txt
+- VERIFICA_PACCHETTO.json
+
+SUPABASE:
+1. Vai su SQL Editor
+2. New Query
+3. Incolla tutto il contenuto di setup_supabase.sql
+4. Premi RUN
+
+MIGLIORIE RIFINITE:
+- Icona iPhone quadrata con logo proporzionato
+- Manifest PWA aggiornato
+- Service worker cache v2
+- Offline migliorato
+- Cancellazioni offline aggiunte alla coda di sincronizzazione
+- Codice inventario presente
+- Dati BENOW presenti
+
+
+FIX TEST RUN:
+- service worker v3: cache solo file locali, più stabile
+- foto offline compresse prima del salvataggio locale
+
+AGGIORNAMENTO SUONI:
+CARICARE SU GITHUB ANCHE:
+- sound-click.wav
+- sound-success.wav
+- sound-error.wav
+
+I suoni hanno pulsante ON/OFF nell'app.
