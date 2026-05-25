@@ -32,7 +32,7 @@ button,input,select,textarea{font-family:inherit;font-size:15px}
 h1{font-size:26px;margin:0;line-height:1.1} h2{margin:0 0 12px} h3{margin:0 0 8px}
 .muted{color:var(--muted);font-size:14px;line-height:1.35;overflow-wrap:anywhere}.brandline{height:4px;background:linear-gradient(90deg,var(--yellow),var(--blue),var(--pink));border-radius:100px;margin-top:8px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-button{background:var(--yellow);color:#111;border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;white-space:nowrap}
+button,.buttonlike{background:var(--yellow);color:#111;border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block}
 button.secondary{background:#1b2942;color:#fff;border:1px solid var(--line)}button.danger{background:var(--red);color:#fff}button.green{background:var(--green);color:#fff}button.active{background:linear-gradient(90deg,var(--yellow),#fff176);color:#111}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px;overflow:hidden}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
@@ -42,6 +42,8 @@ input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(-
 textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;font-weight:900;color:var(--yellow);word-break:break-word}
 .item{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px;overflow:hidden}.item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item img{width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:10px}.total{font-size:30px;color:var(--yellow);font-weight:900}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#24314c;color:#fff;font-size:12px;margin-top:4px}.calendar-day{border-left:4px solid var(--yellow)}.accepted{border-left:4px solid var(--green)}.blocked{opacity:.55}
 .notice{border-left:4px solid var(--yellow);padding:12px;background:#182235;border-radius:12px;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:0 1 auto;max-width:100%}.offline{background:#7f1d1d}.online{background:#14532d}.syncing{background:#854d0e}.pill{padding:6px 10px;border-radius:999px;font-size:13px;font-weight:800}
+.system-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px}.system-row{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px}.system-row b{display:block;color:var(--yellow);margin-bottom:4px}.system-ok{color:#22c55e}.system-warn{color:#facc15}.system-bad{color:#f87171}.mono{font-family:Consolas,Monaco,monospace;font-size:12px;word-break:break-all}
+.alert-list,.stat-list,.doc-list{display:grid;gap:10px;margin-top:10px}.alert-item,.stat-panel,.doc-row{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px}.alert-high{border-left:4px solid var(--red)}.alert-mid{border-left:4px solid var(--yellow)}.alert-ok{border-left:4px solid var(--green)}.permission-lock{opacity:.55;pointer-events:none}.mini-input{max-width:110px}
 @media(max-width:720px){.app{padding:10px}.header{align-items:flex-start}.logo-box{width:76px;height:58px}h1{font-size:21px}.item-head{flex-direction:column}.tabs button{flex:1 1 auto}.total,.stat{font-size:24px}}
 
 .calendar-list{display:flex;flex-direction:column;gap:10px}
@@ -73,6 +75,9 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
 .privacy-money{letter-spacing:.08em}
 .quote-material-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px}
 .quote-material-pick{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:8px}
+.material-qty-row{display:grid;grid-template-columns:auto 1fr 78px;gap:8px;align-items:center}
+.material-qty-row input[type="number"]{margin-top:0;padding:8px}
+.qty-badge{display:inline-block;background:#17233a;border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:12px;margin-top:5px}
 .category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0}
 .category-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer}
 .category-card:hover{border-color:var(--yellow)}
@@ -132,6 +137,64 @@ to{opacity:1}
 .availability-block{background:#3b1010;border-left:4px solid var(--red);padding:10px;border-radius:12px;margin-top:8px;color:#fff}
 .customer-card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
 .dashboard-mini{font-size:13px;color:var(--muted);margin-top:6px}
+
+.agenda-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.agenda-list{display:flex;flex-direction:column;gap:10px}
+.agenda-day{background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:13px}
+.agenda-day.has-items{border-color:rgba(255,212,0,.65);box-shadow:0 0 0 1px rgba(255,212,0,.12)}
+.agenda-day.today{border-color:var(--blue);box-shadow:0 0 0 1px rgba(18,184,238,.2)}
+.agenda-day-head{display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer}
+.agenda-date{font-weight:900;font-size:17px}
+.agenda-empty{color:var(--muted);font-size:14px;margin-top:8px}
+.agenda-items{display:none;margin-top:10px}
+.agenda-items.show{display:block}
+.agenda-item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px;background:#0b1220}
+.agenda-item.evento{border-left:5px solid var(--blue)}
+.agenda-item.impegno{border-left:5px solid var(--yellow)}
+.agenda-badge{font-size:11px;border-radius:999px;padding:4px 8px;font-weight:900}
+.agenda-badge.evento{background:rgba(18,184,238,.18);color:#e0f7ff}
+.agenda-badge.impegno{background:rgba(255,212,0,.18);color:#fff7b0}
+.load-dot{display:inline-block;width:9px;height:9px;border-radius:99px;background:var(--muted);margin-left:4px}
+.load-dot.medium{width:13px;height:13px;background:var(--yellow)}
+.load-dot.high{width:17px;height:17px;background:var(--pink)}
+.impegno-form{background:#0b1220;border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px}
+.compact-event{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
+.compact-event-detail{display:none}
+.compact-event-detail.show{display:block}
+
+
+.availability-ok{background:#102f1a;border-left:4px solid var(--green);padding:8px;border-radius:10px;margin-top:6px;color:#dcfce7}
+.availability-bad{background:#3b1010;border-left:4px solid var(--red);padding:8px;border-radius:10px;margin-top:6px;color:#fee2e2}
+.availability-mid{background:#3b2f10;border-left:4px solid var(--yellow);padding:8px;border-radius:10px;margin-top:6px;color:#fff7b0}
+
+.load-mode{background:#0b1220;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:10px}
+.load-progress{height:16px;background:#1f2937;border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+.load-progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));width:0%}
+.load-check{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px}
+.load-check.done{opacity:.65;border-color:var(--green)}
+.load-check input{width:auto;margin:0;transform:scale(1.35)}
+.client-form{background:#0b1220;border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px}
+.next-job{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px}
+
+.operator-row{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
+.mezzo-warning{background:#3b2f10;border-left:4px solid var(--yellow);padding:9px;border-radius:10px;margin-top:8px}
+.contract-clause{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px}
+
+.dash-panel{background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
+.dash-bar{height:12px;background:#0b1220;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:6px}
+.dash-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--yellow));width:0%}
+.operator-warning{background:#3b2f10;border-left:4px solid var(--yellow);padding:9px;border-radius:10px;margin-top:8px}
+.operator-ok{background:#102f1a;border-left:4px solid var(--green);padding:9px;border-radius:10px;margin-top:8px}
+
+.backup-box{background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px}
+.log-row{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:9px;margin-top:7px;font-size:13px}
+.file-input-label{display:inline-block;background:#1b2942;color:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer}
+.file-input-label input{display:none}
+
+.margin-box{background:#0b1220;border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px}
+.margin-good{color:#22c55e;font-weight:900}
+.margin-bad{color:#ef4444;font-weight:900}
+.margin-neutral{color:#facc15;font-weight:900}
 </style>
 </head>
 <body>
@@ -174,7 +237,14 @@ to{opacity:1}
       <button class="secondary" onclick="tab('calendario',this)">Calendario</button>
       <button class="secondary" onclick="tab('eventiPage',this)">Eventi</button>
       <button class="secondary" onclick="tab('dati',this)">Dati PDF</button>
+      <button class="secondary" onclick="tab('backupPage',this)">Backup</button>
       <button class="secondary" onclick="tab('clientiPage',this)">Clienti</button>
+      <button class="secondary" onclick="tab('operatoriPage',this)">Operatori</button>
+      <button class="secondary" onclick="tab('avvisiPage',this);renderAvvisi()">Avvisi</button>
+      <button class="secondary" onclick="tab('statistichePage',this);renderStatisticheAvanzate()">Statistiche</button>
+      <button class="secondary" onclick="tab('manutenzioniPage',this);renderManutenzioniStorico()">Manutenzioni</button>
+      <button class="secondary" onclick="tab('documentiPage',this);renderArchivioDocumenti()">Documenti</button>
+      <button class="secondary" onclick="tab('sistemaPage',this);renderSystemStatus()">Sistema</button>
       <button id="adminTab" class="secondary hidden" onclick="tab('admin',this)">Admin</button>
       <button class="secondary" onclick="syncNow()">Sincronizza ora</button>
       <button id="soundToggle" class="secondary" onclick="toggleSounds()">Suoni ON</button>
@@ -198,6 +268,14 @@ to{opacity:1}
         </div>
       </div>
       <div class="card"><button class="green" onclick="tabFromHome('calendario')">Apri eventi / calendario</button></div>
+      <div class="card">
+        <h3>Dashboard operativa</h3>
+        <div id="dashboardPlusBox"></div>
+      </div>
+      <div class="card">
+        <h3>Prossimi lavori</h3>
+        <div id="prossimiEventiBox"></div>
+      </div>
       <div class="card notice">
         Offline attivo: senza rete puoi inserire materiali, preventivi ed eventi. Quando torna internet, premi “Sincronizza ora” o aspetta la sincronizzazione automatica.
         <br><b>Elementi in coda:</b> <span id="queueCount">0</span>
@@ -239,7 +317,7 @@ to{opacity:1}
       <div class="card">
         <h2>Crea preventivo</h2>
         <div class="row">
-          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data inizio<input id="p_data" type="date"></label><label>Data fine<input id="p_data_fine" type="date"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente('p')"></select></label><label>Telefono referente<input id="p_telefono"></label>
+          <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data inizio<input id="p_data" type="date" onchange="render();warningMezziPreventivo()"></label><label>Data fine<input id="p_data_fine" type="date" onchange="render();warningMezziPreventivo()"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente('p')"></select></label><label>Telefono referente<input id="p_telefono"></label>
           <label>Audio €<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci €<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video €<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label>
           <div class="item" style="grid-column:1/-1">
             <h3>Mezzi / trasporto</h3>
@@ -265,6 +343,18 @@ to{opacity:1}
           <div class="muted">Seleziona il materiale che vuoi collegare al preventivo. Verrà riportato anche nell’evento quando il preventivo viene accettato.</div>
           <div id="p_materiali_picker" class="quote-material-picker"></div>
         </div>
+        <div class="margin-box">
+          <h3>Margine economico stimato</h3>
+          <div class="muted">Questi costi sono interni e servono a capire utile reale e margine. Non compaiono nel PDF cliente.</div>
+          <div class="row">
+            <label>Costo personale €<input id="p_costo_personale" type="number" value="0" oninput="aggiornaTotale()"></label>
+            <label>Noleggi esterni €<input id="p_costo_noleggi" type="number" value="0" oninput="aggiornaTotale()"></label>
+            <label>Costi extra €<input id="p_costo_extra" type="number" value="0" oninput="aggiornaTotale()"></label>
+            <label>Altri costi €<input id="p_costo_altro" type="number" value="0" oninput="aggiornaTotale()"></label>
+          </div>
+          <h3>Utile stimato: <span class="total" id="utilePreventivo">0,00 €</span></h3>
+          <div class="muted">Margine: <span id="marginePreventivo">0%</span></div>
+        </div>
         <h3>Totale: <span class="total" id="totalePreventivo">0,00 €</span></h3>
         <div class="signature-box">
           <h3>Firma cliente</h3>
@@ -283,32 +373,60 @@ to{opacity:1}
       <div class="card">
         <div class="form-title">
           <div>
-            <h2>Calendario impegni</h2>
-            <div class="muted">Lista giorni. Clicca un giorno per vedere e modificare gli impegni.</div>
+            <h2>Calendario operativo</h2>
+            <div class="muted">Agenda dei prossimi 60 giorni: eventi service e impegni, inclusi i giorni vuoti.</div>
           </div>
-          <button class="green" onclick="mostraNuovoEvento()">Aggiungi impegno</button>
+          <div class="actions">
+            <button class="green" onclick="mostraNuovoEvento()">Aggiungi evento</button>
+            <button class="secondary" onclick="mostraNuovoImpegno()">Aggiungi impegno</button>
+            <button class="secondary" onclick="vaiAOggiCalendario()">Vai a oggi</button>
+          </div>
         </div>
 
         <div id="formNuovoEvento" class="item hidden">
-          <h3>Nuovo impegno / evento</h3>
+          <h3>Nuovo evento service</h3>
           <div class="row">
             <label>Titolo<input id="new_ev_titolo" placeholder="Es. Matrimonio / Service live"></label>
             <label>Cliente<input id="new_ev_cliente" placeholder="Cliente"></label>
             <label>Referente/Tecnico<select id="new_ev_referente" onchange="aggiornaTelefonoReferente('new_ev')"></select></label>
             <label>Telefono referente<input id="new_ev_telefono"></label>
-            <label>Data inizio<input id="new_ev_data" type="date"></label><label>Data fine<input id="new_ev_data_fine" type="date"></label>
+            <label>Data inizio<input id="new_ev_data" type="date" onchange="warningOperatoriNuovoEvento()"></label>
+            <label>Data fine<input id="new_ev_data_fine" type="date" onchange="warningOperatoriNuovoEvento()"></label>
             <label>Luogo<input id="new_ev_luogo" placeholder="Luogo"></label>
             <label>Stato<select id="new_ev_stato"><option>Richiesta</option><option>Preventivo</option><option>Confermato</option><option>Montato</option><option>Smontato</option><option>Pagato</option></select></label>
             <label>Totale €<input id="new_ev_totale" type="number" value="0"></label>
             <label>Ora montaggio<input id="new_ev_montaggio" placeholder="Es. 16:00"></label>
             <label>Ora smontaggio<input id="new_ev_smontaggio" placeholder="Es. 01:00"></label>
           </div>
-          <label>Note<textarea id="new_ev_note"></textarea></label>
-          <div class="notice">Materiale e checklist si possono assegnare/modificare dopo aver salvato l’impegno.</div>
+          <label>Note<textarea id="new_ev_note"></textarea></label><div class="item"><h3>Operatori assegnati</h3><div id="new_ev_operatori_box"></div><div id="new_ev_operatori_warning"></div></div>
           <div class="actions">
-            <button onclick="creaEventoManuale()">Salva impegno</button>
+            <button onclick="creaEventoManuale()">Salva evento</button>
             <button class="secondary" onclick="mostraNuovoEvento(false)">Annulla</button>
           </div>
+        </div>
+
+        <div id="formNuovoImpegno" class="impegno-form hidden">
+          <h3>Nuovo impegno</h3>
+          <div class="row">
+            <label>Titolo<input id="new_imp_titolo" placeholder="Es. Sopralluogo / Ritiro materiale"></label>
+            <label>Cliente / riferimento<input id="new_imp_cliente" placeholder="Facoltativo"></label>
+            <label>Data inizio<input id="new_imp_data" type="date"></label>
+            <label>Data fine<input id="new_imp_data_fine" type="date"></label>
+            <label>Ora inizio<input id="new_imp_ora" placeholder="Es. 10:30"></label>
+            <label>Ora fine<input id="new_imp_ora_fine" placeholder="Es. 12:00"></label>
+            <label>Luogo<input id="new_imp_luogo" placeholder="Luogo"></label>
+            <label>Stato<select id="new_imp_stato"><option>Da fare</option><option>Confermato</option><option>Fatto</option><option>Annullato</option></select></label>
+          </div>
+          <label>Note<textarea id="new_imp_note"></textarea></label>
+          <div class="actions">
+            <button onclick="creaImpegnoManuale()">Salva impegno</button>
+            <button class="secondary" onclick="mostraNuovoImpegno(false)">Annulla</button>
+          </div>
+        </div>
+
+        <div class="agenda-toolbar">
+          <input id="searchCalendario" placeholder="Cerca nel calendario..." oninput="render()">
+          <button class="secondary" onclick="toggleSoloOccupati()">Solo giorni occupati</button>
         </div>
 
         <div id="listaCalendario"></div>
@@ -324,16 +442,104 @@ to{opacity:1}
           </div>
           <button class="green" onclick="tabFromHome('calendario'); mostraNuovoEvento()">Aggiungi evento</button>
         </div>
+        <div class="card">
+          <h2>Modalità carico/scarico furgone</h2>
+          <div class="muted">Seleziona un evento e usa i flag per carico/scarico materiale.</div>
+          <div id="modalitaCaricoBox"></div>
+        </div>
         <div id="listaEventiCompleta"></div>
       </div>
     </section>
 
     <section id="clientiPage" class="page hidden">
       <div class="card">
-        <h2>Storico clienti</h2>
-        <div class="muted">Riepilogo automatico basato sui preventivi salvati.</div>
+        <div class="form-title">
+          <div>
+            <h2>Clienti</h2>
+            <div class="muted">Anagrafica clienti e storico automatico preventivi/eventi.</div>
+          </div>
+          <button class="green" onclick="mostraNuovoCliente()">Aggiungi cliente</button>
+        </div>
+
+        <div id="formNuovoCliente" class="client-form hidden">
+          <h3>Nuovo cliente</h3>
+          <div class="row">
+            <label>Nome / Ragione sociale<input id="cl_nome"></label>
+            <label>Telefono<input id="cl_telefono"></label>
+            <label>Email<input id="cl_email"></label>
+            <label>Indirizzo<input id="cl_indirizzo"></label>
+            <label>P.IVA<input id="cl_piva"></label>
+            <label>Codice fiscale<input id="cl_cf"></label>
+          </div>
+          <label>Note<textarea id="cl_note"></textarea></label>
+          <div class="actions">
+            <button onclick="salvaCliente()">Salva cliente</button>
+            <button class="secondary" onclick="mostraNuovoCliente(false)">Annulla</button>
+          </div>
+        </div>
+
         <input id="searchCliente" placeholder="Cerca cliente..." oninput="render()">
         <div id="listaClientiStorico"></div>
+      </div>
+    </section>
+
+    
+    <section id="operatoriPage" class="page hidden">
+      <div class="card">
+        <div class="form-title">
+          <div>
+            <h2>Operatori / personale</h2>
+            <div class="muted">Gestione tecnici, collaboratori e ruoli operativi.</div>
+          </div>
+          <button class="green" onclick="mostraNuovoOperatore()">Aggiungi operatore</button>
+        </div>
+        <div id="formNuovoOperatore" class="client-form hidden">
+          <div class="row">
+            <label>Nome<input id="op_nome"></label>
+            <label>Telefono<input id="op_tel"></label>
+            <label>Ruolo<input id="op_ruolo" placeholder="Tecnico audio, luci, driver..."></label>
+          </div>
+          <label>Note<textarea id="op_note"></textarea></label>
+          <div class="actions">
+            <button onclick="salvaOperatore()">Salva operatore</button>
+            <button class="secondary" onclick="mostraNuovoOperatore(false)">Annulla</button>
+          </div>
+        </div>
+        <div id="listaOperatori"></div>
+      </div>
+    </section>
+
+    
+    <section id="backupPage" class="page hidden">
+      <div class="card">
+        <h2>Backup / Export dati</h2>
+        <div class="muted">Salva una copia locale del gestionale o esporta tabelle CSV per controllo amministrativo.</div>
+
+        <div class="backup-box">
+          <h3>Backup completo JSON</h3>
+          <div class="muted">Contiene materiali, preventivi, eventi, impegni, clienti, operatori e dati PDF locali.</div>
+          <div class="actions">
+            <button onclick="scaricaBackupCompleto()">Scarica backup completo</button>
+            <label class="file-input-label">Importa backup JSON<input type="file" accept=".json,application/json" onchange="importaBackupCompleto(this.files[0])"></label>
+          </div>
+        </div>
+
+        <div class="backup-box">
+          <h3>Export CSV</h3>
+          <div class="actions">
+            <button class="secondary" onclick="scaricaCSV('materiali')">CSV Materiali</button>
+            <button class="secondary" onclick="scaricaCSV('preventivi')">CSV Preventivi</button>
+            <button class="secondary" onclick="scaricaCSV('eventi')">CSV Eventi</button>
+            <button class="secondary" onclick="scaricaCSV('clienti')">CSV Clienti</button>
+          </div>
+        </div>
+
+        <div class="backup-box">
+          <h3>Registro attività locale</h3>
+          <div class="muted">Ultime azioni importanti fatte da questo dispositivo.</div>
+          <div class="actions"><button class="secondary" onclick="pulisciRegistroAttivita()">Pulisci registro</button></div>
+          <div id="registroAttivitaBox"></div>
+        </div>
       </div>
     </section>
 
@@ -358,6 +564,63 @@ to{opacity:1}
     <section id="admin" class="page hidden">
       <div class="card"><h2>Admin utenti</h2><div class="muted">Le password non vengono mostrate: per sicurezza non sono leggibili.</div><div id="listaUtenti"></div></div>
     </section>
+
+    <section id="avvisiPage" class="page hidden">
+      <div class="card">
+        <div class="form-title"><div><h2>Avvisi automatici</h2><div class="muted">Eventi, pagamenti, manutenzioni e conflitti operativi.</div></div><button class="secondary" onclick="renderAvvisi()">Aggiorna</button></div>
+        <div id="avvisiBox" class="alert-list"></div>
+      </div>
+    </section>
+
+    <section id="statistichePage" class="page hidden">
+      <div class="card">
+        <div class="form-title"><div><h2>Statistiche avanzate</h2><div class="muted">Materiali, clienti, margini, mesi migliori e redditivita eventi.</div></div><button class="secondary" onclick="renderStatisticheAvanzate()">Aggiorna</button></div>
+        <div id="statisticheBox" class="stat-list"></div>
+      </div>
+    </section>
+
+    <section id="manutenzioniPage" class="page hidden">
+      <div class="card">
+        <h2>Storico manutenzioni</h2>
+        <div class="muted">Registro degli interventi salvati nelle schede materiale.</div>
+        <div id="manutenzioniStoricoBox" class="stat-list"></div>
+      </div>
+    </section>
+
+    <section id="documentiPage" class="page hidden">
+      <div class="card">
+        <h2>Archivio documenti</h2>
+        <div class="row">
+          <label>Tipo<select id="doc_tipo"><option>Contratto</option><option>Fattura</option><option>Planimetria</option><option>Foto</option><option>PDF</option><option>Altro</option></select></label>
+          <label>Collega a<input id="doc_ref" placeholder="Cliente, evento, preventivo o materiale"></label>
+          <label>Note<input id="doc_note" placeholder="Descrizione breve"></label>
+          <label>File<input id="doc_file" type="file"></label>
+        </div>
+        <div class="actions"><button onclick="salvaDocumentoArchivio()">Aggiungi documento</button><button class="secondary" onclick="renderArchivioDocumenti()">Aggiorna</button></div>
+        <div id="documentiBox" class="doc-list"></div>
+      </div>
+    </section>
+
+    <section id="sistemaPage" class="page hidden">
+      <div class="card">
+        <div class="form-title">
+          <div>
+            <h2>Stato sistema</h2>
+            <div class="muted">Controllo rapido di rete, sincronizzazione, cache locale e versione app.</div>
+          </div>
+          <button class="secondary" onclick="renderSystemStatus()">Aggiorna stato</button>
+        </div>
+        <div id="systemStatusBox" class="system-grid"></div>
+      </div>
+      <div class="card">
+        <h2>Ultimo errore sincronizzazione</h2>
+        <div id="lastSyncErrorBox" class="muted">Nessun errore registrato.</div>
+        <div class="actions">
+          <button class="secondary" onclick="clearSyncError()">Pulisci errore</button>
+          <button class="secondary" onclick="syncNow()">Riprova sincronizzazione</button>
+        </div>
+      </div>
+    </section>
   </section>
 </div>
 
@@ -365,13 +628,21 @@ to{opacity:1}
 <script>
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
 
-let sb,user,profile,materiali=[],preventivi=[],eventi=[],utenti=[];
+const APP_VERSION="service-k38-v43";
+function bootJsonParse(raw,fallback){
+  try{return raw?JSON.parse(raw):fallback}
+  catch(e){return fallback}
+}
+let sb,user,profile,materiali=[],preventivi=[],eventi=[],impegni=[],clienti=[],operatori=[],utenti=[];
 let inventarioCategoriaAttiva="";
 let inventarioSottocategoriaAttiva="";
 let mostraSoloManutenzioni=false;
-let queue=JSON.parse(localStorage.getItem("k38_queue")||"[]");
-let datiPDF=JSON.parse(localStorage.getItem("k38_dati_pdf")||"{}");
+let queue=bootJsonParse(localStorage.getItem("k38_queue"),[]);
+let datiPDF=bootJsonParse(localStorage.getItem("k38_dati_pdf"),{});
 let soundsEnabled = localStorage.getItem("k38_sounds") !== "off";
+let lastSyncError = bootJsonParse(localStorage.getItem("k38_last_sync_error"),null);
+let lastSyncAt = localStorage.getItem("k38_last_sync_at") || "";
+let lastCacheSaveAt = localStorage.getItem("k38_last_cache_save_at") || "";
 let firmaClienteData="";
 let firmaDrawing=false;
 let lastSoundAt = 0;
@@ -580,6 +851,27 @@ function $(id){return document.getElementById(id)} function v(id){return $(id).v
 function online(){return navigator.onLine}
 function uid(){return "local_"+Date.now()+"_"+Math.random().toString(16).slice(2)}
 function updateNet(){let s=$("netStatus");if(!s)return;s.textContent=online()?"Online":"Offline";s.className="pill "+(online()?"online":"offline");}
+function currentRole(){return profile?.role || (user?.email===MASTER_ADMIN_EMAIL?"admin":"viewer")}
+function roleLabel(role){return ({admin:"Admin",tecnico:"Tecnico",collaboratore:"Collaboratore",viewer:"Solo visualizzazione",user:"Collaboratore"}[role]||role||"-")}
+function can(action){
+  const role=currentRole();
+  if(role==="admin")return true;
+  if(role==="tecnico")return !["admin","users","finance","backup","delete"].includes(action);
+  if(role==="collaboratore"||role==="user")return ["read","sync","event_update","checklist","maintenance"].includes(action);
+  return action==="read";
+}
+function guard(action,label="operazione"){
+  if(can(action))return true;
+  playSound("error");
+  alert("Permesso negato: il tuo ruolo non consente questa operazione.");
+  logAttivita("Permesso negato: "+label+" ("+roleLabel(currentRole())+")");
+  return false;
+}
+function applyRolePermissions(){
+  const admin=can("admin");
+  if($("adminTab"))$("adminTab").classList.toggle("hidden",!admin);
+  document.querySelectorAll(".privacy-money").forEach(el=>el.classList.toggle("hidden",!can("finance")));
+}
 function cleanForDb(obj){
   const x={...obj};
   delete x._pending;
@@ -589,14 +881,103 @@ function cleanForDb(obj){
 function showSyncError(error){
   playSound("error");
   console.error("ERRORE SYNC:", error);
+  recordSyncError(error);
   alert("Errore sincronizzazione: " + (error?.message || JSON.stringify(error)));
 }
 window.addEventListener("online",()=>{updateNet();syncNow()});window.addEventListener("offline",updateNet);updateNet();
-function saveQueue(){localStorage.setItem("k38_queue",JSON.stringify(queue));render()}
-function saveCache(){localStorage.setItem(cacheKey,JSON.stringify({materiali,preventivi,eventi,utenti}))}
-function loadCache(){let c=JSON.parse(localStorage.getItem(cacheKey)||"{}");materiali=c.materiali||[];preventivi=c.preventivi||[];eventi=c.eventi||[];utenti=c.utenti||[]}
+function safeJsonParse(raw,fallback,label){
+  try{return raw?JSON.parse(raw):fallback}
+  catch(e){
+    recordSyncError({message:"Dati locali non leggibili: "+label});
+    console.warn("Dati locali corrotti", label, e);
+    return fallback;
+  }
+}
+function storageSet(key,value,label){
+  try{localStorage.setItem(key,value);return true}
+  catch(e){
+    recordSyncError({message:"Memoria locale piena o non disponibile: "+label});
+    alert("Memoria locale piena o non disponibile. Fai un backup e libera spazio prima di continuare.");
+    return false;
+  }
+}
+function recordSyncError(error,item){
+  lastSyncError={time:new Date().toISOString(),message:error?.message||String(error||"Errore sconosciuto"),item:item?{type:item.type,table:item.table}:null};
+  try{localStorage.setItem("k38_last_sync_error",JSON.stringify(lastSyncError))}catch(e){}
+  renderSystemStatus();
+}
+function clearSyncError(){
+  lastSyncError=null;
+  localStorage.removeItem("k38_last_sync_error");
+  renderSystemStatus();
+}
+function saveQueue(){
+  storageSet("k38_queue",JSON.stringify(queue),"coda sincronizzazione");
+  renderSystemStatus();
+  render();
+}
+function saveCache(){
+  if(storageSet(cacheKey,JSON.stringify({materiali,preventivi,eventi,impegni,clienti,operatori,utenti}),"cache dati")){
+    lastCacheSaveAt=new Date().toISOString();
+    localStorage.setItem("k38_last_cache_save_at",lastCacheSaveAt);
+  }
+  renderSystemStatus();
+}
+function loadCache(){
+  let c=safeJsonParse(localStorage.getItem(cacheKey),{},"cache dati");
+  materiali=c.materiali||[];preventivi=c.preventivi||[];eventi=c.eventi||[];impegni=c.impegni||[];clienti=c.clienti||[];operatori=c.operatori||[];utenti=c.utenti||[];
+  renderSystemStatus();
+}
+function bytesLocalStorage(){
+  let total=0;
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i);
+    total+=(key.length+(localStorage.getItem(key)||"").length)*2;
+  }
+  return total;
+}
+function formatDateTime(iso){
+  if(!iso)return "-";
+  try{return new Date(iso).toLocaleString("it-IT")}catch(e){return iso}
+}
+function statusClass(ok,warn){return ok?"system-ok":(warn?"system-warn":"system-bad")}
+async function serviceWorkerState(){
+  if(!("serviceWorker" in navigator))return "Non supportato";
+  try{
+    const reg=await navigator.serviceWorker.getRegistration();
+    if(!reg)return "Non registrato";
+    if(reg.active)return "Attivo";
+    if(reg.installing)return "Installazione";
+    if(reg.waiting)return "In attesa";
+    return "Registrato";
+  }catch(e){return "Errore controllo"}
+}
+async function renderSystemStatus(){
+  const box=$("systemStatusBox");
+  if(!box)return;
+  const sw=await serviceWorkerState();
+  const storageMb=(bytesLocalStorage()/1024/1024).toFixed(2)+" MB";
+  const appVersion=typeof APP_VERSION!=="undefined"?APP_VERSION:"service-k38-v43";
+  const supabaseOk=typeof SUPABASE_URL==="string" && SUPABASE_URL.startsWith("https://") && typeof SUPABASE_KEY==="string" && SUPABASE_KEY.startsWith("sb_publishable_");
+  box.innerHTML=[
+    ["Rete",online()?"Online":"Offline",statusClass(online(),false)],
+    ["Utente",user?escapeHtml(user.email||user.id):"Non autenticato",user?"system-ok":"system-warn"],
+    ["Ruolo",profile?.role||"-",profile?.role==="admin"?"system-ok":"system-warn"],
+    ["Coda offline",queue.length+" elementi",queue.length===0?"system-ok":"system-warn"],
+    ["Ultimo sync",formatDateTime(lastSyncAt),lastSyncAt?"system-ok":"system-warn"],
+    ["Ultimo salvataggio cache",formatDateTime(lastCacheSaveAt),lastCacheSaveAt?"system-ok":"system-warn"],
+    ["Memoria locale",storageMb,"system-ok"],
+    ["Service worker",sw,sw==="Attivo"?"system-ok":"system-warn"],
+    ["Supabase config",supabaseOk?"Publishable key valida":"Da controllare",supabaseOk?"system-ok":"system-bad"],
+    ["Versione app",appVersion,"system-ok"]
+  ].map(([label,value,cls])=>`<div class="system-row"><b>${label}</b><span class="${cls}">${value}</span></div>`).join("");
+  const errBox=$("lastSyncErrorBox");
+  if(errBox){
+    errBox.innerHTML=lastSyncError?`<div class="system-bad">${escapeHtml(lastSyncError.message)}</div><div class="mono">${escapeHtml(formatDateTime(lastSyncError.time))}${lastSyncError.item?" - "+escapeHtml(lastSyncError.item.table||"")+" "+escapeHtml(lastSyncError.item.type||""):""}</div>`:"Nessun errore registrato.";
+  }
+}
 function initDati(){ $("d_partner").value=datiPDF.partner||"Partner BENOW";$("d_ragione").value=datiPDF.ragione||"Service K38";$("d_benow").value=datiPDF.benow||"BeNow s.c.p.a.";$("d_cf").value=datiPDF.cf||"01516270137";$("d_piva").value=datiPDF.piva||"03080310174";$("d_univoco").value=datiPDF.univoco||"M5UXCR1";$("d_tel").value=datiPDF.tel||"3284218233";$("d_email").value=datiPDF.email||"servicek38@gmail.com";$("d_footer").value=datiPDF.footer||"Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilità e conferma."} initDati();
-window.addEventListener("load",async()=>{updateSoundButton();initFirmaCanvas();setTimeout(()=>{if($("mezziTrasportoBox") && !document.querySelector("#mezziTrasportoBox .mezzo-row")) aggiungiMezzoTrasporto();},150);aggiornaSottocategorie("m");$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
+window.addEventListener("load",async()=>{updateSoundButton();initFirmaCanvas();initClausoleContratto();renderSystemStatus();setTimeout(()=>{if($("mezziTrasportoBox") && !document.querySelector("#mezziTrasportoBox .mezzo-row")) aggiungiMezzoTrasporto();},150);aggiornaSottocategorie("m");$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
 async function signup(){
   if(!online())return msg("loginMsg","per creare utente serve internet");
   msg("loginMsg","creazione...");
@@ -621,14 +1002,14 @@ async function login(){
 }
 async function resetPassword(){if(!online())return msg("loginMsg","per recupero password serve internet");if(!v("email"))return msg("loginMsg","inserisci prima la mail");let {error}=await sb.auth.resetPasswordForEmail(v("email"),{redirectTo:location.origin});msg("loginMsg",error?error.message:"email recupero inviata")}
 async function upsertProfile(username){let role=(user.email===MASTER_ADMIN_EMAIL)?"admin":"user";await sb.from("app_users").upsert({id:user.id,email:user.email,username,role,last_login:new Date().toISOString()})}
-async function afterLogin(){if(online()){let r=await sb.from("app_users").select("*").eq("id",user.id).single();profile=r.data;if(profile?.blocked){await logout();alert("Accesso bloccato dall'admin");return}}$("loginBox").classList.add("hidden");$("mainApp").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");if(profile?.role==="admin")$("adminTab").classList.remove("hidden");await caricaTutto();if(online()) syncNow()}
+async function afterLogin(){if(online()){let r=await sb.from("app_users").select("*").eq("id",user.id).single();profile=r.data;if(profile?.blocked){await logout();alert("Accesso bloccato dall'admin");return}}$("loginBox").classList.add("hidden");$("mainApp").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");applyRolePermissions();await caricaTutto();if(online()) syncNow()}
 async function logout(){await sb.auth.signOut();location.reload()}
 function tabFromHome(id){
   const btn=[...document.querySelectorAll(".tabs button")].find(b=>b.getAttribute("onclick")?.includes("'" + id + "'"));
   if(btn) tab(id,btn);
 }
 function tab(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));$(id).classList.remove("hidden");document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");}
-async function caricaTutto(){if(!online()){loadCache();render();return}let a=await sb.from("materiali").select("*").order("created_at",{ascending:false});let b=await sb.from("preventivi").select("*").order("created_at",{ascending:false});let c=await sb.from("eventi").select("*").order("data_evento",{ascending:true});materiali=a.data||[];preventivi=b.data||[];eventi=c.data||[];if(profile?.role==="admin"){let u=await sb.from("app_users").select("*").order("created_at",{ascending:false});utenti=u.data||[]}saveCache();render()}
+async function caricaTutto(){if(!online()){loadCache();render();return}let a=await sb.from("materiali").select("*").order("created_at",{ascending:false});let b=await sb.from("preventivi").select("*").order("created_at",{ascending:false});let c=await sb.from("eventi").select("*").order("data_evento",{ascending:true});let d=await sb.from("impegni").select("*").order("data_impegno",{ascending:true});let e=await sb.from("clienti").select("*").order("created_at",{ascending:false});let ops=await sb.from("operatori").select("*").order("created_at",{ascending:false});materiali=a.data||[];preventivi=b.data||[];eventi=c.data||[];impegni=d.data||[];clienti=e.data||[];operatori=ops.data||[];if(profile?.role==="admin"){let u=await sb.from("app_users").select("*").order("created_at",{ascending:false});utenti=u.data||[]}saveCache();render()}
 function isPastDate(dateStr){
   if(!dateStr) return false;
   const today = new Date();
@@ -643,15 +1024,23 @@ function confirmPastDate(dateStr){
 }
 function annoCorrenteShort(){return String(new Date().getFullYear()).slice(-2)}
 function progressivoPreventivo(){
-  const yy=annoCorrenteShort();
+  const year=new Date().getFullYear();
   const nums=preventivi
     .map(p=>String(p.numero_preventivo||""))
-    .map(s=>s.match(new RegExp("N(\\d+)/"+yy)))
+    .map(s=>s.match(new RegExp("^PREV-"+year+"-(\\d+)$")))
     .filter(Boolean)
     .map(m=>Number(m[1]||0));
   const next=(nums.length?Math.max(...nums):0)+1;
-  return `Preventivo N${next}/${yy}`;
+  return `PREV-${year}-${String(next).padStart(3,"0")}`;
 }
+function progressivoDocumento(prefix,rows,field){
+  const year=new Date().getFullYear();
+  const re=new RegExp("^"+prefix+"-"+year+"-(\\d+)$");
+  const nums=rows.map(r=>String(r[field]||"").match(re)).filter(Boolean).map(m=>Number(m[1]));
+  return `${prefix}-${year}-${String(Math.max(0,...nums)+1).padStart(3,"0")}`;
+}
+function progressivoEvento(){return progressivoDocumento("EVT",eventi,"numero_evento")}
+function progressivoContratto(){return progressivoDocumento("CONTR",preventivi,"numero_contratto")}
 
 function formatRangeDate(start,end){
   if(!start)return "-";
@@ -828,6 +1217,22 @@ function renderStoricoClienti(){
   }).join(""):'<div class="notice">Nessun cliente trovato.</div>';
 }
 
+function costiPreventivo(o){
+  return Number(o.costo_personale||0)+Number(o.costo_noleggi_esterni||0)+Number(o.costo_extra||0)+Number(o.costo_altro||0);
+}
+function utilePreventivoVal(o){
+  return Number(o.totale||0)-costiPreventivo(o);
+}
+function marginePreventivoVal(o){
+  const totale=Number(o.totale||0);
+  if(!totale)return 0;
+  return Math.round((utilePreventivoVal(o)/totale)*100);
+}
+function classMargine(x){
+  if(x>=40)return "margin-good";
+  if(x>=20)return "margin-neutral";
+  return "margin-bad";
+}
 function totaleP(o){let mat=totaleMaterialiPreventivo(o.materiali||getSelectedPreventivoMateriali());let sub=mat+Number(o.audio||0)+Number(o.luci||0)+Number(o.video||0)+Number(o.trasporto||0)+Number(o.ore_tecnico||0)*Number(o.tariffa_tecnico||0)+Number(o.montaggio||0)-Number(o.sconto||0);return sub+sub*Number(o.iva||0)/100}
 function materialeDaManutenzione(m){
   return ["Da manutentare","In manutenzione","Da controllare","Fuori servizio"].includes(m.stato||"");
@@ -932,6 +1337,7 @@ function renderMaterialeEdit(m){
     '</div>' +
     (m.foto_url?'<img src="'+escapeHtml(m.foto_url)+'">':'') +
     '<label>Note<textarea id="mat_note_'+key+'">'+escapeHtml(m.note||"")+'</textarea></label>' +
+    renderManutenzioniMateriale(m) +
     '<div class="actions">' +
       '<button class="green" onclick="salvaModificaMateriale(&quot;'+key+'&quot;)">Salva modifiche materiale</button>' +
       '<button class="danger" onclick="eliminaLocaleMateriale(&quot;'+key+'&quot;)">Elimina</button>' +
@@ -939,7 +1345,40 @@ function renderMaterialeEdit(m){
     (m._pending?'<span class="status">da sincronizzare</span>':'') +
   '</div>';
 }
+function manutenzioniMateriale(m){return parseJsonField(m.manutenzioni,[])}
+function renderManutenzioniMateriale(m){
+  const key=m.local_id||m.id;
+  const rows=manutenzioniMateriale(m);
+  return '<div class="item"><h3>Storico manutenzioni</h3>'+
+    '<div class="row">'+
+      '<label>Data intervento<input type="date" id="man_data_'+key+'"></label>'+
+      '<label>Tecnico<input id="man_tecnico_'+key+'" placeholder="Chi ha fatto la manutenzione"></label>'+
+      '<label>Costo riparazione €<input type="number" id="man_costo_'+key+'" value="0"></label>'+
+      '<label>Ricambi usati<input id="man_ricambi_'+key+'"></label>'+
+    '</div>'+
+    '<label>Intervento / soluzione<textarea id="man_note_'+key+'"></textarea></label>'+
+    '<div class="actions"><button class="secondary" onclick="aggiungiManutenzioneMateriale(&quot;'+key+'&quot;)">Aggiungi manutenzione</button></div>'+
+    (rows.length?rows.map(r=>'<div class="system-row"><b>'+escapeHtml(r.data||"-")+' - '+escapeHtml(r.tecnico||"-")+'</b><div class="muted">'+escapeHtml(r.note||"")+'</div><div class="muted">Costo: '+euro(r.costo||0)+' - Ricambi: '+escapeHtml(r.ricambi||"-")+'</div></div>').join(""):'<div class="muted">Nessun intervento registrato.</div>')+
+  '</div>';
+}
+async function aggiungiManutenzioneMateriale(key){
+  if(!guard("maintenance","aggiungi manutenzione"))return;
+  let m=materiali.find(x=>(x.local_id||x.id)===key);
+  if(!m)return;
+  const row={data:v("man_data_"+key)||todayISO(),tecnico:v("man_tecnico_"+key),costo:n("man_costo_"+key),ricambi:v("man_ricambi_"+key),note:v("man_note_"+key),creato_il:new Date().toISOString()};
+  m.manutenzioni=[row,...manutenzioniMateriale(m)];
+  const payload={manutenzioni:m.manutenzioni,stato:m.stato};
+  if(online() && m.id){
+    const {error}=await sb.from("materiali").update(payload).eq("id",m.id);
+    if(error){showSyncError(error);return}
+  }else{
+    m._pending=true;queue.push({type:"update_materiale",key,payload});
+  }
+  logAttivita("Manutenzione registrata: "+(m.nome||key));
+  saveCache();saveQueue();render();
+}
 async function salvaModificaMateriale(key){
+  if(!guard("event_update","modifica materiale"))return;
   let m=materiali.find(x=>(x.local_id||x.id)===key);
   if(!m)return;
   const updated={
@@ -974,7 +1413,538 @@ async function salvaModificaMateriale(key){
   if(online())syncNow();
 }
 
+
+let calendarioSoloOccupati=false;
+let caricoFiltro="tutti";
+
+function addDays(date,days){const d=new Date(date);d.setDate(d.getDate()+days);return d;}
+function isoDate(d){return d.toISOString().slice(0,10);}
+function todayISO(){const d=new Date();d.setHours(0,0,0,0);return isoDate(d);}
+function sameOrInRange(day,start,end){
+  if(!start)return false;
+  const d=new Date(day+"T00:00:00");
+  const s=new Date(start+"T00:00:00");
+  const e=new Date((end||start)+"T00:00:00");
+  return d>=s && d<=e;
+}
+function formatDateIT(iso){
+  if(!iso)return "-";
+  return new Date(iso+"T00:00:00").toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
+}
+function toggleAgendaDay(day){
+  const el=$("agenda_items_"+safeId(day));
+  if(el)el.classList.toggle("show");
+}
+function toggleSoloOccupati(){calendarioSoloOccupati=!calendarioSoloOccupati;render();}
+function vaiAOggiCalendario(){const el=$("agenda_day_"+safeId(todayISO()));if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}
+function caricoGiorno(items){if(items.length>=4)return "high";if(items.length>=2)return "medium";return "";}
+function calendarioItemsDelGiorno(day){
+  const q=($("searchCalendario")?.value||"").toLowerCase();
+  const evs=eventi.filter(e=>sameOrInRange(day,e.data_evento,e.data_fine_evento||e.data_evento)).map(e=>({...e,tipo_cal:"evento"}));
+  const imps=impegni.filter(i=>sameOrInRange(day,i.data_impegno,i.data_fine_impegno||i.data_impegno)).map(i=>({...i,tipo_cal:"impegno"}));
+  return [...evs,...imps].filter(x=>!q || JSON.stringify(x).toLowerCase().includes(q));
+}
+function toggleEventoDettaglio(key){const el=$("event_detail_"+key);if(el)el.classList.toggle("show");}
+function renderEventoCompatto(e){
+  const key=e.local_id||e.id;
+  return '<div class="compact-event '+(eventoTerminato(e)?'past-event':'')+'">'+
+    '<div><b>'+escapeHtml(e.titolo||"Evento")+'</b>'+
+    '<div class="muted">'+escapeHtml(formatRangeDate(e.data_evento,e.data_fine_evento||e.data_evento))+' • '+escapeHtml(e.luogo||"-")+'</div>'+
+    '<div class="muted">'+escapeHtml(e.cliente||"-")+' • '+escapeHtml(e.stato||"-")+'</div>'+
+    '<div class="muted">Tecnico: '+escapeHtml(e.tecnico||e.referente||"-")+'</div></div>'+
+    '<button class="secondary" onclick="toggleEventoDettaglio(&quot;'+key+'&quot;)">Apri evento</button>'+
+  '</div><div id="event_detail_'+key+'" class="compact-event-detail">'+renderEventoEdit(e)+'</div>';
+}
+function renderAgendaItem(item){
+  if(item.tipo_cal==="evento"){
+    const key=item.local_id||item.id;
+    return '<div class="agenda-item evento '+(eventoTerminato(item)?'past-event':'')+'">'+
+      '<span class="agenda-badge evento">EVENTO</span>'+
+      '<div><b>'+escapeHtml(item.titolo||"Evento service")+'</b>'+
+      '<div class="muted">'+escapeHtml(item.cliente||"-")+' • '+escapeHtml(item.luogo||"-")+'</div>'+
+      '<div class="muted">'+escapeHtml(formatRangeDate(item.data_evento,item.data_fine_evento||item.data_evento))+' • '+escapeHtml(item.stato||"-")+'</div></div>'+
+      '<button class="secondary" onclick="toggleEventoDettaglio(&quot;'+key+'&quot;)">Apri</button>'+
+      '</div><div id="event_detail_'+key+'" class="compact-event-detail">'+renderEventoEdit(item)+'</div>';
+  }
+  const key=item.local_id||item.id;
+  return '<div class="agenda-item impegno">'+
+    '<span class="agenda-badge impegno">IMPEGNO</span>'+
+    '<div><b>'+escapeHtml(item.titolo||"Impegno")+'</b>'+
+    '<div class="muted">'+escapeHtml(item.cliente||"-")+' • '+escapeHtml(item.luogo||"-")+'</div>'+
+    '<div class="muted">'+escapeHtml(formatRangeDate(item.data_impegno,item.data_fine_impegno||item.data_impegno))+' '+escapeHtml((item.ora_inizio||"")+(item.ora_fine?" - "+item.ora_fine:""))+'</div></div>'+
+    '<button class="danger" onclick="eliminaLocaleImpegno(&quot;'+key+'&quot;)">Elimina</button>'+
+    '</div>';
+}
+function renderCalendarioEvoluto(){
+  const box=$("listaCalendario");if(!box)return;
+  const start=new Date();start.setHours(0,0,0,0);
+  let out='<div class="agenda-list">';
+  for(let i=0;i<60;i++){
+    const day=isoDate(addDays(start,i));
+    const items=calendarioItemsDelGiorno(day);
+    if(calendarioSoloOccupati && !items.length)continue;
+    const occupied=items.length>0;
+    const load=caricoGiorno(items);
+    out+='<div id="agenda_day_'+safeId(day)+'" class="agenda-day '+(occupied?'has-items':'')+' '+(day===todayISO()?'today':'')+'">'+
+      '<div class="agenda-day-head" onclick="toggleAgendaDay(&quot;'+day+'&quot;)">'+
+      '<div><div class="agenda-date">'+escapeHtml(formatDateIT(day))+'</div><div class="muted">'+(occupied?items.length+' attività':'Nessun impegno')+'</div></div>'+
+      '<div><span class="load-dot '+load+'"></span></div></div>'+
+      (occupied?'<div id="agenda_items_'+safeId(day)+'" class="agenda-items show">'+items.map(renderAgendaItem).join("")+'</div>':'<div class="agenda-empty">Giornata libera</div>')+
+      '</div>';
+  }
+  out+='</div>';
+  box.innerHTML=out;
+}
+function mostraNuovoImpegno(show=true){const box=$("formNuovoImpegno");if(box)box.classList.toggle("hidden",!show);}
+async function creaImpegnoManuale(){
+  const row={local_id:uid(),titolo:v("new_imp_titolo")||"Nuovo impegno",cliente:v("new_imp_cliente"),data_impegno:v("new_imp_data")||null,data_fine_impegno:v("new_imp_data_fine")||v("new_imp_data")||null,ora_inizio:v("new_imp_ora"),ora_fine:v("new_imp_ora_fine"),luogo:v("new_imp_luogo"),stato:v("new_imp_stato")||"Da fare",note:v("new_imp_note")};
+  if(!row.data_impegno){playSound("error");alert("Inserisci una data per l'impegno.");return;}
+  if(online()){const ins=await sb.from("impegni").insert(cleanForDb(row)).select().single();if(ins.error){showSyncError(ins.error);return;}impegni.push(ins.data);saveCache();render();mostraNuovoImpegno(false);playSound("success");return;}
+  row._pending=true;impegni.push(row);queue.push({type:"insert",table:"impegni",payload:{...row}});saveCache();saveQueue();mostraNuovoImpegno(false);playSound("success");
+}
+function eliminaLocaleImpegno(key){
+  if(!confirm("Vuoi eliminare questo impegno?"))return;
+  let item=impegni.find(x=>(x.local_id||x.id)===key);
+  impegni=impegni.filter(x=>(x.local_id||x.id)!==key);
+  queue=queue.filter(q=>!(q.payload&&(q.payload.local_id===key||q.payload.id===key)));
+  if(item?.id)queue.push({type:"delete",table:"impegni",remote_id:item.id});
+  saveCache();saveQueue();if(online())syncNow();
+}
+
+
+function prossimiEventi(){
+  const today=todayISO();
+  return eventi.filter(e=>(e.data_fine_evento||e.data_evento||"")>=today).sort((a,b)=>String(a.data_evento||"").localeCompare(String(b.data_evento||""))).slice(0,5);
+}
+function renderProssimiEventi(){
+  const box=$("prossimiEventiBox");
+  if(!box)return;
+  const list=prossimiEventi();
+  box.innerHTML=list.length?list.map(e=>'<div class="next-job"><b>'+escapeHtml(e.titolo||"Evento")+'</b><div class="muted">'+escapeHtml(formatRangeDate(e.data_evento,e.data_fine_evento||e.data_evento))+' • '+escapeHtml(e.luogo||"-")+'</div><div class="muted">'+escapeHtml(e.cliente||"-")+'</div></div>').join(""):'<div class="muted">Nessun lavoro futuro.</div>';
+}
+function mostraNuovoCliente(show=true){
+  const box=$("formNuovoCliente");
+  if(box)box.classList.toggle("hidden",!show);
+}
+function clienteStats(nome){
+  const prev=preventivi.filter(p=>(p.cliente||"").trim().toLowerCase()===String(nome||"").trim().toLowerCase());
+  const evs=eventi.filter(e=>(e.cliente||"").trim().toLowerCase()===String(nome||"").trim().toLowerCase());
+  return {preventivi:prev.length,eventi:evs.length,totale:prev.reduce((s,p)=>s+Number(p.totale||0),0),incassato:prev.reduce((s,p)=>s+Number(p.importo_incassato||0),0)};
+}
+async function salvaCliente(){
+  const row={local_id:uid(),nome:v("cl_nome"),telefono:v("cl_telefono"),email:v("cl_email"),indirizzo:v("cl_indirizzo"),piva:v("cl_piva"),codice_fiscale:v("cl_cf"),note:v("cl_note")};
+  if(!row.nome){playSound("error");alert("Inserisci il nome cliente.");return;}
+  if(online()){
+    const ins=await sb.from("clienti").insert(cleanForDb(row)).select().single();
+    if(ins.error){showSyncError(ins.error);return;}
+    clienti.unshift(ins.data);saveCache();render();mostraNuovoCliente(false);playSound("success");return;
+  }
+  row._pending=true;clienti.unshift(row);queue.push({type:"insert",table:"clienti",payload:{...row}});saveCache();saveQueue();mostraNuovoCliente(false);playSound("success");
+}
+function renderClientiDatabase(){
+  const box=$("listaClientiStorico");
+  if(!box)return;
+  const q=($("searchCliente")?.value||"").toLowerCase();
+  const namesFromPreventivi=[...new Set(preventivi.map(p=>p.cliente).filter(Boolean))];
+  const merged=[...clienti];
+  namesFromPreventivi.forEach(n=>{
+    if(!merged.find(c=>(c.nome||"").toLowerCase()===n.toLowerCase())) merged.push({nome:n});
+  });
+  const list=merged.filter(c=>JSON.stringify(c).toLowerCase().includes(q)).sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||"")));
+  box.innerHTML=list.length?list.map(c=>{
+    const st=clienteStats(c.nome);
+    return `<div class="customer-card">
+      <h3>${escapeHtml(c.nome||"Cliente")}</h3>
+      <div class="muted">${escapeHtml(c.telefono||"")} ${c.email?"• "+escapeHtml(c.email):""}</div>
+      <div class="muted">Preventivi: ${st.preventivi} • Eventi: ${st.eventi}</div>
+      <div class="total">${euro(st.totale)}</div>
+      <div class="muted">Incassato: ${euro(st.incassato)} • Da riscuotere: ${euro(Math.max(0,st.totale-st.incassato))}</div>
+      ${c.note?`<div class="muted">Note: ${escapeHtml(c.note)}</div>`:""}
+    </div>`;
+  }).join(""):'<div class="notice">Nessun cliente trovato.</div>';
+}
+function caricoKey(eventoKey,materialeKey,tipo){
+  return "k38_carico_"+eventoKey+"_"+materialeKey+"_"+tipo;
+}
+function setCaricoFlag(eventoKey,materialeKey,tipo,checked){
+  localStorage.setItem(caricoKey(eventoKey,materialeKey,tipo),checked?"1":"0");
+  renderModalitaCarico();
+}
+function getCaricoFlag(eventoKey,materialeKey,tipo){
+  return localStorage.getItem(caricoKey(eventoKey,materialeKey,tipo))==="1";
+}
+function setCaricoFiltro(f){
+  caricoFiltro=f;renderModalitaCarico();
+}
+function renderModalitaCarico(){
+  const box=$("modalitaCaricoBox");
+  if(!box)return;
+  const futuri=prossimiEventi();
+  if(!futuri.length){box.innerHTML='<div class="muted">Nessun evento futuro.</div>';return;}
+  const selectedId=localStorage.getItem("k38_evento_carico") || (futuri[0].local_id||futuri[0].id);
+  const ev=futuri.find(e=>(e.local_id||e.id)===selectedId) || futuri[0];
+  const evKey=ev.local_id||ev.id;
+  localStorage.setItem("k38_evento_carico",evKey);
+  const mats=materialiEvento(ev).map(item=>({item,materiale:materiali.find(m=>(m.local_id||m.id)===item.id)})).filter(x=>x.materiale);
+  const totale=mats.reduce((s,x)=>s+x.item.qty*2,0);
+  const fatti=mats.reduce((s,x)=>{
+    const k=x.item.id;
+    const qty=x.item.qty;
+    return s+(getCaricoFlag(evKey,k,"carico")?qty:0)+(getCaricoFlag(evKey,k,"scarico")?qty:0);
+  },0);
+  const pct=totale?Math.round(fatti/totale*100):0;
+  let rows=mats.filter(({item})=>{
+    const k=item.id;
+    const done=getCaricoFlag(evKey,k,"carico")&&getCaricoFlag(evKey,k,"scarico");
+    if(caricoFiltro==="mancanti")return !done;
+    if(caricoFiltro==="completi")return done;
+    return true;
+  });
+  box.innerHTML=`<div class="load-mode">
+    <label>Evento<select onchange="localStorage.setItem('k38_evento_carico',this.value);renderModalitaCarico()">
+      ${futuri.map(e=>`<option value="${e.local_id||e.id}" ${(e.local_id||e.id)===evKey?"selected":""}>${escapeHtml((e.titolo||"Evento")+" - "+(e.data_evento||""))}</option>`).join("")}
+    </select></label>
+    <h3>${escapeHtml(ev.titolo||"Evento")}</h3>
+    <div class="muted">${escapeHtml(formatRangeDate(ev.data_evento,ev.data_fine_evento||ev.data_evento))} • ${escapeHtml(ev.luogo||"-")}</div>
+    <div class="load-progress"><span style="width:${pct}%"></span></div>
+    <div class="muted">${pct}% completato • ${fatti}/${totale} flag</div>
+    <div class="actions">
+      <button class="secondary" onclick="setCaricoFiltro('tutti')">Tutti</button>
+      <button class="secondary" onclick="setCaricoFiltro('mancanti')">Mancanti</button>
+      <button class="secondary" onclick="setCaricoFiltro('completi')">Completi</button>
+    </div>
+    ${rows.length?rows.map(({item,materiale:m})=>{
+      const k=item.id;
+      const carico=getCaricoFlag(evKey,k,"carico");
+      const scarico=getCaricoFlag(evKey,k,"scarico");
+      return `<div class="load-check ${carico&&scarico?'done':''}">
+        <input type="checkbox" ${carico?"checked":""} onchange="setCaricoFlag('${evKey}','${k}','carico',this.checked)">
+        <div><b>${escapeHtml(m.nome||"Materiale")}</b><div class="muted">${escapeHtml(m.codice_inventario||"")} • ${escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))}</div></div>
+        <label style="margin:0"><input type="checkbox" ${scarico?"checked":""} onchange="setCaricoFlag('${evKey}','${k}','scarico',this.checked)"> Scarico</label>
+      </div>`;
+    }).join(""):'<div class="notice">Nessun materiale assegnato o nessun elemento nel filtro.</div>'}
+  </div>`;
+}
+
+
+function operatoriEvento(e){return parseJsonField(e.operatori,[]);}
+function renderOperatoriCheckboxes(selected=[],prefix="op_pick"){
+  if(!operatori.length)return '<div class="muted">Nessun operatore salvato.</div>';
+  return '<div class="material-picker">'+operatori.filter(o=>o.attivo!==false).map(o=>{
+    const key=o.local_id||o.id;
+    return `<label class="material-pick"><input type="checkbox" class="${prefix}" value="${escapeHtml(key)}" ${selected.includes(key)?"checked":""}> ${escapeHtml(o.nome||"Operatore")}<div class="muted">${escapeHtml((o.ruolo||"")+(o.telefono?" • "+o.telefono:""))}</div></label>`;
+  }).join("")+'</div>';
+}
+function renderOperatoriPickerEvento(e){return renderOperatoriCheckboxes(operatoriEvento(e),"ev_op_"+(e.local_id||e.id));}
+function getSelectedOperatoriEvento(key){return [...document.querySelectorAll(".ev_op_"+CSS.escape(key))].filter(x=>x.checked).map(x=>x.value);}
+function getSelectedOperatoriNuovoEvento(){return [...document.querySelectorAll(".new_ev_op")].filter(x=>x.checked).map(x=>x.value);}
+function renderOperatoriNuovoEvento(){const box=$("new_ev_operatori_box");if(box)box.innerHTML=renderOperatoriCheckboxes([],"new_ev_op");}
+function nomeOperatoreById(key){const o=operatori.find(x=>(x.local_id||x.id)===key);return o?o.nome||key:key;}
+function mostraNuovoOperatore(show=true){const box=$("formNuovoOperatore");if(box)box.classList.toggle("hidden",!show);}
+async function salvaOperatore(){
+  const row={local_id:uid(),nome:v("op_nome"),telefono:v("op_tel"),ruolo:v("op_ruolo"),note:v("op_note"),attivo:true};
+  if(!row.nome){playSound("error");alert("Inserisci il nome operatore.");return;}
+  if(online()){
+    const ins=await sb.from("operatori").insert(cleanForDb(row)).select().single();
+    if(ins.error){showSyncError(ins.error);return;}
+    operatori.unshift(ins.data);
+  }else{
+    row._pending=true;operatori.unshift(row);queue.push({type:"insert",table:"operatori",payload:{...row}});
+  }
+  ["op_nome","op_tel","op_ruolo","op_note"].forEach(id=>{if($(id))$(id).value=""});
+  saveCache();saveQueue();render();mostraNuovoOperatore(false);playSound("success");
+}
+function renderOperatori(){
+  const box=$("listaOperatori");if(!box)return;
+  box.innerHTML=operatori.length?operatori.map(o=>`<div class="operator-row"><h3>${escapeHtml(o.nome||"Operatore")}</h3><div class="muted">${escapeHtml(o.ruolo||"")} • ${escapeHtml(o.telefono||"")}</div><div>${escapeHtml(o.note||"")}</div></div>`).join(""):'<div class="notice">Nessun operatore salvato.</div>';
+}
+function mezziImpegnatiPeriodo(start,end,excludeEventoKey=""){
+  if(!start)return [];
+  const nomi=[];
+  eventi.filter(e=>(e.local_id||e.id)!==excludeEventoKey && rangeOverlap(start,end||start,e.data_evento,e.data_fine_evento||e.data_evento)).forEach(e=>{
+    const mezzi=e.mezzi_trasporto||[];
+    if(Array.isArray(mezzi))mezzi.forEach(m=>nomi.push({mezzo:m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo,evento:e.titolo||"Evento"}));
+    else if(e.mezzo_trasporto)nomi.push({mezzo:e.mezzo_trasporto,evento:e.titolo||"Evento"});
+  });
+  return nomi;
+}
+function warningMezziPreventivo(){
+  const box=$("mezziWarningBox");if(!box)return;
+  const start=$("p_data")?.value||null; const end=$("p_data_fine")?.value||start;
+  const current=typeof getMezziTrasporto==="function"?getMezziTrasporto():[];
+  if(!start || !current.length){box.innerHTML="";return;}
+  const busy=mezziImpegnatiPeriodo(start,end);
+  const conflicts=current.filter(m=>busy.find(b=>b.mezzo===(m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo)));
+  box.innerHTML=conflicts.length?`<div class="mezzo-warning">Attenzione: mezzo già impegnato nel periodo: ${escapeHtml(conflicts.map(m=>m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo).join(", "))}</div>`:'<div class="availability-ok">Mezzi disponibili nel periodo selezionato.</div>';
+}
+function clausoleContrattoDefault(){
+  return JSON.parse(localStorage.getItem("k38_clausole_contratto")||"null") || [
+    "Il cliente conferma dati, luogo, periodo e condizioni economiche indicate nel preventivo.",
+    "Eventuali ritardi, variazioni tecniche o richieste extra potranno comportare costi aggiuntivi.",
+    "Il cliente garantisce accesso, spazi adeguati e alimentazione elettrica idonea al servizio richiesto.",
+    "Danni causati da terzi, pubblico, incuria o condizioni non imputabili a Service K38 saranno a carico del cliente.",
+    "In caso di annullamento, eventuali acconti o costi gia sostenuti potranno essere trattenuti a copertura delle spese.",
+    "Materiali e personale sono soggetti a disponibilita fino a conferma definitiva."
+  ];
+}
+function salvaClausoleContratto(){
+  const txt=$("d_clausole")?.value||"";
+  const list=txt.split("\\n").map(x=>x.trim()).filter(Boolean);
+  localStorage.setItem("k38_clausole_contratto",JSON.stringify(list));
+  playSound("success");alert("Clausole contratto salvate.");
+}
+function initClausoleContratto(){
+  const el=$("d_clausole"); if(el)el.value=clausoleContrattoDefault().join("\\n");
+}
+
+
+function sommaPreventiviFiltro(fn){
+  return preventivi.filter(fn).reduce((s,p)=>s+Number(p.totale||0),0);
+}
+function preventiviMeseCorrente(){
+  return preventivi.filter(p=>dataNelMeseCorrente(p.data_evento));
+}
+function utileMese(){
+  return preventiviMeseCorrente().reduce((s,p)=>s+Number(p.utile_stimato||0),0);
+}
+function margineMese(){
+  const fatt=fatturatoMese();
+  if(!fatt)return 0;
+  return Math.round((utileMese()/fatt)*100);
+}
+function incassatoMese(){
+  return preventiviMeseCorrente().reduce((s,p)=>s+Number(p.importo_incassato||0),0);
+}
+function daRiscuotereMese(){
+  return preventiviMeseCorrente().reduce((s,p)=>s+Math.max(0,Number(p.totale||0)-Number(p.importo_incassato||0)),0);
+}
+function materialeDaManutentareCount(){
+  return materiali.filter(materialeDaManutenzione).length;
+}
+function eventiProssimi7Giorni(){
+  const today=new Date(todayISO()+"T00:00:00");
+  const end=addDays(today,7);
+  return eventi.filter(e=>{
+    const d=new Date((e.data_evento||"1900-01-01")+"T00:00:00");
+    return d>=today && d<=end;
+  });
+}
+function caricoOperativo7Giorni(){
+  const evs=eventiProssimi7Giorni();
+  const materiale=evs.reduce((s,e)=>s+materialiEvento(e).reduce((q,item)=>q+item.qty,0),0);
+  return {eventi:evs.length,materiale};
+}
+function renderDashboardPlus(){
+  const box=$("dashboardPlusBox");
+  if(!box)return;
+  const fatt=fatturatoMese();
+  const inc=incassatoMese();
+  const ris=daRiscuotereMese();
+  const pct=fatt?Math.round((inc/fatt)*100):0;
+  const carico=caricoOperativo7Giorni();
+  box.innerHTML=`<div class="dash-panel">
+    <b>Economia mese</b>
+    <div class="muted">Fatturato: ${euro(fatt)} • Incassato: ${euro(inc)} • Da riscuotere: ${euro(ris)} • Utile stimato: ${euro(utileMese())}</div>
+    <div class="dash-bar"><span style="width:${pct}%"></span></div>
+    <div class="muted">${pct}% incassato sul mese • Margine stimato: ${margineMese()}%</div>
+  </div>
+  <div class="dash-panel">
+    <b>Carico prossimi 7 giorni</b>
+    <div class="muted">Eventi: ${carico.eventi} • Materiali movimentati: ${carico.materiale}</div>
+  </div>
+  <div class="dash-panel">
+    <b>Controlli rapidi</b>
+    <div class="muted">Materiali da manutentare: ${materialeDaManutentareCount()} • Clienti salvati: ${clienti.length} • Operatori: ${operatori.length}</div>
+  </div>`;
+}
+function operatoriImpegnatiPeriodo(start,end,excludeEventoKey=""){
+  if(!start)return [];
+  const busy=[];
+  eventi.filter(e=>(e.local_id||e.id)!==excludeEventoKey && rangeOverlap(start,end||start,e.data_evento,e.data_fine_evento||e.data_evento)).forEach(e=>{
+    operatoriEvento(e).forEach(op=>busy.push({operatore:op,evento:e.titolo||"Evento"}));
+  });
+  return busy;
+}
+function warningOperatoriNuovoEvento(){
+  const box=$("new_ev_operatori_warning");
+  if(!box)return;
+  const start=$("new_ev_data")?.value||null;
+  const end=$("new_ev_data_fine")?.value||start;
+  const selected=getSelectedOperatoriNuovoEvento();
+  if(!start || !selected.length){box.innerHTML="";return;}
+  const busy=operatoriImpegnatiPeriodo(start,end);
+  const conflicts=selected.filter(op=>busy.find(b=>b.operatore===op));
+  box.innerHTML=conflicts.length?`<div class="operator-warning">Attenzione: operatori già impegnati nel periodo: ${escapeHtml(conflicts.map(nomeOperatoreById).join(", "))}</div>`:'<div class="operator-ok">Operatori disponibili nel periodo selezionato.</div>';
+}
+function renderRiepilogoEventoOperatoriMezzi(e){
+  const ops=operatoriEvento(e).map(nomeOperatoreById).join(", ")||"-";
+  const mezzi=descrizioneMezziPreventivo?descrizioneMezziPreventivo(e):nomeMezzoPreventivo(e);
+  return `<div class="muted">Operatori: ${escapeHtml(ops)}</div><div class="muted">Mezzi: ${escapeHtml(mezzi||"-")}</div>`;
+}
+
+function avvisiAutomatici(){
+  const today=todayISO();
+  const tomorrow=isoDate(addDays(new Date(today+"T00:00:00"),1));
+  const out=[];
+  eventi.filter(e=>e.data_evento===tomorrow).forEach(e=>out.push({level:"mid",title:"Evento domani",text:(e.titolo||"Evento")+" - "+(e.luogo||"-")}));
+  preventivi.filter(p=>!["Pagato","Annullato"].includes(p.stato_pagamento||"") && (p.data_evento||"")<today && Number(p.totale||0)>Number(p.importo_incassato||0)).forEach(p=>out.push({level:"high",title:"Pagamento scaduto",text:(p.numero_preventivo||"Preventivo")+" - "+(p.cliente||"-")+" - "+euro(Number(p.totale||0)-Number(p.importo_incassato||0))}));
+  materiali.filter(materialeDaManutenzione).forEach(m=>out.push({level:"mid",title:"Materiale da manutentare",text:(m.codice_inventario||"")+" "+(m.nome||"Materiale")+" - "+(m.stato||"")}));
+  eventi.forEach(e=>{
+    const ops=operatoriImpegnatiPeriodo(e.data_evento,e.data_fine_evento,e.local_id||e.id).filter(x=>operatoriEvento(e).includes(x.operatore));
+    if(ops.length)out.push({level:"high",title:"Operatore impegnato",text:(e.titolo||"Evento")+" - "+ops.map(x=>nomeOperatoreById(x.operatore)).join(", ")});
+    const mezzi=mezziImpegnatiPeriodo(e.data_evento,e.data_fine_evento,e.local_id||e.id);
+    if(mezzi.length && (e.mezzi_trasporto||[]).length)out.push({level:"mid",title:"Controllo mezzi",text:(e.titolo||"Evento")+" - verifica disponibilita mezzi"});
+  });
+  return out;
+}
+function renderAvvisi(){
+  const box=$("avvisiBox");if(!box)return;
+  const list=avvisiAutomatici();
+  box.innerHTML=list.length?list.map(a=>`<div class="alert-item alert-${a.level}"><b>${escapeHtml(a.title)}</b><div class="muted">${escapeHtml(a.text)}</div></div>`).join(""):'<div class="alert-item alert-ok"><b>Tutto pulito</b><div class="muted">Nessun avviso automatico in questo momento.</div></div>';
+}
+function materialePiuNoleggiato(){
+  const map={};
+  [...preventivi,...eventi].forEach(row=>normalizeMaterialSelection(row.materiali).forEach(item=>{map[item.id]=(map[item.id]||0)+item.qty;}));
+  return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);
+}
+function mesiMigliori(){
+  const map={};
+  preventivi.forEach(p=>{const k=String(p.data_evento||p.created_at||"").slice(0,7)||"Senza data";map[k]=(map[k]||0)+Number(p.totale||0);});
+  return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,6);
+}
+function eventiRedditizi(){
+  return [...preventivi].sort((a,b)=>Number(b.utile_stimato||0)-Number(a.utile_stimato||0)).slice(0,6);
+}
+function renderStatisticheAvanzate(){
+  const box=$("statisticheBox");if(!box)return;
+  const topMat=materialePiuNoleggiato().map(([id,q])=>`<div>${escapeHtml(nomeMaterialeById(id))}: <b>${q}</b></div>`).join("")||'<div class="muted">Nessun dato.</div>';
+  const topClienti=storicoClienti().slice(0,6).map(c=>`<div>${escapeHtml(c.cliente)}: <b>${euro(c.totale)}</b></div>`).join("")||'<div class="muted">Nessun dato.</div>';
+  const mesi=mesiMigliori().map(([m,v])=>`<div>${escapeHtml(m)}: <b>${euro(v)}</b></div>`).join("")||'<div class="muted">Nessun dato.</div>';
+  const redd=eventiRedditizi().map(p=>`<div>${escapeHtml(p.numero_preventivo||p.evento||"Preventivo")}: <b>${euro(p.utile_stimato||0)}</b> (${p.margine_percentuale||0}%)</div>`).join("")||'<div class="muted">Nessun dato.</div>';
+  const fatt=preventivi.reduce((s,p)=>s+Number(p.totale||0),0);
+  const marg=fatt?Math.round(preventivi.reduce((s,p)=>s+Number(p.utile_stimato||0),0)/fatt*100):0;
+  box.innerHTML=`<div class="stat-panel"><h3>Materiale piu noleggiato</h3>${topMat}</div><div class="stat-panel"><h3>Clienti migliori</h3>${topClienti}</div><div class="stat-panel"><h3>Mesi migliori</h3>${mesi}</div><div class="stat-panel"><h3>Eventi piu redditizi</h3>${redd}</div><div class="stat-panel"><h3>Margine medio</h3><div class="stat">${marg}%</div></div>`;
+}
+function renderManutenzioniStorico(){
+  const box=$("manutenzioniStoricoBox");if(!box)return;
+  const rows=[];
+  materiali.forEach(m=>manutenzioniMateriale(m).forEach(r=>rows.push({...r,materiale:m.nome,codice:m.codice_inventario})));
+  rows.sort((a,b)=>String(b.data||"").localeCompare(String(a.data||"")));
+  box.innerHTML=rows.length?rows.map(r=>`<div class="stat-panel"><b>${escapeHtml(r.data||"-")} - ${escapeHtml(r.materiale||"Materiale")}</b><div class="muted">${escapeHtml(r.tecnico||"-")} - ${euro(r.costo||0)}</div><div>${escapeHtml(r.note||"")}</div><div class="muted">Ricambi: ${escapeHtml(r.ricambi||"-")}</div></div>`).join(""):'<div class="notice">Nessuna manutenzione registrata.</div>';
+}
+function documentiArchivio(){return safeJsonParse(localStorage.getItem("k38_documenti"),[],"archivio documenti")}
+function saveDocumentiArchivio(list){storageSet("k38_documenti",JSON.stringify(list),"archivio documenti")}
+async function salvaDocumentoArchivio(){
+  if(!guard("event_update","archivia documento"))return;
+  const file=$("doc_file")?.files?.[0];
+  if(!file){alert("Seleziona un file.");return;}
+  const data=await fileToRawDataURL(file);
+  const row={id:uid(),tipo:v("doc_tipo"),ref:v("doc_ref"),note:v("doc_note"),nome:file.name,size:file.size,data_url:data,creato_il:new Date().toISOString()};
+  const list=[row,...documentiArchivio()];
+  saveDocumentiArchivio(list);
+  logAttivita("Documento archiviato: "+file.name);
+  renderArchivioDocumenti();
+}
+function eliminaDocumentoArchivio(id){
+  if(!guard("delete","elimina documento"))return;
+  saveDocumentiArchivio(documentiArchivio().filter(d=>d.id!==id));
+  renderArchivioDocumenti();
+}
+function renderArchivioDocumenti(){
+  const box=$("documentiBox");if(!box)return;
+  const list=documentiArchivio();
+  box.innerHTML=list.length?list.map(d=>`<div class="doc-row"><b>${escapeHtml(d.tipo)} - ${escapeHtml(d.nome)}</b><div class="muted">${escapeHtml(d.ref||"-")} - ${escapeHtml(d.note||"")}</div><div class="actions"><a class="buttonlike" href="${d.data_url}" download="${escapeHtml(d.nome)}">Scarica</a><button class="danger" onclick="eliminaDocumentoArchivio('${d.id}')">Elimina</button></div></div>`).join(""):'<div class="notice">Nessun documento archiviato.</div>';
+}
+
+function logAttivita(testo){
+  const logs=JSON.parse(localStorage.getItem("k38_log_attivita")||"[]");
+  logs.unshift({data:new Date().toISOString(),testo});
+  localStorage.setItem("k38_log_attivita",JSON.stringify(logs.slice(0,120)));
+}
+function renderRegistroAttivita(){
+  const box=$("registroAttivitaBox"); if(!box)return;
+  const logs=JSON.parse(localStorage.getItem("k38_log_attivita")||"[]");
+  box.innerHTML=logs.length?logs.slice(0,40).map(l=>`<div class="log-row"><b>${new Date(l.data).toLocaleString("it-IT")}</b><br>${escapeHtml(l.testo)}</div>`).join(""):'<div class="muted">Nessuna attività registrata.</div>';
+}
+function pulisciRegistroAttivita(){
+  if(!confirm("Vuoi pulire il registro attività locale?"))return;
+  localStorage.removeItem("k38_log_attivita");
+  renderRegistroAttivita();
+}
+function backupCompletoObj(){
+  return {
+    versione:"Service K38 Backup",
+    creato_il:new Date().toISOString(),
+    materiali,preventivi,eventi,impegni,clienti,operatori,utenti,
+    datiPDF,
+    queue,
+    localStorage:{
+      clausole:localStorage.getItem("k38_clausole_contratto")||"",
+      log:localStorage.getItem("k38_log_attivita")||"[]",
+      documenti:localStorage.getItem("k38_documenti")||"[]"
+    }
+  };
+}
+function downloadText(filename,text,type="text/plain"){
+  const blob=new Blob([text],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+  URL.revokeObjectURL(url);
+}
+function scaricaBackupCompleto(){
+  if(!guard("backup","scarica backup"))return;
+  const data=backupCompletoObj();
+  downloadText("backup-service-k38-"+todayISO()+".json",JSON.stringify(data,null,2),"application/json");
+  logAttivita("Backup completo scaricato");
+  renderRegistroAttivita();
+}
+async function importaBackupCompleto(file){
+  if(!file)return;
+  if(!guard("backup","importa backup"))return;
+  if(!confirm("ATTENZIONE: importare un backup sostituirà i dati locali di questo dispositivo. Procedere?"))return;
+  const text=await file.text();
+  let data;
+  try{data=JSON.parse(text)}catch(e){alert("File JSON non valido.");return;}
+  materiali=data.materiali||[];
+  preventivi=data.preventivi||[];
+  eventi=data.eventi||[];
+  impegni=data.impegni||[];
+  clienti=data.clienti||[];
+  operatori=data.operatori||[];
+  utenti=data.utenti||[];
+  datiPDF=data.datiPDF||datiPDF;
+  queue=data.queue||[];
+  if(data.localStorage?.clausole)localStorage.setItem("k38_clausole_contratto",data.localStorage.clausole);
+  if(data.localStorage?.log)localStorage.setItem("k38_log_attivita",data.localStorage.log);
+  if(data.localStorage?.documenti)localStorage.setItem("k38_documenti",data.localStorage.documenti);
+  saveCache();saveQueue();
+  localStorage.setItem("k38_dati_pdf",JSON.stringify(datiPDF));
+  logAttivita("Backup importato localmente");
+  render();
+  alert("Backup importato localmente. Premi Sincronizza ora per mandare eventuali dati online.");
+}
+function csvEscape(v){
+  const s=String(v??"");
+  if(/[",;\n]/.test(s))return '"'+s.replace(/"/g,'""')+'"';
+  return s;
+}
+function toCSV(rows){
+  if(!rows.length)return "";
+  const keys=[...new Set(rows.flatMap(r=>Object.keys(r)))];
+  return keys.join(";")+"\\n"+rows.map(r=>keys.map(k=>csvEscape(typeof r[k]==="object"?JSON.stringify(r[k]):r[k])).join(";")).join("\\n");
+}
+function scaricaCSV(tipo){
+  const map={materiali,preventivi,eventi,clienti};
+  const rows=map[tipo]||[];
+  downloadText("service-k38-"+tipo+"-"+todayISO()+".csv",toCSV(rows),"text/csv;charset=utf-8");
+  logAttivita("Export CSV "+tipo+" scaricato");
+  renderRegistroAttivita();
+}
+
 function render(){
+renderDashboardPlus();warningOperatoriNuovoEvento();
+renderOperatori();renderOperatoriNuovoEvento();warningMezziPreventivo();
 if($("p_materiali_picker")) {renderPreventivoMaterialPicker(getSelectedPreventivoMateriali());aggiornaTotaleMaterialiPreventivo();}
 $("queueCount").textContent=queue.length;$("statMateriali").textContent=materiali.length;if($("statManutenzioni"))$("statManutenzioni").textContent=materiali.filter(materialeDaManutenzione).length;$("statPreventivi").textContent=preventivi.length;$("statEventi").textContent=eventi.length;if($("statEventiMese"))$("statEventiMese").textContent=eventiMese();$("statValore").textContent=euro(materiali.reduce((s,m)=>s+Number(m.quantita||0)*Number(m.prezzo_listino||0),0));if($("statFatturatoMese"))$("statFatturatoMese").textContent=euro(fatturatoMese());if($("statIncassatoAnno"))$("statIncassatoAnno").textContent=euro(incassatoAnno());if($("statDaRiscuotere"))$("statDaRiscuotere").textContent=euro(daRiscuotereTotale());
 let search=(v("searchMateriale")||"").toLowerCase();
@@ -1012,27 +1982,16 @@ $("listaPreventivi").innerHTML=
   `<div class="archive-box"><h3>Archivio preventivi</h3>`+
   (preventiviArchivio.length?preventiviArchivio.map(renderPreventivoCard).join(""):`<div class="muted">Nessun preventivo archiviato.</div>`)+
   `</div>`;
-const grouped={};
-eventi.forEach(e=>{
-  const d=e.data_evento||"Senza data";
-  if(!grouped[d]) grouped[d]=[];
-  grouped[d].push(e);
-});
-const days=Object.keys(grouped).sort();
-$("listaCalendario").innerHTML = days.length ? '<div class="calendar-list">' + days.map(day=>{
-  const list=grouped[day];
-  const label=day==="Senza data" ? "Senza data" : new Date(day+"T00:00:00").toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
-  return '<div>' +
-    '<div class="calendar-day-row" onclick="toggleDayDetail(\'' + escapeAttr(day) + '\')">' +
-      '<div><b>' + escapeHtml(label) + '</b><div class="muted">' + list.length + ' impegno/i</div></div>' +
-      '<div>' + list.map(e=>'<span class="badge">' + escapeHtml(e.stato||"Evento") + '</span>').join("") + '</div>' +
-    '</div>' +
-    '<div id="day_' + safeId(day) + '" class="calendar-detail hidden">' + list.map(e=>renderEventoCompatto(e)).join("") + '</div>' +
-  '</div>';
-}).join("") + '</div>' : '<div class="notice">Nessun impegno presente. Premi Aggiungi impegno.</div>';
+renderCalendarioEvoluto();
+renderProssimiEventi();
+renderModalitaCarico();
+renderClientiDatabase();
+renderAvvisi();
+renderStatisticheAvanzate();
+renderManutenzioniStorico();
+renderArchivioDocumenti();
 $("listaEventiCompleta").innerHTML = eventi.length ? eventi.map(e=>renderEventoCompatto(e)).join("") : '<div class="notice">Nessun evento presente.</div>';
-renderStoricoClienti();
-$("listaUtenti").innerHTML=utenti.map(u=>`<div class="item ${u.blocked?'blocked':''}"><div class="item-head"><div><b>${u.username||"-"}</b><div class="muted">${u.email}</div><span class="status">${u.role}</span><div class="muted">Ultimo accesso: ${u.last_login||"-"}</div></div>${u.id!==user.id?`<button class="${u.blocked?'green':'danger'}" onclick="toggleUser('${u.id}',${!u.blocked})">${u.blocked?'Sblocca':'Blocca'}</button>`:""}</div></div>`).join("");
+$("listaUtenti").innerHTML=utenti.map(u=>`<div class="item ${u.blocked?'blocked':''}"><div class="item-head"><div><b>${u.username||"-"}</b><div class="muted">${u.email}</div><span class="status">${roleLabel(u.role)}</span><div class="muted">Ultimo accesso: ${u.last_login||"-"}</div><label>Ruolo<select onchange="setUserRole('${u.id}',this.value)" ${u.id===user.id?"disabled":""}><option value="admin" ${u.role==="admin"?"selected":""}>Admin</option><option value="tecnico" ${u.role==="tecnico"?"selected":""}>Tecnico</option><option value="collaboratore" ${(u.role==="collaboratore"||u.role==="user")?"selected":""}>Collaboratore</option><option value="viewer" ${u.role==="viewer"?"selected":""}>Solo visualizzazione</option></select></label></div>${u.id!==user.id?`<button class="${u.blocked?'green':'danger'}" onclick="toggleUser('${u.id}',${!u.blocked})">${u.blocked?'Sblocca':'Blocca'}</button>`:""}</div></div>`).join("");
 }
 function fileToDataURL(file){
   return new Promise((res,rej)=>{
@@ -1057,7 +2016,16 @@ function fileToDataURL(file){
     reader.readAsDataURL(file);
   });
 }
+function fileToRawDataURL(file){
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=()=>res(reader.result);
+    reader.onerror=rej;
+    reader.readAsDataURL(file);
+  });
+}
 async function salvaMateriale(){
+  if(!guard("event_update","salva materiale"))return;
   msg("m_msg","salvataggio...");
   let foto_url="";
   let foto_data="";
@@ -1103,7 +2071,7 @@ async function salvaMateriale(){
     saveCache();
     render();
     playSound("success");
-    msg("m_msg","materiale salvato online");
+    msg("m_msg","materiale salvato online");logAttivita("Materiale salvato: "+row.nome);
     return;
   }
 
@@ -1114,9 +2082,49 @@ async function salvaMateriale(){
   saveQueue();
   msg("m_msg","salvato offline");
 }
+function getPeriodoPreventivoCorrente(){
+  const start=$("p_data")?.value||null;
+  const end=$("p_data_fine")?.value||start;
+  return {start,end};
+}
+function eventiSovrappostiPeriodo(start,end){
+  if(!start)return [];
+  return eventi.filter(e=>rangeOverlap(start,end||start,e.data_evento,e.data_fine_evento||e.data_evento));
+}
+function disponibilitaMaterialePeriodo(materialeKey,start,end,excludeEventoKey=""){
+  const m=materiali.find(x=>(x.local_id||x.id)===materialeKey);
+  if(!m)return {totale:0,impegnati:0,disponibili:0,eventi:[]};
+  const totale=Number(m.quantita||1);
+  const evs=eventiSovrappostiPeriodo(start,end).filter(e=>(e.local_id||e.id)!==excludeEventoKey);
+  const occupanti=evs.filter(e=>materialSelectionQty(e.materiali,materialeKey)>0);
+  const impegnati=evs.reduce((s,e)=>s+materialSelectionQty(e.materiali,materialeKey),0);
+  return {totale,impegnati,disponibili:Math.max(0,totale-impegnati),eventi:occupanti};
+}
+function messaggioDisponibilitaMateriale(m){
+  const key=m.local_id||m.id;
+  const periodo=getPeriodoPreventivoCorrente();
+  if(!periodo.start)return {classe:"availability-mid",testo:"Seleziona data inizio/fine per controllo disponibilità."};
+  const d=disponibilitaMaterialePeriodo(key,periodo.start,periodo.end);
+  if(statoMaterialeCritico(m)==="bloccato")return {classe:"availability-bad",testo:"Fuori servizio: non selezionabile."};
+  if(d.disponibili<=0)return {classe:"availability-bad",testo:"Non disponibile nel periodo selezionato. Già impegnato in: "+d.eventi.map(e=>e.titolo||"Evento").join(", ")};
+  if(d.impegnati>0)return {classe:"availability-mid",testo:"Disponibilità parziale: "+d.disponibili+" disponibili su "+d.totale};
+  return {classe:"availability-ok",testo:"Disponibile nel periodo selezionato: "+d.disponibili+" su "+d.totale};
+}
+function materialiNonDisponibiliPreventivo(){
+  const periodo=getPeriodoPreventivoCorrente();
+  if(!periodo.start)return [];
+  return getSelectedPreventivoMateriali()
+    .map(item=>({item,materiale:materiali.find(m=>(m.local_id||m.id)===item.id)}))
+    .filter(x=>x.materiale)
+    .filter(({item,materiale:m})=>{
+      const d=disponibilitaMaterialePeriodo(m.local_id||m.id,periodo.start,periodo.end);
+      return d.disponibili<item.qty || statoMaterialeCritico(m)==="bloccato";
+    });
+}
 function renderPreventivoMaterialPicker(selected=[]){
   const box=$("p_materiali_picker");
   if(!box)return;
+  const selectedMap=Object.fromEntries(normalizeMaterialSelection(selected).map(item=>[item.id,item.qty]));
   if(!materiali.length){
     box.innerHTML='<div class="muted">Nessun materiale inventariato.</div>';
     return;
@@ -1125,36 +2133,49 @@ function renderPreventivoMaterialPicker(selected=[]){
     const key=m.local_id||m.id;
     const label=((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Materiale"));
     const sub=(m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:"");
+    const d=disponibilitaMaterialePeriodo(key,getPeriodoPreventivoCorrente().start,getPeriodoPreventivoCorrente().end);
+    const maxQty=Math.max(1,Number(m.quantita||1));
+    const selectedQty=selectedMap[key]||1;
     return `<label class="quote-material-pick">
-      <input type="checkbox" class="p_mat" value="${escapeHtml(key)}" onchange="aggiornaTotaleMaterialiPreventivo()" ${selected.includes(key)?"checked":""}>
-      ${escapeHtml(label)}
+      <div class="material-qty-row">
+        <input type="checkbox" class="p_mat" value="${escapeHtml(key)}" onchange="aggiornaTotaleMaterialiPreventivo()" ${selectedMap[key]?"checked":""}>
+        <span>${escapeHtml(label)}</span>
+        <input type="number" class="p_mat_qty" data-material="${escapeHtml(key)}" min="1" max="${maxQty}" value="${selectedQty}" onchange="aggiornaTotaleMaterialiPreventivo()" oninput="aggiornaTotaleMaterialiPreventivo()">
+      </div>
       <div class="muted">${escapeHtml(sub)}</div>
+      <span class="qty-badge">Disponibili periodo: ${d.disponibili}/${d.totale}</span>
     </label>`;
   }).join("");
 }
 function materialiBloccatiPreventivo(){
   return getSelectedPreventivoMateriali()
-    .map(k=>materiali.find(m=>(m.local_id||m.id)===k))
+    .map(item=>materiali.find(m=>(m.local_id||m.id)===item.id))
     .filter(m=>m && statoMaterialeCritico(m)==="bloccato");
 }
 function getSelectedPreventivoMateriali(){
-  return [...document.querySelectorAll(".p_mat")].filter(x=>x.checked).map(x=>x.value);
+  return [...document.querySelectorAll(".p_mat")].filter(x=>x.checked).map(x=>{
+    const qtyInput=document.querySelector(`.p_mat_qty[data-material="${CSS.escape(x.value)}"]`);
+    return {id:x.value,qty:Math.max(1,Math.round(Number(qtyInput?.value||1)))};
+  });
 }
 function materialiPreventivoConDettaglio(keys=[]){
-  return keys.map(k=>materiali.find(m=>(m.local_id||m.id)===k)).filter(Boolean);
+  return normalizeMaterialSelection(keys).map(item=>{
+    const m=materiali.find(x=>(x.local_id||x.id)===item.id);
+    return m?{...m,quantita_richiesta:item.qty,_selection:item}:null;
+  }).filter(Boolean);
 }
 function valoreCaricoAcquisto(keys=[]){
-  return materialiPreventivoConDettaglio(keys).reduce((s,m)=>s+(Number(m.prezzo_reale||m.prezzo_listino||0)*Number(m.quantita||1)),0);
+  return materialiPreventivoConDettaglio(keys).reduce((s,m)=>s+(Number(m.prezzo_reale||m.prezzo_listino||0)*Number(m.quantita_richiesta||1)),0);
 }
 function totaleMaterialiPreventivo(keys=[]){
-  return materialiPreventivoConDettaglio(keys).reduce((s,m)=>s+Number(m.prezzo_noleggio||0),0);
+  return materialiPreventivoConDettaglio(keys).reduce((s,m)=>s+Number(m.prezzo_noleggio||0)*Number(m.quantita_richiesta||1),0);
 }
 function totaliMaterialiPerCategoria(keys=[]){
   const out={};
   materialiPreventivoConDettaglio(keys).forEach(m=>{
     const cat=m.categoria||"Altro";
     if(!out[cat])out[cat]={totale:0,items:[]};
-    out[cat].totale+=Number(m.prezzo_noleggio||0);
+    out[cat].totale+=Number(m.prezzo_noleggio||0)*Number(m.quantita_richiesta||1);
     out[cat].items.push(m);
   });
   return out;
@@ -1165,17 +2186,30 @@ function aggiornaTotaleMaterialiPreventivo(){
   aggiornaTotale();
 }
 function materialiPreventivoNomi(keys=[]){
-  return keys.map(k=>nomeMaterialeById(k)).filter(Boolean);
+  return normalizeMaterialSelection(keys).map(nomeMaterialeConQuantita).filter(Boolean);
 }
-function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,data_fine_evento:v("p_data_fine")||v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),mezzi_trasporto:getMezziTrasporto(),mezzo_trasporto:(getMezziTrasporto()[0]?.mezzo||""),mezzo_custom:(getMezziTrasporto()[0]?.custom||""),km_trasporto:(getMezziTrasporto()[0]?.km||0),costo_km:(getMezziTrasporto()[0]?.costo_km||0),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),firma_cliente:firmaClienteData||null,firmato:!!firmaClienteData,accettato:false};o.totale=totaleP(o);return o}
-function aggiornaTotale(){$("totalePreventivo").textContent=euro(datiPreventivo().totale)}
+function datiPreventivo(){let o={local_id:uid(),numero_preventivo:progressivoPreventivo(),numero_contratto:progressivoContratto(),cliente:v("p_cliente"),evento:v("p_evento"),data_evento:v("p_data")||null,data_fine_evento:v("p_data_fine")||v("p_data")||null,luogo:v("p_luogo"),referente:v("p_referente"),telefono_referente:v("p_telefono"),audio:n("p_audio"),luci:n("p_luci"),video:n("p_video"),trasporto:n("p_trasporto"),mezzi_trasporto:getMezziTrasporto(),mezzo_trasporto:(getMezziTrasporto()[0]?.mezzo||""),mezzo_custom:(getMezziTrasporto()[0]?.custom||""),km_trasporto:(getMezziTrasporto()[0]?.km||0),costo_km:(getMezziTrasporto()[0]?.costo_km||0),ore_tecnico:n("p_ore"),tariffa_tecnico:n("p_tariffa"),montaggio:n("p_montaggio"),sconto:n("p_sconto"),iva:n("p_iva"),note:v("p_note"),costo_personale:n("p_costo_personale"),costo_noleggi_esterni:n("p_costo_noleggi"),costo_extra:n("p_costo_extra"),costo_altro:n("p_costo_altro"),stato_pagamento:v("p_stato_pagamento"),importo_incassato:n("p_incassato"),data_pagamento:v("p_data_pagamento")||null,archiviato:false,materiali:getSelectedPreventivoMateriali(),firma_cliente:firmaClienteData||null,firmato:!!firmaClienteData,accettato:false};o.totale=totaleP(o);o.utile_stimato=utilePreventivoVal(o);o.margine_percentuale=marginePreventivoVal(o);return o}
+function aggiornaTotale(){
+  const q=datiPreventivo();
+  $("totalePreventivo").textContent=euro(q.totale);
+  if($("utilePreventivo"))$("utilePreventivo").textContent=euro(q.utile_stimato);
+  if($("marginePreventivo")){
+    $("marginePreventivo").textContent=q.margine_percentuale+"%";
+    $("marginePreventivo").className=classMargine(q.margine_percentuale);
+  }
+}
 async function salvaPreventivo(){
+  if(!guard("event_update","salva preventivo"))return;
   const row=datiPreventivo();
   if(row.firmato && row.stato_pagamento==="Da saldare") row.stato_pagamento="Firmato";
+  const nonDisp=materialiNonDisponibiliPreventivo();
+  if(nonDisp.length){playSound("error");alert("Materiale non disponibile nelle quantità richieste: "+nonDisp.map(x=>(x.materiale?.nome||"Materiale")+" richiesto x"+x.item.qty).join(", "));return;}
   const bloccati=materialiBloccatiPreventivo();
   if(bloccati.length){playSound("error");alert("Hai selezionato materiale fuori servizio: "+bloccati.map(m=>m.nome).join(", "));return;}
   if(!row.cliente && !row.evento){ playSound("error"); alert("Inserisci almeno cliente o evento prima di salvare il preventivo."); return; }
   if(!confirmPastDate(row.data_evento)) return;
+  const operatoriConflitto=getSelectedOperatoriNuovoEvento().filter(op=>operatoriImpegnatiPeriodo(row.data_evento,row.data_fine_evento).find(b=>b.operatore===op));
+  if(operatoriConflitto.length && !confirm("ATTENZIONE: alcuni operatori risultano già impegnati: "+operatoriConflitto.map(nomeOperatoreById).join(", ")+". Vuoi continuare comunque?")) return;
 
   if(online()){
     const ins=await sb.from("preventivi").insert(cleanForDb(row)).select().single();
@@ -1184,7 +2218,7 @@ async function salvaPreventivo(){
     saveCache();
     render();
     playSound("success");
-    msg("p_msg","preventivo salvato online");
+    msg("p_msg","preventivo salvato online");logAttivita("Preventivo salvato: "+(row.cliente||row.evento||"senza nome"));
     return;
   }
 
@@ -1198,6 +2232,7 @@ async function salvaPreventivo(){
 }
 function oggiISO(){return new Date().toISOString().slice(0,10)}
 async function togglePagamentoRiscosso(key,checked){
+  if(!guard("finance","modifica pagamento"))return;
   let p=preventivi.find(x=>(x.local_id||x.id)===key);
   if(!p)return;
   const payload=checked
@@ -1215,6 +2250,7 @@ async function togglePagamentoRiscosso(key,checked){
   saveCache();saveQueue();
 }
 async function toggleArchivioPreventivo(key,checked){
+  if(!guard("event_update","archivia preventivo"))return;
   let p=preventivi.find(x=>(x.local_id||x.id)===key);
   if(!p)return;
   p.archiviato=checked;
@@ -1230,6 +2266,7 @@ async function toggleArchivioPreventivo(key,checked){
   saveCache();saveQueue();
 }
 async function toggleAccettato(key,checked){
+  if(!guard("event_update","accetta preventivo"))return;
   let p=preventivi.find(x=>(x.local_id||x.id)===key);
   if(!p)return;
 
@@ -1259,12 +2296,12 @@ async function toggleAccettato(key,checked){
         stato:"Confermato",
         preventivo_id:p.id,
         note:p.note,
-        totale:p.totale,
+        totale:p.totale,costo_personale:p.costo_personale||0,costo_noleggi_esterni:p.costo_noleggi_esterni||0,costo_extra:p.costo_extra||0,costo_altro:p.costo_altro||0,utile_stimato:p.utile_stimato||0,margine_percentuale:p.margine_percentuale||0,
         stato_pagamento:p.stato_pagamento||"Da saldare",
         importo_incassato:p.importo_incassato||0,
         data_pagamento:p.data_pagamento||null,
         materiali:p.materiali||[],
-        checklist:p.checklist||{}
+        checklist:p.checklist||{},operatori:p.operatori||[]
       };
       const ins=await sb.from("eventi").insert(ev).select().single();
       if(ins.error){ playSound("error"); alert(ins.error.message); render(); return; }
@@ -1280,7 +2317,7 @@ async function toggleAccettato(key,checked){
   }
 
   if(checked){
-    let ev={local_id:uid(),titolo:p.evento||"Evento da preventivo",numero_preventivo:p.numero_preventivo||"",cliente:p.cliente,referente:p.referente||"",tecnico:p.referente||"",telefono_referente:p.telefono_referente||"",mezzi_trasporto:p.mezzi_trasporto||[],mezzo_trasporto:p.mezzo_trasporto||"",mezzo_custom:p.mezzo_custom||"",km_trasporto:p.km_trasporto||0,costo_km:p.costo_km||0,data_evento:p.data_evento,data_fine_evento:p.data_fine_evento||p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,stato_pagamento:p.stato_pagamento||"Da saldare",importo_incassato:p.importo_incassato||0,data_pagamento:p.data_pagamento||null,materiali:p.materiali||[],checklist:p.checklist||{},_pending:true};
+    let ev={local_id:uid(),numero_evento:progressivoEvento(),titolo:p.evento||"Evento da preventivo",numero_preventivo:p.numero_preventivo||"",cliente:p.cliente,referente:p.referente||"",tecnico:p.referente||"",telefono_referente:p.telefono_referente||"",mezzi_trasporto:p.mezzi_trasporto||[],mezzo_trasporto:p.mezzo_trasporto||"",mezzo_custom:p.mezzo_custom||"",km_trasporto:p.km_trasporto||0,costo_km:p.costo_km||0,data_evento:p.data_evento,data_fine_evento:p.data_fine_evento||p.data_evento,luogo:p.luogo,stato:"Confermato",preventivo_id:p.id||null,note:p.note,totale:p.totale,costo_personale:p.costo_personale||0,costo_noleggi_esterni:p.costo_noleggi_esterni||0,costo_extra:p.costo_extra||0,costo_altro:p.costo_altro||0,utile_stimato:p.utile_stimato||0,margine_percentuale:p.margine_percentuale||0,stato_pagamento:p.stato_pagamento||"Da saldare",importo_incassato:p.importo_incassato||0,data_pagamento:p.data_pagamento||null,materiali:p.materiali||[],checklist:p.checklist||{},operatori:p.operatori||[],_pending:true};
     eventi.push(ev);
     p.evento_id=ev.local_id;
     queue.push({type:"insert",table:"eventi",payload:{...ev}});
@@ -1345,6 +2382,7 @@ async function syncNow(){
       }
     }catch(e){
       console.error("Errore elemento sync", item, e);
+      recordSyncError(e,item);
       newQueue.push(item);
     }
   }
@@ -1354,6 +2392,10 @@ async function syncNow(){
   queue=newQueue;
   saveQueue();
   if(queue.length===0){
+    lastSyncAt=new Date().toISOString();
+    localStorage.setItem("k38_last_sync_at",lastSyncAt);
+    clearSyncError();
+    logAttivita("Sincronizzazione completata");
     await caricaTutto();
   }else{
     saveCache();
@@ -1362,6 +2404,7 @@ async function syncNow(){
   updateNet();
 }
 function eliminaLocaleMateriale(key){
+  if(!guard("delete","elimina materiale"))return;
   if(!confirm("Vuoi davvero eliminare questo materiale?")) return;
   let item=materiali.find(x=>(x.local_id||x.id)===key);
   materiali=materiali.filter(x=>(x.local_id||x.id)!==key);
@@ -1371,6 +2414,7 @@ function eliminaLocaleMateriale(key){
   if(online())syncNow();
 }
 function eliminaLocalePreventivo(key){
+  if(!guard("delete","elimina preventivo"))return;
   if(!confirm("Vuoi davvero eliminare questo preventivo?")) return;
   let item=preventivi.find(x=>(x.local_id||x.id)===key);
   preventivi=preventivi.filter(x=>(x.local_id||x.id)!==key);
@@ -1380,6 +2424,7 @@ function eliminaLocalePreventivo(key){
   if(online())syncNow();
 }
 function eliminaLocaleEvento(key){
+  if(!guard("delete","elimina evento"))return;
   if(!confirm("Vuoi davvero eliminare questo impegno dal calendario?")) return;
   let item=eventi.find(x=>(x.local_id||x.id)===key);
   eventi=eventi.filter(x=>(x.local_id||x.id)!==key);
@@ -1406,6 +2451,22 @@ function parseJsonField(value, fallback){
   if(typeof value === "object") return value;
   try{return JSON.parse(value)}catch(e){return fallback}
 }
+function materialItemKey(item){
+  return typeof item==="string" ? item : (item?.id || item?.key || item?.materiale || "");
+}
+function materialItemQty(item){
+  const qty=typeof item==="string" ? 1 : Number(item?.qty ?? item?.quantita ?? 1);
+  return Math.max(1, Math.round(qty || 1));
+}
+function normalizeMaterialSelection(value){
+  return parseJsonField(value,[]).map(item=>({id:materialItemKey(item),qty:materialItemQty(item)})).filter(item=>item.id);
+}
+function materialSelectionQty(value,key){
+  return normalizeMaterialSelection(value).filter(item=>item.id===key).reduce((s,item)=>s+item.qty,0);
+}
+function materialSelectionKeys(value){
+  return normalizeMaterialSelection(value).map(item=>item.id);
+}
 function checklistEvento(e){
   const c=parseJsonField(e.checklist,{});
   return {
@@ -1413,15 +2474,48 @@ function checklistEvento(e){
     montato:!!c.montato,
     testato:!!c.testato,
     smontato:!!c.smontato,
-    rientrato:!!c.rientrato
+    rientrato:!!c.rientrato,
+    materiali:c.materiali||{}
   };
 }
+function renderChecklistAvanzataEvento(e){
+  const key=e.local_id||e.id;
+  const c=checklistEvento(e);
+  const mats=materialiEvento(e);
+  if(!mats.length)return '<div class="muted">Seleziona materiali e salva per usare la checklist avanzata.</div>';
+  return '<div class="checklist">'+mats.map(item=>{
+    const mid=item.id;
+    const row=c.materiali[mid]||{};
+    return '<div class="checkitem"><b>'+escapeHtml(nomeMaterialeConQuantita(item))+'</b>'+
+      '<label><input type="checkbox" class="chk_mancante_'+key+'" data-material="'+escapeHtml(mid)+'" '+(row.mancante?'checked':'')+'> Mancante</label>'+
+      '<label><input type="checkbox" class="chk_rotto_'+key+'" data-material="'+escapeHtml(mid)+'" '+(row.rotto?'checked':'')+'> Rotto</label>'+
+      '<label><input type="checkbox" class="chk_verificare_'+key+'" data-material="'+escapeHtml(mid)+'" '+(row.verificare?'checked':'')+'> Da verificare</label>'+
+      '<label>Note rapide<input class="chk_note_'+key+'" data-material="'+escapeHtml(mid)+'" value="'+escapeHtml(row.note||'')+'"></label>'+
+    '</div>';
+  }).join("")+'</div>';
+}
+function getChecklistAvanzataEvento(key){
+  const materialiChecklist={};
+  document.querySelectorAll(".chk_note_"+CSS.escape(key)).forEach(input=>{
+    const mid=input.dataset.material;
+    materialiChecklist[mid]={
+      mancante:document.querySelector(`.chk_mancante_${CSS.escape(key)}[data-material="${CSS.escape(mid)}"]`)?.checked||false,
+      rotto:document.querySelector(`.chk_rotto_${CSS.escape(key)}[data-material="${CSS.escape(mid)}"]`)?.checked||false,
+      verificare:document.querySelector(`.chk_verificare_${CSS.escape(key)}[data-material="${CSS.escape(mid)}"]`)?.checked||false,
+      note:input.value||""
+    };
+  });
+  return {materiali:materialiChecklist};
+}
 function materialiEvento(e){
-  return parseJsonField(e.materiali,[]);
+  return normalizeMaterialSelection(e.materiali);
 }
 function nomeMaterialeById(key){
   const m=materiali.find(x=>(x.local_id||x.id)===key);
   return m ? `${m.codice_inventario||""} ${m.nome||""}`.trim() : key;
+}
+function nomeMaterialeConQuantita(item){
+  return nomeMaterialeById(materialItemKey(item))+" x"+materialItemQty(item);
 }
 function rangeOverlap(a1,a2,b1,b2){
   if(!a1 || !b1)return false;
@@ -1438,11 +2532,11 @@ function conflittoTecnico(data, tecnico, excludeKey="", dataFine=null){
 }
 function conflittiMateriale(data, selectedKeys, excludeKey="", dataFine=null){
   if(!data || !selectedKeys?.length) return [];
+  const selected=normalizeMaterialSelection(selectedKeys);
   const conflicts=[];
   eventiStessaData(data,excludeKey,dataFine).forEach(ev=>{
-    const mats=materialiEvento(ev);
-    selectedKeys.forEach(k=>{
-      if(mats.includes(k)) conflicts.push({materiale:k, evento:ev.titolo||"Evento"});
+    selected.forEach(item=>{
+      if(materialSelectionQty(ev.materiali,item.id)>0) conflicts.push({materiale:item.id, evento:ev.titolo||"Evento"});
     });
   });
   return conflicts;
@@ -1450,30 +2544,21 @@ function conflittiMateriale(data, selectedKeys, excludeKey="", dataFine=null){
 function renderMaterialPicker(e){
   const key=e.local_id||e.id;
   const selected=materialiEvento(e);
+  const selectedMap=Object.fromEntries(selected.map(item=>[item.id,item.qty]));
   if(!materiali.length) return '<div class="muted">Nessun materiale inventariato.</div>';
   return '<div class="material-picker">' + materiali.map(m=>{
     const mid=m.local_id||m.id;
-    return '<label class="material-pick"><input type="checkbox" class="ev_mat_'+key+'" value="'+escapeHtml(mid)+'" '+(selected.includes(mid)?'checked':'')+'> '+escapeHtml((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Materiale"))+'<div class="muted">'+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div></label>';
+    return '<label class="material-pick"><div class="material-qty-row"><input type="checkbox" class="ev_mat_'+key+'" value="'+escapeHtml(mid)+'" '+(selectedMap[mid]?'checked':'')+'><span>'+escapeHtml((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Materiale"))+'</span><input type="number" class="ev_mat_qty_'+key+'" data-material="'+escapeHtml(mid)+'" min="1" max="'+Math.max(1,Number(m.quantita||1))+'" value="'+(selectedMap[mid]||1)+'"></div><div class="muted">'+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div></label>';
   }).join("") + '</div>';
 }
 function getSelectedMaterialiEvento(key){
-  return [...document.querySelectorAll(".ev_mat_"+CSS.escape(key))].filter(x=>x.checked).map(x=>x.value);
+  return [...document.querySelectorAll(".ev_mat_"+CSS.escape(key))].filter(x=>x.checked).map(x=>{
+    const qty=document.querySelector(`.ev_mat_qty_${CSS.escape(key)}[data-material="${CSS.escape(x.value)}"]`);
+    return {id:x.value,qty:Math.max(1,Math.round(Number(qty?.value||1)))};
+  });
 }
 
-function toggleEventoDettaglio(key){
-  const el=$("event_detail_"+key);
-  if(el)el.classList.toggle("show");
-}
-function renderEventoCompatto(e){
-  const key=e.local_id||e.id;
-  return '<div class="compact-event '+(eventoTerminato(e)?'past-event':'')+'">'+
-    '<div><b>'+escapeHtml(e.titolo||"Evento")+'</b>'+
-    '<div class="muted">'+escapeHtml(formatRangeDate(e.data_evento,e.data_fine_evento))+' • '+escapeHtml(e.luogo||"-")+'</div>'+
-    '<div class="muted">'+escapeHtml(e.cliente||"-")+' • '+escapeHtml(e.stato||"-")+'</div>'+
-    '<div class="muted">Tecnico: '+escapeHtml(e.tecnico||e.referente||"-")+'</div></div>'+
-    '<button class="secondary" onclick="toggleEventoDettaglio(&quot;'+key+'&quot;)">Apri evento</button>'+
-  '</div><div id="event_detail_'+key+'" class="compact-event-detail">'+renderEventoEdit(e)+'</div>';
-}
+
 function renderEventoEdit(e){
   const key=e.local_id||e.id;
   const stati=["Richiesta","Preventivo","Confermato","Montato","Smontato","Pagato"];
@@ -1495,9 +2580,10 @@ function renderEventoEdit(e){
       '<label>Ora smontaggio<input id="ev_smont_'+key+'" value="'+escapeHtml(e.ora_smontaggio||"")+'"></label>' +
     '</div>' +
     '<label>Note<textarea id="ev_n_'+key+'">'+escapeHtml(e.note||"")+'</textarea></label>' +
-    '<h3>Materiale assegnato</h3>' +
+    '<h3>Operatori assegnati</h3><div id="operatori_box_'+key+'">'+renderOperatoriPickerEvento(e)+'</div><h3>Materiale assegnato</h3>' +
     renderMaterialPicker(e) +
-    (selectedMats.length?'<div class="muted">Distinta: '+selectedMats.map(nomeMaterialeById).map(escapeHtml).join(" • ")+'</div>':'') +
+    '<h3>Checklist tecnica avanzata</h3>' + renderChecklistAvanzataEvento(e) +
+    (selectedMats.length?'<div class="muted">Distinta: '+selectedMats.map(nomeMaterialeConQuantita).map(escapeHtml).join(" • ")+'</div>':'') +
     '<div class="actions">' +
       '<button class="green" onclick="salvaModificaEvento(&quot;'+key+'&quot;)">Salva modifiche</button>' +
       '<button class="secondary" onclick="scaricaDistintaEvento(&quot;'+key+'&quot;)">PDF distinta</button>' +
@@ -1511,9 +2597,11 @@ function mostraNuovoEvento(show=true){
   if(box) box.classList.toggle("hidden", !show);
 }
 async function creaEventoManuale(){
+  if(!guard("event_update","crea evento"))return;
   const ref=v("new_ev_referente")||"Gianluca Rallo";
   const row={
     local_id:uid(),
+    numero_evento:progressivoEvento(),
     titolo:v("new_ev_titolo")||"Nuovo impegno",
     cliente:v("new_ev_cliente"),
     referente:ref,
@@ -1525,7 +2613,7 @@ async function creaEventoManuale(){
     totale:n("new_ev_totale"),
     ora_montaggio:v("new_ev_montaggio"),
     ora_smontaggio:v("new_ev_smontaggio"),
-    note:v("new_ev_note"),
+    note:v("new_ev_note"),operatori:getSelectedOperatoriNuovoEvento(),
     materiali:[],
     checklist:{}
   };
@@ -1540,7 +2628,7 @@ async function creaEventoManuale(){
     saveCache();
     render();
     mostraNuovoEvento(false);
-    playSound("success");
+    playSound("success");logAttivita("Evento creato: "+row.titolo);
     return;
   }
 
@@ -1553,10 +2641,11 @@ async function creaEventoManuale(){
   playSound("success");
 }
 async function salvaModificaEvento(key){
+  if(!guard("event_update","modifica evento"))return;
   let e=eventi.find(x=>(x.local_id||x.id)===key);
   if(!e)return;
   const selectedMats=getSelectedMaterialiEvento(key);
-  const checklist={};
+  const checklist=getChecklistAvanzataEvento(key);
   const tecnico=$("ev_ref_"+key).value;
   const updated={
     titolo:$("ev_t_"+key).value,
@@ -1570,7 +2659,7 @@ async function salvaModificaEvento(key){
     totale:Number($("ev_tot_"+key).value||0),
     ora_montaggio:$("ev_mont_"+key).value,
     ora_smontaggio:$("ev_smont_"+key).value,
-    note:$("ev_n_"+key).value,
+    note:$("ev_n_"+key).value,operatori:getSelectedOperatoriEvento(key),
     materiali:selectedMats,
     checklist
   };
@@ -1601,7 +2690,8 @@ async function salvaModificaEvento(key){
   playSound("success");
   if(online())syncNow();
 }
-async function toggleUser(id,blocked){if(!online())return alert("serve internet");await sb.from("app_users").update({blocked}).eq("id",id);await caricaTutto()}
+async function toggleUser(id,blocked){if(!guard("users","blocca utente"))return;if(!online())return alert("serve internet");await sb.from("app_users").update({blocked}).eq("id",id);await caricaTutto()}
+async function setUserRole(id,role){if(!guard("users","cambia ruolo"))return;if(!online())return alert("serve internet");await sb.from("app_users").update({role}).eq("id",id);logAttivita("Ruolo utente aggiornato: "+role);await caricaTutto()}
 function scaricaDistintaEvento(key){
   const e=eventi.find(x=>(x.local_id||x.id)===key);
   if(!e)return;
@@ -1623,7 +2713,7 @@ function scaricaDistintaEvento(key){
   y+=4;doc.setFontSize(13);doc.text("Materiale assegnato",12,y);y+=8;doc.setFontSize(10);
   const mats=materialiEvento(e);
   if(!mats.length){doc.text("- Nessun materiale assegnato",12,y);y+=6}
-  mats.forEach(k=>{doc.text("- "+nomeMaterialeById(k),12,y);y+=6;if(y>275){doc.addPage();y=15}});
+  mats.forEach(item=>{doc.text("- "+nomeMaterialeConQuantita(item),12,y);y+=6;if(y>275){doc.addPage();y=15}});
   y+=4;doc.setFontSize(13);doc.text("Checklist",12,y);y+=8;doc.setFontSize(10);
   const c=checklistEvento(e);
   Object.keys(c).forEach(k=>{doc.text((c[k]?"[X] ":"[ ] ")+k,12,y);y+=6});
@@ -1943,6 +3033,7 @@ function scaricaContrattoPDF(){
   doc.text("CONTRATTO DI SERVIZIO",12,y); y+=10;
   doc.setFontSize(11);
   [
+    ["Contratto",q.numero_contratto||progressivoContratto()],
     ["Preventivo",q.numero_preventivo||""],
     ["Cliente",q.cliente||""],
     ["Evento",q.evento||""],
@@ -1956,14 +3047,7 @@ function scaricaContrattoPDF(){
   doc.setFontSize(14);
   doc.text("Condizioni principali",12,y); y+=8;
   doc.setFontSize(9);
-  const clausole=[
-    "Il cliente conferma dati, luogo, periodo e condizioni economiche indicate nel preventivo.",
-    "Eventuali ritardi, variazioni tecniche o richieste extra potranno comportare costi aggiuntivi.",
-    "Il cliente garantisce accesso, spazi adeguati e alimentazione elettrica idonea al servizio richiesto.",
-    "Danni causati da terzi, pubblico, incuria o condizioni non imputabili a Service K38 saranno a carico del cliente.",
-    "In caso di annullamento, eventuali acconti o costi gia sostenuti potranno essere trattenuti a copertura delle spese.",
-    "Materiali e personale sono soggetti a disponibilita fino a conferma definitiva."
-  ];
+  const clausole=clausoleContrattoDefault();
   clausole.forEach((c,i)=>{
     const lines=doc.splitTextToSize((i+1)+". "+c,180);
     doc.text(lines,12,y);
