@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8" />
@@ -204,7 +204,7 @@ to{opacity:1}
       <div class="logo-box"><img class="logo" src="logo-k38.png" alt="Service K38"></div>
       <div style="min-width:0">
         <h1>Gestionale Service K38</h1>
-        <div class="muted">Magazzino â€¢ Preventivi â€¢ Eventi â€¢ Calendario</div>
+        <div class="muted">Magazzino • Preventivi • Eventi • Calendario</div>
         <div class="brandline"></div>
       </div>
     </div>
@@ -257,14 +257,14 @@ to{opacity:1}
         <div class="card"><h3>Preventivi</h3><div class="stat" id="statPreventivi">0</div></div>
         <div class="card"><h3>Eventi</h3><div class="stat" id="statEventi">0</div></div>
         <div class="card"><h3>Eventi mese</h3><div class="stat" id="statEventiMese">0</div><div class="dashboard-mini">lavori nel mese corrente</div></div>
-        <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 â‚¬</div></div>
-        <div class="card"><h3>Fatturato mese</h3><div class="stat" id="statFatturatoMese">0 â‚¬</div><div class="dashboard-mini">preventivi/eventi del mese</div></div>
+        <div class="card"><h3>Valore magazzino</h3><div class="stat" id="statValore">0 €</div></div>
+        <div class="card"><h3>Fatturato mese</h3><div class="stat" id="statFatturatoMese">0 €</div><div class="dashboard-mini">preventivi/eventi del mese</div></div>
       </div>
       <div class="card">
         <button class="secondary" id="toggleFinanceBtn" onclick="toggleFinanceCounters()">Mostra dati economici</button>
         <div id="financeCounters" class="grid finance-hidden-box" style="margin-top:14px">
-          <div class="card"><h3>Incassato anno</h3><div class="stat money-good privacy-money" id="statIncassatoAnno">0 â‚¬</div></div>
-          <div class="card"><h3>Da riscuotere</h3><div class="stat money-warn privacy-money" id="statDaRiscuotere">0 â‚¬</div></div>
+          <div class="card"><h3>Incassato anno</h3><div class="stat money-good privacy-money" id="statIncassatoAnno">0 €</div></div>
+          <div class="card"><h3>Da riscuotere</h3><div class="stat money-warn privacy-money" id="statDaRiscuotere">0 €</div></div>
         </div>
       </div>
       <div class="card"><button class="green" onclick="tabFromHome('calendario')">Apri eventi / calendario</button></div>
@@ -277,7 +277,7 @@ to{opacity:1}
         <div id="prossimiEventiBox"></div>
       </div>
       <div class="card notice">
-        Offline attivo: senza rete puoi inserire materiali, preventivi ed eventi. Quando torna internet, premi â€œSincronizza oraâ€ o aspetta la sincronizzazione automatica.
+        Offline attivo: senza rete puoi inserire materiali, preventivi ed eventi. Quando torna internet, premi “Sincronizza ora” o aspetta la sincronizzazione automatica.
         <br><b>Elementi in coda:</b> <span id="queueCount">0</span>
       </div>
     </section>
@@ -286,10 +286,10 @@ to{opacity:1}
       <div class="card">
         <h2>Nuova scheda materiale</h2>
         <div class="row">
-          <label>Codice inventario<input id="m_codice" placeholder="Es. K38-AUD-001"></label>
+          <label>Codice inventario<input id="m_codice" placeholder="Automatico: es. X-01"></label>
           <label>Nome<input id="m_nome"></label>
-          <label>Categoria<select id="m_categoria" onchange="aggiornaSottocategorie('m')"><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Aste Microfoniche</option><option>Carrelli</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
-          <label>Sottocategoria<select id="m_sottocategoria" onchange="aggiornaCodiceInventarioSuggerito()"></select></label>
+          <label>Categoria<select id="m_categoria" onchange="aggiornaSottocategorie('m');aggiornaCampiNuovoMateriale(true)"><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Aste Microfoniche</option><option>Carrelli</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
+          <label>Sottocategoria<select id="m_sottocategoria" onchange="aggiornaCampiNuovoMateriale(true)"></select></label>
           <div id="m_cavo_fields" class="item hidden" style="grid-column:1/-1">
             <h3>Dettagli cavo</h3>
             <div class="row">
@@ -299,11 +299,11 @@ to{opacity:1}
             </div>
           </div>
           <label>Marca<input id="m_marca"></label><label>Modello<input id="m_modello"></label><label>Seriale<input id="m_seriale"></label>
-          <label>QuantitÃ <input id="m_quantita" type="number" value="1"></label><label>Posizione<input id="m_posizione"></label>
+          <label>Quantità<input id="m_quantita" type="number" value="1"></label><label>Posizione<input id="m_posizione"></label>
           <label>Stato<select id="m_stato"><option>Disponibile</option><option>Impegnato</option><option>In manutenzione</option><option>Da manutentare</option><option>Da controllare</option><option>Fuori servizio</option></select></label>
-          <label>Prezzo listino/acquisto â‚¬<input id="m_listino" type="number" value="0"></label>
-          <label>Prezzo reale pagato â‚¬<input id="m_reale" type="number" value="0"></label>
-          <label>Prezzo noleggio â‚¬<input id="m_noleggio" type="number" value="0"></label>
+          <label>Prezzo listino/acquisto €<input id="m_listino" type="number" value="0"></label>
+          <label>Prezzo reale pagato €<input id="m_reale" type="number" value="0"></label>
+          <label>Prezzo noleggio €<input id="m_noleggio" type="number" value="0"></label>
           <label>Foto<input id="m_foto" type="file" accept="image/*"></label>
         </div>
         <label>Note<textarea id="m_note"></textarea></label>
@@ -326,15 +326,15 @@ to{opacity:1}
         <h2>Crea preventivo</h2>
         <div class="row">
           <label>Cliente<input id="p_cliente"></label><label>Evento<input id="p_evento"></label><label>Data inizio<input id="p_data" type="date" onchange="render();warningMezziPreventivo()"></label><label>Data fine<input id="p_data_fine" type="date" onchange="render();warningMezziPreventivo()"></label><label>Luogo<input id="p_luogo"></label><label>Referente<select id="p_referente" onchange="aggiornaTelefonoReferente('p')"></select></label><label>Telefono referente<input id="p_telefono"></label>
-          <label>Audio â‚¬<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci â‚¬<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video â‚¬<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <label>Audio €<input id="p_audio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Luci €<input id="p_luci" type="number" value="0" oninput="aggiornaTotale()"></label><label>Video €<input id="p_video" type="number" value="0" oninput="aggiornaTotale()"></label>
           <div class="item" style="grid-column:1/-1">
             <h3>Mezzi / trasporto</h3>
-            <div class="muted">Puoi aggiungere piÃ¹ mezzi. Il trasporto viene calcolato automaticamente sommando tutte le righe.</div>
+            <div class="muted">Puoi aggiungere più mezzi. Il trasporto viene calcolato automaticamente sommando tutte le righe.</div>
             <div id="mezziTrasportoBox"></div>
             <div class="actions"><button class="secondary" type="button" onclick="aggiungiMezzoTrasporto()">Aggiungi mezzo</button></div>
           </div>
-          <label>Trasporto â‚¬<input id="p_trasporto" type="number" value="0" oninput="aggiornaTotale()"></label>
-          <label>Ore tecnico<input id="p_ore" type="number" value="0" oninput="aggiornaTotale()"></label><label>Tariffa tecnico â‚¬<input id="p_tariffa" type="number" value="0" oninput="aggiornaTotale()"></label><label>Montaggio â‚¬<input id="p_montaggio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Sconto â‚¬<input id="p_sconto" type="number" value="0" oninput="aggiornaTotale()"></label><label>IVA/Maggiorazione %<input id="p_iva" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <label>Trasporto €<input id="p_trasporto" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <label>Ore tecnico<input id="p_ore" type="number" value="0" oninput="aggiornaTotale()"></label><label>Tariffa tecnico €<input id="p_tariffa" type="number" value="0" oninput="aggiornaTotale()"></label><label>Montaggio €<input id="p_montaggio" type="number" value="0" oninput="aggiornaTotale()"></label><label>Sconto €<input id="p_sconto" type="number" value="0" oninput="aggiornaTotale()"></label><label>IVA/Maggiorazione %<input id="p_iva" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Stato pagamento<select id="p_stato_pagamento">
             <option>Da saldare</option>
             <option>Acconto ricevuto</option>
@@ -342,31 +342,31 @@ to{opacity:1}
             <option>Pagato</option>
             <option>Annullato</option>
           </select></label>
-          <label>Importo incassato â‚¬<input id="p_incassato" type="number" value="0" oninput="aggiornaTotale()"></label>
+          <label>Importo incassato €<input id="p_incassato" type="number" value="0" oninput="aggiornaTotale()"></label>
           <label>Data pagamento<input id="p_data_pagamento" type="date"></label>
         </div>
         <label>Note<textarea id="p_note"></textarea></label>
         <div class="item">
           <h3>Materiale da inventario</h3>
-          <div class="muted">Seleziona il materiale che vuoi collegare al preventivo. VerrÃ  riportato anche nellâ€™evento quando il preventivo viene accettato.</div>
+          <div class="muted">Seleziona il materiale che vuoi collegare al preventivo. Verrà riportato anche nell’evento quando il preventivo viene accettato.</div>
           <div id="p_materiali_picker" class="quote-material-picker"></div>
         </div>
         <div class="margin-box">
           <h3>Margine economico stimato</h3>
           <div class="muted">Questi costi sono interni e servono a capire utile reale e margine. Non compaiono nel PDF cliente.</div>
           <div class="row">
-            <label>Costo personale â‚¬<input id="p_costo_personale" type="number" value="0" oninput="aggiornaTotale()"></label>
-            <label>Noleggi esterni â‚¬<input id="p_costo_noleggi" type="number" value="0" oninput="aggiornaTotale()"></label>
-            <label>Costi extra â‚¬<input id="p_costo_extra" type="number" value="0" oninput="aggiornaTotale()"></label>
-            <label>Altri costi â‚¬<input id="p_costo_altro" type="number" value="0" oninput="aggiornaTotale()"></label>
+            <label>Costo personale €<input id="p_costo_personale" type="number" value="0" oninput="aggiornaTotale()"></label>
+            <label>Noleggi esterni €<input id="p_costo_noleggi" type="number" value="0" oninput="aggiornaTotale()"></label>
+            <label>Costi extra €<input id="p_costo_extra" type="number" value="0" oninput="aggiornaTotale()"></label>
+            <label>Altri costi €<input id="p_costo_altro" type="number" value="0" oninput="aggiornaTotale()"></label>
           </div>
-          <h3>Utile stimato: <span class="total" id="utilePreventivo">0,00 â‚¬</span></h3>
+          <h3>Utile stimato: <span class="total" id="utilePreventivo">0,00 €</span></h3>
           <div class="muted">Margine: <span id="marginePreventivo">0%</span></div>
         </div>
-        <h3>Totale: <span class="total" id="totalePreventivo">0,00 â‚¬</span></h3>
+        <h3>Totale: <span class="total" id="totalePreventivo">0,00 €</span></h3>
         <div class="signature-box">
           <h3>Firma cliente</h3>
-          <div class="muted">Firma con dito, mouse o tablet. VerrÃ  salvata nel preventivo e inserita nel PDF Cliente.</div>
+          <div class="muted">Firma con dito, mouse o tablet. Verrà salvata nel preventivo e inserita nel PDF Cliente.</div>
           <canvas id="firmaCanvas" class="signature-pad"></canvas>
           <div class="actions">
             <button class="secondary" onclick="pulisciFirma()">Pulisci firma</button>
@@ -402,7 +402,7 @@ to{opacity:1}
             <label>Data fine<input id="new_ev_data_fine" type="date" onchange="warningOperatoriNuovoEvento()"></label>
             <label>Luogo<input id="new_ev_luogo" placeholder="Luogo"></label>
             <label>Stato<select id="new_ev_stato"><option>Richiesta</option><option>Preventivo</option><option>Confermato</option><option>Montato</option><option>Smontato</option><option>Pagato</option></select></label>
-            <label>Totale â‚¬<input id="new_ev_totale" type="number" value="0"></label>
+            <label>Totale €<input id="new_ev_totale" type="number" value="0"></label>
             <label>Ora montaggio<input id="new_ev_montaggio" placeholder="Es. 16:00"></label>
             <label>Ora smontaggio<input id="new_ev_smontaggio" placeholder="Es. 01:00"></label>
           </div>
@@ -451,7 +451,7 @@ to{opacity:1}
           <button class="green" onclick="tabFromHome('calendario'); mostraNuovoEvento()">Aggiungi evento</button>
         </div>
         <div class="card">
-          <h2>ModalitÃ  carico/scarico furgone</h2>
+          <h2>Modalità carico/scarico furgone</h2>
           <div class="muted">Seleziona un evento e usa i flag per carico/scarico materiale.</div>
           <div id="modalitaCaricoBox"></div>
         </div>
@@ -543,7 +543,7 @@ to{opacity:1}
         </div>
 
         <div class="backup-box">
-          <h3>Registro attivitÃ  locale</h3>
+          <h3>Registro attività locale</h3>
           <div class="muted">Ultime azioni importanti fatte da questo dispositivo.</div>
           <div class="actions"><button class="secondary" onclick="pulisciRegistroAttivita()">Pulisci registro</button></div>
           <div id="registroAttivitaBox"></div>
@@ -564,7 +564,7 @@ to{opacity:1}
           <label>Telefono<input id="d_tel" value="3284218233"></label>
           <label>Email<input id="d_email" value="servicek38@gmail.com"></label>
         </div>
-        <label>Nota finale<textarea id="d_footer">Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilitÃ  e conferma.</textarea></label>
+        <label>Nota finale<textarea id="d_footer">Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilità e conferma.</textarea></label>
         <div class="actions"><button onclick="salvaDatiPDF()">Salva dati PDF</button></div>
       </div>
     </section>
@@ -636,7 +636,7 @@ to{opacity:1}
 <script>
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
 
-const APP_VERSION="service-k38-v43";
+const APP_VERSION="service-k38-v46";
 function bootJsonParse(raw,fallback){
   try{return raw?JSON.parse(raw):fallback}
   catch(e){return fallback}
@@ -768,7 +768,7 @@ function triggerK38Egg(){
   overlay.innerHTML=`
     <div class="k38-secret-box">
       <div class="k38-secret-title">K38 SYSTEM ONLINE</div>
-      <div class="k38-secret-sub">ModalitÃ  backstage attivata</div>
+      <div class="k38-secret-sub">Modalità backstage attivata</div>
     </div>
   `;
   document.body.appendChild(overlay);
@@ -823,13 +823,13 @@ function aggiornaTelefonoReferente(prefix){
   if(tel) tel.value=telefonoReferente(ref);
 }
 const categorieMateriale = {
-  "Audio":["Casse attive","Casse passive","Subwoofer attivi","Subwoofer passivi","Diffusori","Monitor spia","Mixer","Finali","DSP","Microfoni","Radiomicrofoni","DI Box","Player","Controller DJ","Cuffie","Altro audio"],
+  "Audio":["Casse attive","Casse passive","Subwoofer attivi","Subwoofer passivi","Monitor spia","Mixer","Finali","DSP","Microfoni","Radiomicrofoni","DI Box","Controller DJ","Cuffie","Altro audio"],
   "Luci":["Teste mobili","Barre LED","PAR LED","Strobo","Laser","Blinder","Sagomatori","Dimmer","Centraline DMX","Effetti speciali","Altro luci"],
-  "Video":["TV","Videoproiettori","LED wall","Switch video","Convertitori","Telecamere","Streaming","Altro video"],
+  "Video":["TV","Videoproiettori","LED wall","Switch video","Convertitori","Extender","Telecamere","Streaming","Altro video"],
   "Cavi":["XLR","Speakon","PowerCON","DMX","RCA","Jack","HDMI","Ethernet","Prolunghe","Adattatori","Altro cavi"],
   "Strutture":["Americane","Elevatori","Pedane","Tralicci","Flight case","Supporti casse","Supporti luci","Altro strutture"],
-  "Aste Microfoniche":["Aste giraffa","Aste dritte","Aste basse","Aste da tavolo","Basi tonde","Accessori aste","Altro aste"],
-  "Carrelli":["Carrelli trasporto","Carrelli pieghevoli","Dolly","Carrelli flight case","Carrelli scale","Altro carrelli"],
+  "Aste Microfoniche":["Aste Microfoniche"],
+  "Carrelli":["Carrelli"],
   "Accessori":["Stand","Clamp","Ganci","Borse","Custodie","Telecomandi","Materiale consumo","Altro accessori"],
   "Ricambi":["Driver","Woofer","Tweeter","Connettori","Schede elettroniche","Alimentatori","Altro ricambi"],
   "Utensili":["Tester","Saldatori","Trapani","Avvitatori","Batterie","Attrezzi manuali","Altro utensili"]
@@ -846,9 +846,13 @@ function opzioniConnettoriCavo(selected=""){
 }
 function initCampiCavo(){
   ["m_cavo_estremita_a","m_cavo_estremita_b"].forEach(id=>{const el=$(id);if(el)el.innerHTML=opzioniConnettoriCavo(el.value||"");});
-  toggleCampiCavo("m");
+  aggiornaCampiNuovoMateriale(true);
 }
 function isCategoriaCavi(cat){return cat==="Cavi";}
+function aggiornaCampiNuovoMateriale(forceCode=false){
+  toggleCampiCavo("m");
+  aggiornaCodiceInventarioSuggerito(forceCode);
+}
 function toggleCampiCavo(prefix){
   if(prefix==="m"){
     const box=$("m_cavo_fields");
@@ -872,6 +876,40 @@ function normalizzaCodiceKey(value){
   return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim();
 }
 const prefissiCodiceInventario={
+  "AUDIO|CASSE ATTIVE":"SA",
+  "AUDIO|CASSE PASSIVE":"SP",
+  "AUDIO|SUBWOOFER ATTIVI":"SWA",
+  "AUDIO|SUBWOOFER PASSIVI":"SWP",
+  "AUDIO|MONITOR SPIA":"MS",
+  "AUDIO|MIXER":"MIX",
+  "AUDIO|FINALI":"FIN",
+  "AUDIO|DSP":"DSP",
+  "AUDIO|MICROFONI":"MIC",
+  "AUDIO|RADIOMICROFONI":"RM",
+  "AUDIO|DI BOX":"DI",
+  "AUDIO|CONTROLLER DJ":"CDJ",
+  "AUDIO|CUFFIE":"CUF",
+  "AUDIO|ALTRO AUDIO":"AA",
+  "LUCI|TESTE MOBILI":"TM",
+  "LUCI|BARRE LED":"BL",
+  "LUCI|PAR LED":"PAR",
+  "LUCI|STROBO":"STR",
+  "LUCI|LASER":"LAS",
+  "LUCI|BLINDER":"BLI",
+  "LUCI|SAGOMATORI":"SAG",
+  "LUCI|DIMMER":"DIM",
+  "LUCI|CENTRALINE DMX":"CDMX",
+  "LUCI|EFFETTI SPECIALI":"FX",
+  "LUCI|ALTRO LUCI":"AL",
+  "VIDEO|TV":"T",
+  "VIDEO|VIDEOPROIETTORI":"P",
+  "VIDEO|LED WALL":"LW",
+  "VIDEO|SWITCH VIDEO":"SV",
+  "VIDEO|CONVERTITORI":"CV",
+  "VIDEO|EXTENDER":"EXT",
+  "VIDEO|TELECAMERE":"TC",
+  "VIDEO|STREAMING":"ST",
+  "VIDEO|ALTRO VIDEO":"AV",
   "CAVI|XLR":"X",
   "CAVI|SPEAKON":"SPK",
   "CAVI|POWERCON":"PC",
@@ -880,21 +918,41 @@ const prefissiCodiceInventario={
   "CAVI|JACK":"J",
   "CAVI|HDMI":"H",
   "CAVI|ETHERNET":"ETH",
-  "VIDEO|TV":"T",
-  "VIDEO|VIDEOPROIETTORI":"P",
-  "AUDIO|CASSE ATTIVE":"SA",
-  "AUDIO|CASSE PASSIVE":"SP",
-  "AUDIO|SUBWOOFER ATTIVI":"SA",
-  "AUDIO|SUBWOOFER PASSIVI":"SP",
-  "AUDIO|MICROFONI":"M",
-  "AUDIO|RADIOMICROFONI":"RM",
-  "ASTE MICROFONICHE|ASTE GIRAFFA":"AG",
-  "ASTE MICROFONICHE|ASTE DRITTE":"AD",
-  "ASTE MICROFONICHE|ASTE BASSE":"AB",
-  "ASTE MICROFONICHE|ASTE DA TAVOLO":"AT",
-  "CARRELLI|CARRELLI TRASPORTO":"CT",
-  "CARRELLI|CARRELLI PIEGHEVOLI":"CP",
-  "CARRELLI|DOLLY":"DOL"
+  "CAVI|PROLUNGHE":"PR",
+  "CAVI|ADATTATORI":"AD",
+  "CAVI|ALTRO CAVI":"ACV",
+  "STRUTTURE|AMERICANE":"AM",
+  "STRUTTURE|ELEVATORI":"EL",
+  "STRUTTURE|PEDANE":"PD",
+  "STRUTTURE|TRALICCI":"TR",
+  "STRUTTURE|FLIGHT CASE":"FC",
+  "STRUTTURE|SUPPORTI CASSE":"SC",
+  "STRUTTURE|SUPPORTI LUCI":"SL",
+  "STRUTTURE|ALTRO STRUTTURE":"ASTR",
+  "ASTE MICROFONICHE|ASTE MICROFONICHE":"AM",
+  "CARRELLI|CARRELLI":"CAR",
+  "ACCESSORI|STAND":"STD",
+  "ACCESSORI|CLAMP":"CLP",
+  "ACCESSORI|GANCI":"GNC",
+  "ACCESSORI|BORSE":"BOR",
+  "ACCESSORI|CUSTODIE":"CUS",
+  "ACCESSORI|TELECOMANDI":"TLC",
+  "ACCESSORI|MATERIALE CONSUMO":"MCO",
+  "ACCESSORI|ALTRO ACCESSORI":"ACC",
+  "RICAMBI|DRIVER":"DRV",
+  "RICAMBI|WOOFER":"WOO",
+  "RICAMBI|TWEETER":"TWE",
+  "RICAMBI|CONNETTORI":"CON",
+  "RICAMBI|SCHEDE ELETTRONICHE":"SCH",
+  "RICAMBI|ALIMENTATORI":"ALI",
+  "RICAMBI|ALTRO RICAMBI":"RIC",
+  "UTENSILI|TESTER":"TST",
+  "UTENSILI|SALDATORI":"SLD",
+  "UTENSILI|TRAPANI":"TRP",
+  "UTENSILI|AVVITATORI":"AVV",
+  "UTENSILI|BATTERIE":"BAT",
+  "UTENSILI|ATTREZZI MANUALI":"ATM",
+  "UTENSILI|ALTRO UTENSILI":"UTE"
 };
 function escapeRegExp(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
 function prefissoCodiceInventario(cat,sub){
@@ -943,7 +1001,7 @@ function aggiornaSottocategorie(prefix){
   }
   if(sub) sub.innerHTML=opzioniSottocategorie(cat||"Audio", sub.value);
   toggleCampiCavo(prefix);
-  if(prefix==="m")aggiornaCodiceInventarioSuggerito();
+  if(prefix==="m")aggiornaCampiNuovoMateriale(true);
 }
 function $(id){return document.getElementById(id)} function v(id){return $(id).value} function n(id){return Number(v(id)||0)} function euro(x){return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(Number(x||0))} function msg(id,t){$(id).textContent=" "+t}
 function online(){return navigator.onLine}
@@ -1074,8 +1132,8 @@ async function renderSystemStatus(){
     errBox.innerHTML=lastSyncError?`<div class="system-bad">${escapeHtml(lastSyncError.message)}</div><div class="mono">${escapeHtml(formatDateTime(lastSyncError.time))}${lastSyncError.item?" - "+escapeHtml(lastSyncError.item.table||"")+" "+escapeHtml(lastSyncError.item.type||""):""}</div>`:"Nessun errore registrato.";
   }
 }
-function initDati(){ $("d_partner").value=datiPDF.partner||"Partner BENOW";$("d_ragione").value=datiPDF.ragione||"Service K38";$("d_benow").value=datiPDF.benow||"BeNow s.c.p.a.";$("d_cf").value=datiPDF.cf||"01516270137";$("d_piva").value=datiPDF.piva||"03080310174";$("d_univoco").value=datiPDF.univoco||"M5UXCR1";$("d_tel").value=datiPDF.tel||"3284218233";$("d_email").value=datiPDF.email||"servicek38@gmail.com";$("d_footer").value=datiPDF.footer||"Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilitÃ  e conferma."} initDati();
-window.addEventListener("load",async()=>{updateSoundButton();initFirmaCanvas();initClausoleContratto();renderSystemStatus();initCampiCavo();setTimeout(()=>{if($("mezziTrasportoBox") && !document.querySelector("#mezziTrasportoBox .mezzo-row")) aggiungiMezzoTrasporto();},150);aggiornaSottocategorie("m");aggiornaCodiceInventarioSuggerito(true);$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
+function initDati(){ $("d_partner").value=datiPDF.partner||"Partner BENOW";$("d_ragione").value=datiPDF.ragione||"Service K38";$("d_benow").value=datiPDF.benow||"BeNow s.c.p.a.";$("d_cf").value=datiPDF.cf||"01516270137";$("d_piva").value=datiPDF.piva||"03080310174";$("d_univoco").value=datiPDF.univoco||"M5UXCR1";$("d_tel").value=datiPDF.tel||"3284218233";$("d_email").value=datiPDF.email||"servicek38@gmail.com";$("d_footer").value=datiPDF.footer||"Preventivo valido salvo diversa indicazione. Data e materiali soggetti a disponibilità e conferma."} initDati();
+window.addEventListener("load",async()=>{updateSoundButton();initFirmaCanvas();initClausoleContratto();renderSystemStatus();initCampiCavo();setTimeout(()=>{if($("mezziTrasportoBox") && !document.querySelector("#mezziTrasportoBox .mezzo-row")) aggiungiMezzoTrasporto();},150);aggiornaSottocategorie("m");aggiornaCampiNuovoMateriale(true);document.addEventListener("change",ev=>{if(ev.target?.id==="m_categoria"||ev.target?.id==="m_sottocategoria")aggiornaCampiNuovoMateriale(true)});$("p_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("p");$("new_ev_referente").innerHTML=opzioniReferenti("Gianluca Rallo");aggiornaTelefonoReferente("new_ev");sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});let s=await sb.auth.getSession();if(s.data.session){user=s.data.session.user;await afterLogin()}})
 async function signup(){
   if(!online())return msg("loginMsg","per creare utente serve internet");
   msg("loginMsg","creazione...");
@@ -1100,13 +1158,13 @@ async function login(){
 }
 async function resetPassword(){if(!online())return msg("loginMsg","per recupero password serve internet");if(!v("email"))return msg("loginMsg","inserisci prima la mail");let {error}=await sb.auth.resetPasswordForEmail(v("email"),{redirectTo:location.origin});msg("loginMsg",error?error.message:"email recupero inviata")}
 async function upsertProfile(username){let role=(user.email===MASTER_ADMIN_EMAIL)?"admin":"user";await sb.from("app_users").upsert({id:user.id,email:user.email,username,role,last_login:new Date().toISOString()})}
-async function afterLogin(){if(online()){let r=await sb.from("app_users").select("*").eq("id",user.id).single();profile=r.data;if(profile?.blocked){await logout();alert("Accesso bloccato dall'admin");return}}$("loginBox").classList.add("hidden");$("mainApp").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");applyRolePermissions();await caricaTutto();if(online()) syncNow()}
+async function afterLogin(){if(online()){let r=await sb.from("app_users").select("*").eq("id",user.id).single();profile=r.data;if(profile?.blocked){await logout();alert("Accesso bloccato dall'admin");return}}$("loginBox").classList.add("hidden");$("mainApp").classList.remove("hidden");$("logoutBtn").classList.remove("hidden");applyRolePermissions();await caricaTutto();aggiornaCampiNuovoMateriale(true);if(online()) syncNow()}
 async function logout(){await sb.auth.signOut();location.reload()}
 function tabFromHome(id){
   const btn=[...document.querySelectorAll(".tabs button")].find(b=>b.getAttribute("onclick")?.includes("'" + id + "'"));
   if(btn) tab(id,btn);
 }
-function tab(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));$(id).classList.remove("hidden");document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");}
+function tab(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));$(id).classList.remove("hidden");document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");if(id==="magazzino")setTimeout(()=>aggiornaCampiNuovoMateriale(true),0);}
 async function caricaTutto(){if(!online()){loadCache();render();return}let a=await sb.from("materiali").select("*").order("created_at",{ascending:false});let b=await sb.from("preventivi").select("*").order("created_at",{ascending:false});let c=await sb.from("eventi").select("*").order("data_evento",{ascending:true});let d=await sb.from("impegni").select("*").order("data_impegno",{ascending:true});let e=await sb.from("clienti").select("*").order("created_at",{ascending:false});let ops=await sb.from("operatori").select("*").order("created_at",{ascending:false});materiali=a.data||[];preventivi=b.data||[];eventi=c.data||[];impegni=d.data||[];clienti=e.data||[];operatori=ops.data||[];if(profile?.role==="admin"){let u=await sb.from("app_users").select("*").order("created_at",{ascending:false});utenti=u.data||[]}saveCache();render()}
 function isPastDate(dateStr){
   if(!dateStr) return false;
@@ -1118,7 +1176,7 @@ function isPastDate(dateStr){
 function confirmPastDate(dateStr){
   if(!isPastDate(dateStr)) return true;
   playSound("error");
-  return confirm("ATTENZIONE: hai selezionato una data giÃ  trascorsa. Vuoi continuare comunque?");
+  return confirm("ATTENZIONE: hai selezionato una data già trascorsa. Vuoi continuare comunque?");
 }
 function annoCorrenteShort(){return String(new Date().getFullYear()).slice(-2)}
 function progressivoPreventivo(){
@@ -1143,7 +1201,7 @@ function progressivoContratto(){return progressivoDocumento("CONTR",preventivi,"
 function formatRangeDate(start,end){
   if(!start)return "-";
   if(!end || end===start)return start;
-  return start+" â†’ "+end;
+  return start+" → "+end;
 }
 function eventoTerminato(e){
   const end=e.data_fine_evento||e.data_evento;
@@ -1198,7 +1256,7 @@ function aggiungiMezzoTrasporto(data){
     '</select></label>',
     '<label>Mezzo personalizzato<input class="mezzo_custom" value="'+escapeHtml(custom)+'" placeholder="Se Altro"></label>',
     '<label>Km<input class="mezzo_km" type="number" value="'+km+'" oninput="calcolaTrasportoDaKm()"></label>',
-    '<label>Costo â‚¬/km<input class="mezzo_costo" type="number" step="0.01" value="'+costo.toFixed(2)+'" oninput="calcolaTrasportoDaKm()"></label>',
+    '<label>Costo €/km<input class="mezzo_costo" type="number" step="0.01" value="'+costo.toFixed(2)+'" oninput="calcolaTrasportoDaKm()"></label>',
     '<label>Totale riga<input class="mezzo_totale" type="number" value="'+(km*costo).toFixed(2)+'" readonly></label>',
     '</div>',
     '<div class="actions"><button class="danger" type="button" onclick="rimuoviRigaMezzo(this)">Rimuovi mezzo</button></div>'
@@ -1247,7 +1305,7 @@ function descrizioneMezziPreventivo(q){
     return mezzi.map(m=>{
       const nome=m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo;
       return nome+": "+(m.km||0)+" km x "+euro(m.costo_km||0)+" = "+euro(m.totale||0);
-    }).join(" â€¢ ");
+    }).join(" • ");
   }
   return nomeMezzoPreventivo(q)+": "+(q.km_trasporto||0)+" km x "+euro(q.costo_km||0);
 }
@@ -1304,12 +1362,12 @@ function renderStoricoClienti(){
   const q=($("searchCliente")?.value||"").toLowerCase();
   const list=storicoClienti().filter(c=>c.cliente.toLowerCase().includes(q));
   box.innerHTML=list.length?list.map(c=>{
-    const last=c.ultime.slice(0,3).map(p=>`<div class="muted">${p.numero_preventivo||"Preventivo"} â€¢ ${p.evento||""} â€¢ ${p.data_evento||""} â€¢ ${euro(p.totale||0)}</div>`).join("");
+    const last=c.ultime.slice(0,3).map(p=>`<div class="muted">${p.numero_preventivo||"Preventivo"} • ${p.evento||""} • ${p.data_evento||""} • ${euro(p.totale||0)}</div>`).join("");
     return `<div class="customer-card">
       <h3>${escapeHtml(c.cliente)}</h3>
-      <div class="muted">Preventivi: ${c.preventivi} â€¢ Accettati: ${c.accettati}</div>
+      <div class="muted">Preventivi: ${c.preventivi} • Accettati: ${c.accettati}</div>
       <div class="total">${euro(c.totale)}</div>
-      <div class="muted">Incassato: ${euro(c.incassato)} â€¢ Da riscuotere: ${euro(Math.max(0,c.totale-c.incassato))}</div>
+      <div class="muted">Incassato: ${euro(c.incassato)} • Da riscuotere: ${euro(Math.max(0,c.totale-c.incassato))}</div>
       ${last}
     </div>`;
   }).join(""):'<div class="notice">Nessun cliente trovato.</div>';
@@ -1352,7 +1410,7 @@ function disattivaVistaManutenzione(){
 }
 function renderManutenzioni(lista){
   const manut=lista.filter(materialeDaManutenzione);
-  return '<div class="actions"><button class="secondary" onclick="disattivaVistaManutenzione()">â† Torna inventario</button></div>'+
+  return '<div class="actions"><button class="secondary" onclick="disattivaVistaManutenzione()">← Torna inventario</button></div>'+
     '<h3>Materiali da manutentare / controllare</h3>'+
     '<div class="muted">Elenco rapido di materiali con stato In manutenzione, Da controllare o Fuori servizio.</div>'+
     (manut.length?manut.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale da manutentare.</div>');
@@ -1392,8 +1450,8 @@ function renderMaterialeCompatto(m){
   return '<div class="compact-material">'+
     img+
     '<div><b>'+escapeHtml(m.nome||"Materiale")+'</b>'+
-    '<div class="muted">'+escapeHtml(m.codice_inventario||"Senza codice")+' â€¢ '+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div>'+
-    '<div class="muted">'+escapeHtml((m.marca||"")+(m.modello?" / "+m.modello:""))+' â€¢ Stato: '+escapeHtml(m.stato||"-")+' â€¢ Q.tÃ  '+Number(m.quantita||0)+'</div>'+
+    '<div class="muted">'+escapeHtml(m.codice_inventario||"Senza codice")+' • '+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div>'+
+    '<div class="muted">'+escapeHtml((m.marca||"")+(m.modello?" / "+m.modello:""))+' • Stato: '+escapeHtml(m.stato||"-")+' • Q.tà '+Number(m.quantita||0)+'</div>'+
     '<div class="muted">Noleggio: '+euro(m.prezzo_noleggio||0)+'</div></div>'+
     '<button class="secondary" onclick="toggleSchedaMateriale(&quot;'+key+'&quot;)">Apri scheda</button>'+
     '</div><div id="full_mat_'+key+'" class="full-card-hidden">'+renderMaterialeEdit(m)+'</div>';
@@ -1406,12 +1464,12 @@ function renderInventarioOrganizzato(lista){
   }
   const subs=[...new Set(lista.filter(m=>m.categoria===inventarioCategoriaAttiva).map(m=>m.sottocategoria||"Altro"))].sort();
   if(!inventarioSottocategoriaAttiva){
-    return '<div class="actions"><button class="secondary" onclick="tornaCategorieInventario()">â† Torna alle categorie</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+'</h3><div class="category-grid">'+subs.map(sub=>
+    return '<div class="actions"><button class="secondary" onclick="tornaCategorieInventario()">← Torna alle categorie</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+'</h3><div class="category-grid">'+subs.map(sub=>
       '<div class="category-card" onclick="selezionaSottocategoriaInventario(&quot;'+escapeHtml(sub)+'&quot;)"><h3>'+escapeHtml(sub)+'</h3><div class="stat">'+contaMaterialiSottocategoria(inventarioCategoriaAttiva,sub)+'</div><div class="muted">elementi</div></div>'
     ).join("")+'</div>';
   }
   const mats=lista.filter(m=>m.categoria===inventarioCategoriaAttiva && (m.sottocategoria||"Altro")===inventarioSottocategoriaAttiva);
-  return '<div class="actions"><button class="secondary" onclick="tornaSottocategorieInventario()">â† Torna alle sottocategorie</button><button class="secondary" onclick="tornaCategorieInventario()">Categorie principali</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+' / '+escapeHtml(inventarioSottocategoriaAttiva)+'</h3>'+(mats.length?mats.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale in questa sottocategoria.</div>');
+  return '<div class="actions"><button class="secondary" onclick="tornaSottocategorieInventario()">← Torna alle sottocategorie</button><button class="secondary" onclick="tornaCategorieInventario()">Categorie principali</button></div><h3>'+escapeHtml(inventarioCategoriaAttiva)+' / '+escapeHtml(inventarioSottocategoriaAttiva)+'</h3>'+(mats.length?mats.map(renderMaterialeCompatto).join(""):'<div class="notice">Nessun materiale in questa sottocategoria.</div>');
 }
 function renderMaterialeEdit(m){
   const key=m.local_id||m.id;
@@ -1427,12 +1485,12 @@ function renderMaterialeEdit(m){
       '<label>Marca<input id="mat_marca_'+key+'" value="'+escapeHtml(m.marca||"")+'"></label>' +
       '<label>Modello<input id="mat_modello_'+key+'" value="'+escapeHtml(m.modello||"")+'"></label>' +
       '<label>Seriale<input id="mat_seriale_'+key+'" value="'+escapeHtml(m.seriale||"")+'"></label>' +
-      '<label>QuantitÃ <input type="number" id="mat_qta_'+key+'" value="'+Number(m.quantita||0)+'"></label>' +
+      '<label>Quantità<input type="number" id="mat_qta_'+key+'" value="'+Number(m.quantita||0)+'"></label>' +
       '<label>Posizione<input id="mat_pos_'+key+'" value="'+escapeHtml(m.posizione||"")+'"></label>' +
       '<label>Stato<select id="mat_stato_'+key+'">'+stati.map(s=>'<option '+(s===(m.stato||"")?'selected':'')+'>'+escapeHtml(s)+'</option>').join("")+'</select></label>' +
-      '<label>Prezzo listino/acquisto â‚¬<input type="number" id="mat_listino_'+key+'" value="'+Number(m.prezzo_listino||0)+'"></label>' +
-      '<label>Prezzo reale pagato â‚¬<input type="number" id="mat_reale_'+key+'" value="'+Number(m.prezzo_reale||0)+'"></label>' +
-      '<label>Prezzo noleggio â‚¬<input type="number" id="mat_noleggio_'+key+'" value="'+Number(m.prezzo_noleggio||0)+'"></label>' +
+      '<label>Prezzo listino/acquisto €<input type="number" id="mat_listino_'+key+'" value="'+Number(m.prezzo_listino||0)+'"></label>' +
+      '<label>Prezzo reale pagato €<input type="number" id="mat_reale_'+key+'" value="'+Number(m.prezzo_reale||0)+'"></label>' +
+      '<label>Prezzo noleggio €<input type="number" id="mat_noleggio_'+key+'" value="'+Number(m.prezzo_noleggio||0)+'"></label>' +
     '</div>' +
     (m.foto_url?'<img src="'+escapeHtml(m.foto_url)+'">':'') +
     '<label>Note<textarea id="mat_note_'+key+'">'+escapeHtml(m.note||"")+'</textarea></label>' +
@@ -1452,7 +1510,7 @@ function renderManutenzioniMateriale(m){
     '<div class="row">'+
       '<label>Data intervento<input type="date" id="man_data_'+key+'"></label>'+
       '<label>Tecnico<input id="man_tecnico_'+key+'" placeholder="Chi ha fatto la manutenzione"></label>'+
-      '<label>Costo riparazione â‚¬<input type="number" id="man_costo_'+key+'" value="0"></label>'+
+      '<label>Costo riparazione €<input type="number" id="man_costo_'+key+'" value="0"></label>'+
       '<label>Ricambi usati<input id="man_ricambi_'+key+'"></label>'+
     '</div>'+
     '<label>Intervento / soluzione<textarea id="man_note_'+key+'"></textarea></label>'+
@@ -1499,7 +1557,7 @@ async function salvaModificaMateriale(key){
     prezzo_noleggio:Number($("mat_noleggio_"+key).value||0),
     note:$("mat_note_"+key).value
   };
-  if(!updated.nome){playSound("error");alert("Il nome materiale Ã¨ obbligatorio.");return}
+  if(!updated.nome){playSound("error");alert("Il nome materiale è obbligatorio.");return}
   Object.assign(m,updated);
   if(online() && m.id){
     const {error}=await sb.from("materiali").update(updated).eq("id",m.id);
@@ -1551,8 +1609,8 @@ function renderEventoCompatto(e){
   const key=e.local_id||e.id;
   return '<div class="compact-event '+(eventoTerminato(e)?'past-event':'')+'">'+
     '<div><b>'+escapeHtml(e.titolo||"Evento")+'</b>'+
-    '<div class="muted">'+escapeHtml(formatRangeDate(e.data_evento,e.data_fine_evento||e.data_evento))+' â€¢ '+escapeHtml(e.luogo||"-")+'</div>'+
-    '<div class="muted">'+escapeHtml(e.cliente||"-")+' â€¢ '+escapeHtml(e.stato||"-")+'</div>'+
+    '<div class="muted">'+escapeHtml(formatRangeDate(e.data_evento,e.data_fine_evento||e.data_evento))+' • '+escapeHtml(e.luogo||"-")+'</div>'+
+    '<div class="muted">'+escapeHtml(e.cliente||"-")+' • '+escapeHtml(e.stato||"-")+'</div>'+
     '<div class="muted">Tecnico: '+escapeHtml(e.tecnico||e.referente||"-")+'</div></div>'+
     '<button class="secondary" onclick="toggleEventoDettaglio(&quot;'+key+'&quot;)">Apri evento</button>'+
   '</div><div id="event_detail_'+key+'" class="compact-event-detail">'+renderEventoEdit(e)+'</div>';
@@ -1563,8 +1621,8 @@ function renderAgendaItem(item){
     return '<div class="agenda-item evento '+(eventoTerminato(item)?'past-event':'')+'">'+
       '<span class="agenda-badge evento">EVENTO</span>'+
       '<div><b>'+escapeHtml(item.titolo||"Evento service")+'</b>'+
-      '<div class="muted">'+escapeHtml(item.cliente||"-")+' â€¢ '+escapeHtml(item.luogo||"-")+'</div>'+
-      '<div class="muted">'+escapeHtml(formatRangeDate(item.data_evento,item.data_fine_evento||item.data_evento))+' â€¢ '+escapeHtml(item.stato||"-")+'</div></div>'+
+      '<div class="muted">'+escapeHtml(item.cliente||"-")+' • '+escapeHtml(item.luogo||"-")+'</div>'+
+      '<div class="muted">'+escapeHtml(formatRangeDate(item.data_evento,item.data_fine_evento||item.data_evento))+' • '+escapeHtml(item.stato||"-")+'</div></div>'+
       '<button class="secondary" onclick="toggleEventoDettaglio(&quot;'+key+'&quot;)">Apri</button>'+
       '</div><div id="event_detail_'+key+'" class="compact-event-detail">'+renderEventoEdit(item)+'</div>';
   }
@@ -1572,7 +1630,7 @@ function renderAgendaItem(item){
   return '<div class="agenda-item impegno">'+
     '<span class="agenda-badge impegno">IMPEGNO</span>'+
     '<div><b>'+escapeHtml(item.titolo||"Impegno")+'</b>'+
-    '<div class="muted">'+escapeHtml(item.cliente||"-")+' â€¢ '+escapeHtml(item.luogo||"-")+'</div>'+
+    '<div class="muted">'+escapeHtml(item.cliente||"-")+' • '+escapeHtml(item.luogo||"-")+'</div>'+
     '<div class="muted">'+escapeHtml(formatRangeDate(item.data_impegno,item.data_fine_impegno||item.data_impegno))+' '+escapeHtml((item.ora_inizio||"")+(item.ora_fine?" - "+item.ora_fine:""))+'</div></div>'+
     '<button class="danger" onclick="eliminaLocaleImpegno(&quot;'+key+'&quot;)">Elimina</button>'+
     '</div>';
@@ -1589,7 +1647,7 @@ function renderCalendarioEvoluto(){
     const load=caricoGiorno(items);
     out+='<div id="agenda_day_'+safeId(day)+'" class="agenda-day '+(occupied?'has-items':'')+' '+(day===todayISO()?'today':'')+'">'+
       '<div class="agenda-day-head" onclick="toggleAgendaDay(&quot;'+day+'&quot;)">'+
-      '<div><div class="agenda-date">'+escapeHtml(formatDateIT(day))+'</div><div class="muted">'+(occupied?items.length+' attivitÃ ':'Nessun impegno')+'</div></div>'+
+      '<div><div class="agenda-date">'+escapeHtml(formatDateIT(day))+'</div><div class="muted">'+(occupied?items.length+' attività':'Nessun impegno')+'</div></div>'+
       '<div><span class="load-dot '+load+'"></span></div></div>'+
       (occupied?'<div id="agenda_items_'+safeId(day)+'" class="agenda-items show">'+items.map(renderAgendaItem).join("")+'</div>':'<div class="agenda-empty">Giornata libera</div>')+
       '</div>';
@@ -1622,7 +1680,7 @@ function renderProssimiEventi(){
   const box=$("prossimiEventiBox");
   if(!box)return;
   const list=prossimiEventi();
-  box.innerHTML=list.length?list.map(e=>'<div class="next-job"><b>'+escapeHtml(e.titolo||"Evento")+'</b><div class="muted">'+escapeHtml(formatRangeDate(e.data_evento,e.data_fine_evento||e.data_evento))+' â€¢ '+escapeHtml(e.luogo||"-")+'</div><div class="muted">'+escapeHtml(e.cliente||"-")+'</div></div>').join(""):'<div class="muted">Nessun lavoro futuro.</div>';
+  box.innerHTML=list.length?list.map(e=>'<div class="next-job"><b>'+escapeHtml(e.titolo||"Evento")+'</b><div class="muted">'+escapeHtml(formatRangeDate(e.data_evento,e.data_fine_evento||e.data_evento))+' • '+escapeHtml(e.luogo||"-")+'</div><div class="muted">'+escapeHtml(e.cliente||"-")+'</div></div>').join(""):'<div class="muted">Nessun lavoro futuro.</div>';
 }
 function mostraNuovoCliente(show=true){
   const box=$("formNuovoCliente");
@@ -1657,10 +1715,10 @@ function renderClientiDatabase(){
     const st=clienteStats(c.nome);
     return `<div class="customer-card">
       <h3>${escapeHtml(c.nome||"Cliente")}</h3>
-      <div class="muted">${escapeHtml(c.telefono||"")} ${c.email?"â€¢ "+escapeHtml(c.email):""}</div>
-      <div class="muted">Preventivi: ${st.preventivi} â€¢ Eventi: ${st.eventi}</div>
+      <div class="muted">${escapeHtml(c.telefono||"")} ${c.email?"• "+escapeHtml(c.email):""}</div>
+      <div class="muted">Preventivi: ${st.preventivi} • Eventi: ${st.eventi}</div>
       <div class="total">${euro(st.totale)}</div>
-      <div class="muted">Incassato: ${euro(st.incassato)} â€¢ Da riscuotere: ${euro(Math.max(0,st.totale-st.incassato))}</div>
+      <div class="muted">Incassato: ${euro(st.incassato)} • Da riscuotere: ${euro(Math.max(0,st.totale-st.incassato))}</div>
       ${c.note?`<div class="muted">Note: ${escapeHtml(c.note)}</div>`:""}
     </div>`;
   }).join(""):'<div class="notice">Nessun cliente trovato.</div>';
@@ -1707,9 +1765,9 @@ function renderModalitaCarico(){
       ${futuri.map(e=>`<option value="${e.local_id||e.id}" ${(e.local_id||e.id)===evKey?"selected":""}>${escapeHtml((e.titolo||"Evento")+" - "+(e.data_evento||""))}</option>`).join("")}
     </select></label>
     <h3>${escapeHtml(ev.titolo||"Evento")}</h3>
-    <div class="muted">${escapeHtml(formatRangeDate(ev.data_evento,ev.data_fine_evento||ev.data_evento))} â€¢ ${escapeHtml(ev.luogo||"-")}</div>
+    <div class="muted">${escapeHtml(formatRangeDate(ev.data_evento,ev.data_fine_evento||ev.data_evento))} • ${escapeHtml(ev.luogo||"-")}</div>
     <div class="load-progress"><span style="width:${pct}%"></span></div>
-    <div class="muted">${pct}% completato â€¢ ${fatti}/${totale} flag</div>
+    <div class="muted">${pct}% completato • ${fatti}/${totale} flag</div>
     <div class="actions">
       <button class="secondary" onclick="setCaricoFiltro('tutti')">Tutti</button>
       <button class="secondary" onclick="setCaricoFiltro('mancanti')">Mancanti</button>
@@ -1721,7 +1779,7 @@ function renderModalitaCarico(){
       const scarico=getCaricoFlag(evKey,k,"scarico");
       return `<div class="load-check ${carico&&scarico?'done':''}">
         <input type="checkbox" ${carico?"checked":""} onchange="setCaricoFlag('${evKey}','${k}','carico',this.checked)">
-        <div><b>${escapeHtml(m.nome||"Materiale")}</b><div class="muted">${escapeHtml(m.codice_inventario||"")} â€¢ ${escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))}</div></div>
+        <div><b>${escapeHtml(m.nome||"Materiale")}</b><div class="muted">${escapeHtml(m.codice_inventario||"")} • ${escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))}</div></div>
         <label style="margin:0"><input type="checkbox" ${scarico?"checked":""} onchange="setCaricoFlag('${evKey}','${k}','scarico',this.checked)"> Scarico</label>
       </div>`;
     }).join(""):'<div class="notice">Nessun materiale assegnato o nessun elemento nel filtro.</div>'}
@@ -1734,7 +1792,7 @@ function renderOperatoriCheckboxes(selected=[],prefix="op_pick"){
   if(!operatori.length)return '<div class="muted">Nessun operatore salvato.</div>';
   return '<div class="material-picker">'+operatori.filter(o=>o.attivo!==false).map(o=>{
     const key=o.local_id||o.id;
-    return `<label class="material-pick"><input type="checkbox" class="${prefix}" value="${escapeHtml(key)}" ${selected.includes(key)?"checked":""}> ${escapeHtml(o.nome||"Operatore")}<div class="muted">${escapeHtml((o.ruolo||"")+(o.telefono?" â€¢ "+o.telefono:""))}</div></label>`;
+    return `<label class="material-pick"><input type="checkbox" class="${prefix}" value="${escapeHtml(key)}" ${selected.includes(key)?"checked":""}> ${escapeHtml(o.nome||"Operatore")}<div class="muted">${escapeHtml((o.ruolo||"")+(o.telefono?" • "+o.telefono:""))}</div></label>`;
   }).join("")+'</div>';
 }
 function renderOperatoriPickerEvento(e){return renderOperatoriCheckboxes(operatoriEvento(e),"ev_op_"+(e.local_id||e.id));}
@@ -1758,7 +1816,7 @@ async function salvaOperatore(){
 }
 function renderOperatori(){
   const box=$("listaOperatori");if(!box)return;
-  box.innerHTML=operatori.length?operatori.map(o=>`<div class="operator-row"><h3>${escapeHtml(o.nome||"Operatore")}</h3><div class="muted">${escapeHtml(o.ruolo||"")} â€¢ ${escapeHtml(o.telefono||"")}</div><div>${escapeHtml(o.note||"")}</div></div>`).join(""):'<div class="notice">Nessun operatore salvato.</div>';
+  box.innerHTML=operatori.length?operatori.map(o=>`<div class="operator-row"><h3>${escapeHtml(o.nome||"Operatore")}</h3><div class="muted">${escapeHtml(o.ruolo||"")} • ${escapeHtml(o.telefono||"")}</div><div>${escapeHtml(o.note||"")}</div></div>`).join(""):'<div class="notice">Nessun operatore salvato.</div>';
 }
 function mezziImpegnatiPeriodo(start,end,excludeEventoKey=""){
   if(!start)return [];
@@ -1777,7 +1835,7 @@ function warningMezziPreventivo(){
   if(!start || !current.length){box.innerHTML="";return;}
   const busy=mezziImpegnatiPeriodo(start,end);
   const conflicts=current.filter(m=>busy.find(b=>b.mezzo===(m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo)));
-  box.innerHTML=conflicts.length?`<div class="mezzo-warning">Attenzione: mezzo giÃ  impegnato nel periodo: ${escapeHtml(conflicts.map(m=>m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo).join(", "))}</div>`:'<div class="availability-ok">Mezzi disponibili nel periodo selezionato.</div>';
+  box.innerHTML=conflicts.length?`<div class="mezzo-warning">Attenzione: mezzo già impegnato nel periodo: ${escapeHtml(conflicts.map(m=>m.mezzo==="Altro"?(m.custom||"Altro"):m.mezzo).join(", "))}</div>`:'<div class="availability-ok">Mezzi disponibili nel periodo selezionato.</div>';
 }
 function clausoleContrattoDefault(){
   return JSON.parse(localStorage.getItem("k38_clausole_contratto")||"null") || [
@@ -1846,17 +1904,17 @@ function renderDashboardPlus(){
   const carico=caricoOperativo7Giorni();
   box.innerHTML=`<div class="dash-panel">
     <b>Economia mese</b>
-    <div class="muted">Fatturato: ${euro(fatt)} â€¢ Incassato: ${euro(inc)} â€¢ Da riscuotere: ${euro(ris)} â€¢ Utile stimato: ${euro(utileMese())}</div>
+    <div class="muted">Fatturato: ${euro(fatt)} • Incassato: ${euro(inc)} • Da riscuotere: ${euro(ris)} • Utile stimato: ${euro(utileMese())}</div>
     <div class="dash-bar"><span style="width:${pct}%"></span></div>
-    <div class="muted">${pct}% incassato sul mese â€¢ Margine stimato: ${margineMese()}%</div>
+    <div class="muted">${pct}% incassato sul mese • Margine stimato: ${margineMese()}%</div>
   </div>
   <div class="dash-panel">
     <b>Carico prossimi 7 giorni</b>
-    <div class="muted">Eventi: ${carico.eventi} â€¢ Materiali movimentati: ${carico.materiale}</div>
+    <div class="muted">Eventi: ${carico.eventi} • Materiali movimentati: ${carico.materiale}</div>
   </div>
   <div class="dash-panel">
     <b>Controlli rapidi</b>
-    <div class="muted">Materiali da manutentare: ${materialeDaManutentareCount()} â€¢ Clienti salvati: ${clienti.length} â€¢ Operatori: ${operatori.length}</div>
+    <div class="muted">Materiali da manutentare: ${materialeDaManutentareCount()} • Clienti salvati: ${clienti.length} • Operatori: ${operatori.length}</div>
   </div>`;
 }
 function operatoriImpegnatiPeriodo(start,end,excludeEventoKey=""){
@@ -1876,7 +1934,7 @@ function warningOperatoriNuovoEvento(){
   if(!start || !selected.length){box.innerHTML="";return;}
   const busy=operatoriImpegnatiPeriodo(start,end);
   const conflicts=selected.filter(op=>busy.find(b=>b.operatore===op));
-  box.innerHTML=conflicts.length?`<div class="operator-warning">Attenzione: operatori giÃ  impegnati nel periodo: ${escapeHtml(conflicts.map(nomeOperatoreById).join(", "))}</div>`:'<div class="operator-ok">Operatori disponibili nel periodo selezionato.</div>';
+  box.innerHTML=conflicts.length?`<div class="operator-warning">Attenzione: operatori già impegnati nel periodo: ${escapeHtml(conflicts.map(nomeOperatoreById).join(", "))}</div>`:'<div class="operator-ok">Operatori disponibili nel periodo selezionato.</div>';
 }
 function renderRiepilogoEventoOperatoriMezzi(e){
   const ops=operatoriEvento(e).map(nomeOperatoreById).join(", ")||"-";
@@ -1966,10 +2024,10 @@ function logAttivita(testo){
 function renderRegistroAttivita(){
   const box=$("registroAttivitaBox"); if(!box)return;
   const logs=JSON.parse(localStorage.getItem("k38_log_attivita")||"[]");
-  box.innerHTML=logs.length?logs.slice(0,40).map(l=>`<div class="log-row"><b>${new Date(l.data).toLocaleString("it-IT")}</b><br>${escapeHtml(l.testo)}</div>`).join(""):'<div class="muted">Nessuna attivitÃ  registrata.</div>';
+  box.innerHTML=logs.length?logs.slice(0,40).map(l=>`<div class="log-row"><b>${new Date(l.data).toLocaleString("it-IT")}</b><br>${escapeHtml(l.testo)}</div>`).join(""):'<div class="muted">Nessuna attività registrata.</div>';
 }
 function pulisciRegistroAttivita(){
-  if(!confirm("Vuoi pulire il registro attivitÃ  locale?"))return;
+  if(!confirm("Vuoi pulire il registro attività locale?"))return;
   localStorage.removeItem("k38_log_attivita");
   renderRegistroAttivita();
 }
@@ -2004,7 +2062,7 @@ function scaricaBackupCompleto(){
 async function importaBackupCompleto(file){
   if(!file)return;
   if(!guard("backup","importa backup"))return;
-  if(!confirm("ATTENZIONE: importare un backup sostituirÃ  i dati locali di questo dispositivo. Procedere?"))return;
+  if(!confirm("ATTENZIONE: importare un backup sostituirà i dati locali di questo dispositivo. Procedere?"))return;
   const text=await file.text();
   let data;
   try{data=JSON.parse(text)}catch(e){alert("File JSON non valido.");return;}
@@ -2065,10 +2123,10 @@ var renderPreventivoCard=function(p){
   return `<div class="item ${p.accettato?'accepted':''}">
     <div class="item-head">
       <div>
-        <b>${p.numero_preventivo||"Preventivo"} â€” ${p.cliente||"Cliente"}</b>
-        <div class="muted">${p.evento||""} â€¢ ${formatRangeDate(p.data_evento,p.data_fine_evento)} â€¢ ${p.luogo||""}</div>
+        <b>${p.numero_preventivo||"Preventivo"} — ${p.cliente||"Cliente"}</b>
+        <div class="muted">${p.evento||""} • ${formatRangeDate(p.data_evento,p.data_fine_evento)} • ${p.luogo||""}</div>
         <div class="total">${euro(p.totale)}</div>
-        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} â€¢ Incassato: ${euro(p.importo_incassato||0)} â€¢ Da riscuotere: ${euro(daRiscuotere)}</div><div class="muted">Mezzi: ${descrizioneMezziPreventivo(p)}</div><div class="muted">Materiali collegati: ${(p.materiali||[]).length||0}</div>
+        <div class="muted">Pagamento: ${p.stato_pagamento||"Da saldare"} • Incassato: ${euro(p.importo_incassato||0)} • Da riscuotere: ${euro(daRiscuotere)}</div><div class="muted">Mezzi: ${descrizioneMezziPreventivo(p)}</div><div class="muted">Materiali collegati: ${(p.materiali||[]).length||0}</div>
         <label><input type="checkbox" ${p.accettato?"checked":""} onchange="toggleAccettato('${key}',this.checked)"> Preventivo accettato / inserisci impegno calendario</label>
         <label><input type="checkbox" ${(p.stato_pagamento||"")==="Pagato"?"checked":""} onchange="togglePagamentoRiscosso('${key}',this.checked)"> Pagamento riscosso</label>
         <label><input type="checkbox" ${p.archiviato?"checked":""} onchange="toggleArchivioPreventivo('${key}',this.checked)"> Archiviato</label>
@@ -2160,7 +2218,7 @@ async function salvaMateriale(){
     note:v("m_note")
   };
 
-  if(!row.nome){ playSound("error"); alert("Il nome materiale Ã¨ obbligatorio."); return; }
+  if(!row.nome){ playSound("error"); alert("Il nome materiale è obbligatorio."); return; }
 
   if(online()){
     if(file){
@@ -2210,11 +2268,11 @@ function disponibilitaMaterialePeriodo(materialeKey,start,end,excludeEventoKey="
 function messaggioDisponibilitaMateriale(m){
   const key=m.local_id||m.id;
   const periodo=getPeriodoPreventivoCorrente();
-  if(!periodo.start)return {classe:"availability-mid",testo:"Seleziona data inizio/fine per controllo disponibilitÃ ."};
+  if(!periodo.start)return {classe:"availability-mid",testo:"Seleziona data inizio/fine per controllo disponibilità."};
   const d=disponibilitaMaterialePeriodo(key,periodo.start,periodo.end);
   if(statoMaterialeCritico(m)==="bloccato")return {classe:"availability-bad",testo:"Fuori servizio: non selezionabile."};
-  if(d.disponibili<=0)return {classe:"availability-bad",testo:"Non disponibile nel periodo selezionato. GiÃ  impegnato in: "+d.eventi.map(e=>e.titolo||"Evento").join(", ")};
-  if(d.impegnati>0)return {classe:"availability-mid",testo:"DisponibilitÃ  parziale: "+d.disponibili+" disponibili su "+d.totale};
+  if(d.disponibili<=0)return {classe:"availability-bad",testo:"Non disponibile nel periodo selezionato. Già impegnato in: "+d.eventi.map(e=>e.titolo||"Evento").join(", ")};
+  if(d.impegnati>0)return {classe:"availability-mid",testo:"Disponibilità parziale: "+d.disponibili+" disponibili su "+d.totale};
   return {classe:"availability-ok",testo:"Disponibile nel periodo selezionato: "+d.disponibili+" su "+d.totale};
 }
 function materialiNonDisponibiliPreventivo(){
@@ -2310,13 +2368,13 @@ async function salvaPreventivo(){
   const row=datiPreventivo();
   if(row.firmato && row.stato_pagamento==="Da saldare") row.stato_pagamento="Firmato";
   const nonDisp=materialiNonDisponibiliPreventivo();
-  if(nonDisp.length){playSound("error");alert("Materiale non disponibile nelle quantitÃ  richieste: "+nonDisp.map(x=>(x.materiale?.nome||"Materiale")+" richiesto x"+x.item.qty).join(", "));return;}
+  if(nonDisp.length){playSound("error");alert("Materiale non disponibile nelle quantità richieste: "+nonDisp.map(x=>(x.materiale?.nome||"Materiale")+" richiesto x"+x.item.qty).join(", "));return;}
   const bloccati=materialiBloccatiPreventivo();
   if(bloccati.length){playSound("error");alert("Hai selezionato materiale fuori servizio: "+bloccati.map(m=>m.nome).join(", "));return;}
   if(!row.cliente && !row.evento){ playSound("error"); alert("Inserisci almeno cliente o evento prima di salvare il preventivo."); return; }
   if(!confirmPastDate(row.data_evento)) return;
   const operatoriConflitto=getSelectedOperatoriNuovoEvento().filter(op=>operatoriImpegnatiPeriodo(row.data_evento,row.data_fine_evento).find(b=>b.operatore===op));
-  if(operatoriConflitto.length && !confirm("ATTENZIONE: alcuni operatori risultano giÃ  impegnati: "+operatoriConflitto.map(nomeOperatoreById).join(", ")+". Vuoi continuare comunque?")) return;
+  if(operatoriConflitto.length && !confirm("ATTENZIONE: alcuni operatori risultano già impegnati: "+operatoriConflitto.map(nomeOperatoreById).join(", ")+". Vuoi continuare comunque?")) return;
 
   if(online()){
     const ins=await sb.from("preventivi").insert(cleanForDb(row)).select().single();
@@ -2682,7 +2740,7 @@ function renderEventoEdit(e){
       '<label>Data fine<input type="date" id="ev_df_'+key+'" value="'+escapeHtml(e.data_fine_evento||e.data_evento||"")+'"></label>' +
       '<label>Luogo<input id="ev_l_'+key+'" value="'+escapeHtml(e.luogo||"")+'"></label>' +
       '<label>Stato<select id="ev_s_'+key+'">'+options+'</select></label>' +
-      '<label>Totale â‚¬<input type="number" id="ev_tot_'+key+'" value="'+Number(e.totale||0)+'"></label>' +
+      '<label>Totale €<input type="number" id="ev_tot_'+key+'" value="'+Number(e.totale||0)+'"></label>' +
       '<label>Ora montaggio<input id="ev_mont_'+key+'" value="'+escapeHtml(e.ora_montaggio||"")+'"></label>' +
       '<label>Ora smontaggio<input id="ev_smont_'+key+'" value="'+escapeHtml(e.ora_smontaggio||"")+'"></label>' +
     '</div>' +
@@ -2690,7 +2748,7 @@ function renderEventoEdit(e){
     '<h3>Operatori assegnati</h3><div id="operatori_box_'+key+'">'+renderOperatoriPickerEvento(e)+'</div><h3>Materiale assegnato</h3>' +
     renderMaterialPicker(e) +
     '<h3>Checklist tecnica avanzata</h3>' + renderChecklistAvanzataEvento(e) +
-    (selectedMats.length?'<div class="muted">Distinta: '+selectedMats.map(nomeMaterialeConQuantita).map(escapeHtml).join(" â€¢ ")+'</div>':'') +
+    (selectedMats.length?'<div class="muted">Distinta: '+selectedMats.map(nomeMaterialeConQuantita).map(escapeHtml).join(" • ")+'</div>':'') +
     '<div class="actions">' +
       '<button class="green" onclick="salvaModificaEvento(&quot;'+key+'&quot;)">Salva modifiche</button>' +
       '<button class="secondary" onclick="scaricaDistintaEvento(&quot;'+key+'&quot;)">PDF distinta</button>' +
@@ -2726,7 +2784,7 @@ async function creaEventoManuale(){
   };
   if(!confirmPastDate(row.data_evento)) return;
   const ctec=conflittoTecnico(row.data_evento,row.tecnico,"",row.data_fine_evento);
-  if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha giÃ  un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?")) return;
+  if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha già un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?")) return;
 
   if(online()){
     const ins=await sb.from("eventi").insert(cleanForDb(row)).select().single();
@@ -2773,7 +2831,7 @@ async function salvaModificaEvento(key){
   if(!confirmPastDate(updated.data_evento)) return;
 
   const ctec=conflittoTecnico(updated.data_evento,updated.tecnico,key,updated.data_fine_evento);
-  if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha giÃ  un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?")) return;
+  if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha già un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?")) return;
 
   const cmats=conflittiMateriale(updated.data_evento,selectedMats,key,updated.data_fine_evento);
   if(cmats.length){
@@ -2894,7 +2952,7 @@ function pdf(doc,q,img){
   doc.setFontSize(11);
   doc.text(q.numero_preventivo||"Preventivo",50,26);
   doc.setFontSize(9);
-  doc.text("Service K38 â€¢ Audio Video Luci â€¢ Noleggio e Service",50,34);
+  doc.text("Service K38 • Audio Video Luci • Noleggio e Service",50,34);
 
   // Right document box
   doc.setFillColor(255,255,255);
@@ -2957,7 +3015,7 @@ function pdf(doc,q,img){
   if(catsKeys.length){
     catsKeys.forEach((cat,i)=>{
       const desc=catsAtt[cat].items.map(m=>m.nome||"Materiale").join(", ");
-      tableRow(doc,cat,desc+" â€” "+euro(catsAtt[cat].totale),y,i%2===0);
+      tableRow(doc,cat,desc+" — "+euro(catsAtt[cat].totale),y,i%2===0);
       y+=9;
     });
   }else{
