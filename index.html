@@ -48,6 +48,10 @@ input.code-error{border-color:#ef4444;box-shadow:0 0 0 2px rgba(239,68,68,.18)}
 .code-locked-badge{display:inline-block;border:1px solid #14532d;background:#082414;color:#86efac;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}
 .unit-code-grid{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .unit-code{display:inline-block;background:#0b1220;border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;color:#e5e7eb}
+.unit-code small{display:block;color:var(--muted);font-weight:700;margin-top:3px}
+.unit-serial-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px}
+.unit-serial-row{background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:9px}
+.unit-serial-row b{display:block;color:var(--yellow);font-size:13px;margin-bottom:5px}
 textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;font-weight:900;color:var(--yellow);word-break:break-word}
 .item{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px;overflow:hidden}.item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item img{width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:10px}.total{font-size:30px;color:var(--yellow);font-weight:900}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#24314c;color:#fff;font-size:12px;margin-top:4px}.calendar-day{border-left:4px solid var(--yellow)}.accepted{border-left:4px solid var(--green)}.blocked{opacity:.55}
 .notice{border-left:4px solid var(--yellow);padding:12px;background:#182235;border-radius:12px;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:0 1 auto;max-width:100%}.offline{background:#7f1d1d}.online{background:#14532d}.syncing{background:#854d0e}.pill{padding:6px 10px;border-radius:999px;font-size:13px;font-weight:800}
@@ -352,8 +356,9 @@ to{opacity:1}
             <datalist id="speaker_quantita_coni_options"><option value="1"><option value="2"><option value="3"><option value="4"><option value="6"><option value="8"></datalist>
             <datalist id="speaker_spl_options"><option value="90"><option value="92"><option value="95"><option value="98"><option value="100"><option value="102"><option value="105"><option value="108"><option value="110"><option value="112"><option value="115"><option value="118"><option value="120"><option value="125"><option value="128"><option value="130"></datalist>
           </div>
+          <div id="m_unit_serials" class="item hidden" style="grid-column:1/-1"></div>
           <label>Marca<input id="m_marca"></label><label>Modello<input id="m_modello"></label><label>Seriale<input id="m_seriale"></label>
-          <label>Quantità<input id="m_quantita" type="number" value="1"></label><label>Posizione<input id="m_posizione"></label>
+          <label>Quantità<input id="m_quantita" type="number" value="1" min="1" oninput="aggiornaCampiNuovoMateriale(false)"></label><label>Posizione<input id="m_posizione"></label>
           <label>Stato<select id="m_stato"><option>Disponibile</option><option>Impegnato</option><option>In manutenzione</option><option>Da manutentare</option><option>Da controllare</option><option>Fuori servizio</option></select></label>
           <label>Prezzo listino/acquisto €<input id="m_listino" type="number" value="0"></label>
           <label>Prezzo reale pagato €<input id="m_reale" type="number" value="0"></label>
@@ -704,7 +709,7 @@ to{opacity:1}
 <script>
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
 
-const APP_VERSION="service-k38-v59";
+const APP_VERSION="service-k38-v61";
 function bootJsonParse(raw,fallback){
   try{return raw?JSON.parse(raw):fallback}
   catch(e){return fallback}
@@ -954,6 +959,7 @@ function aggiornaCampiNuovoMateriale(forceCode=false){
   toggleCampiCavo("m");
   toggleCampiAltoparlante("m");
   aggiornaCodiceInventarioSuggerito(forceCode);
+  renderSerialiUnitaNuovoMateriale();
 }
 function toggleCampiCavo(prefix){
   if(prefix==="m"){
@@ -977,6 +983,7 @@ function toggleCampiAltoparlante(prefix){
     const key=prefix.replace("mat_","");
     const box=$("mat_speaker_fields_"+key);
     if(box)box.classList.toggle("hidden",!isAltoparlanteMateriale($("mat_cat_"+key)?.value,$("mat_sub_"+key)?.value));
+    renderSerialiUnitaEditMateriale(key);
   }
 }
 function dettagliCavoMateriale(m){
@@ -996,6 +1003,12 @@ function dettagliAltoparlanteMateriale(m){
     m.speaker_spl_db?m.speaker_spl_db+" dB SPL":""
   ].filter(Boolean);
   return parts.length?'<div class="muted">Altoparlante: '+escapeHtml(parts.join(" - "))+'</div>':"";
+}
+function dettagliSerialiUnitaMateriale(m){
+  if(!isAltoparlanteMateriale(m.categoria,m.sottocategoria) || quantitaMaterialeIntera(m)<=1)return "";
+  const rows=serialiUnitaArray(m);
+  const compilati=rows.filter(x=>x.seriale).length;
+  return '<div class="muted">Seriali pezzi: '+compilati+'/'+rows.length+'</div>';
 }
 function normalizzaCodiceKey(value){
   return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim();
@@ -1122,11 +1135,107 @@ function codiciUnitaMateriale(m){
   const generated=generaCodiciUnitaMateriale(m);
   return Array.from({length:total},(_,i)=>existing[i]||generated[i]);
 }
-function renderCodiciUnitaMateriale(m){
+function serialiUnitaArray(m){
   const codici=codiciUnitaMateriale(m);
+  const raw=parseJsonField(m.seriali_unita,[]);
+  const byCode={};
+  const byIndex={};
+  if(Array.isArray(raw)){
+    raw.forEach((row,i)=>{
+      if(typeof row==="string"){
+        byIndex[i]=row;
+      }else if(row && typeof row==="object"){
+        if(row.codice)byCode[String(row.codice)]=row.seriale||"";
+        byIndex[i]=row.seriale||"";
+      }
+    });
+  }else if(raw && typeof raw==="object"){
+    Object.entries(raw).forEach(([k,v])=>{
+      if(/^\d+$/.test(k))byIndex[Number(k)]=v||"";
+      else byCode[String(k)]=v||"";
+    });
+  }
+  return codici.map((codice,i)=>({codice,seriale:String(byCode[codice]||byIndex[i]||"")}));
+}
+function serialiUnitaSalvabili(m){
+  return serialiUnitaArray(m).map(x=>({codice:x.codice,seriale:String(x.seriale||"").trim()})).filter(x=>x.seriale);
+}
+function readSerialiUnitaFromBox(box){
+  const out={};
+  if(!box)return out;
+  box.querySelectorAll(".unit-serial-input").forEach(el=>{
+    const code=el.dataset.unitCode||"";
+    if(code)out[code]=el.value||"";
+  });
+  return out;
+}
+function serialiUnitaHtml(m,inputPrefix,existingValues={}){
+  const rows=serialiUnitaArray(m);
+  return '<h3>Seriali per singolo pezzo</h3>'+
+    '<div class="muted">Compila un seriale per ciascun altoparlante fisico. Il codice a sinistra e quello della etichetta.</div>'+
+    '<div class="unit-serial-grid">'+rows.map((r,i)=>{
+      const value=existingValues[r.codice]??r.seriale??"";
+      return '<label class="unit-serial-row"><b>'+escapeHtml(r.codice)+'</b><input class="unit-serial-input" data-unit-code="'+escapeHtml(r.codice)+'" id="'+inputPrefix+i+'" value="'+escapeHtml(value)+'" placeholder="Seriale '+escapeHtml(r.codice)+'"></label>';
+    }).join("")+'</div>';
+}
+function bozzaNuovoMaterialePerUnita(){
+  return {
+    codice_inventario:$("m_codice")?.value||prossimoCodiceInventario($("m_categoria")?.value,$("m_sottocategoria")?.value),
+    categoria:$("m_categoria")?.value||"",
+    sottocategoria:$("m_sottocategoria")?.value||"",
+    quantita:n("m_quantita")
+  };
+}
+function renderSerialiUnitaNuovoMateriale(){
+  const box=$("m_unit_serials");
+  if(!box)return;
+  const draft=bozzaNuovoMaterialePerUnita();
+  const show=isAltoparlanteMateriale(draft.categoria,draft.sottocategoria) && quantitaMaterialeIntera(draft)>1;
+  const previous=readSerialiUnitaFromBox(box);
+  box.classList.toggle("hidden",!show);
+  if(!show){box.innerHTML="";return;}
+  box.innerHTML=serialiUnitaHtml(draft,"m_unit_serial_",previous);
+}
+function leggiSerialiUnitaNuovoMateriale(row){
+  if(!isAltoparlanteMateriale(row.categoria,row.sottocategoria) || quantitaMaterialeIntera(row)<=1)return [];
+  const codici=codiciUnitaMateriale(row);
+  return codici.map((codice,i)=>({codice,seriale:String($("m_unit_serial_"+i)?.value||"").trim()})).filter(x=>x.seriale);
+}
+function renderSerialiUnitaMateriale(m,key){
+  const show=isAltoparlanteMateriale(m.categoria,m.sottocategoria) && quantitaMaterialeIntera(m)>1;
+  return '<div id="mat_unit_serials_'+key+'" class="item '+(show?'':'hidden')+'" style="grid-column:1/-1">'+(show?serialiUnitaHtml(m,"mat_unit_serial_"+key+"_",{}):"")+'</div>';
+}
+function renderSerialiUnitaEditMateriale(key){
+  const box=$("mat_unit_serials_"+key);
+  const m=materiali.find(x=>(x.local_id||x.id)===key)||{};
+  const draft={
+    ...m,
+    codice_inventario:$("mat_cod_"+key)?.value||m.codice_inventario,
+    categoria:$("mat_cat_"+key)?.value||m.categoria,
+    sottocategoria:$("mat_sub_"+key)?.value||m.sottocategoria,
+    quantita:Number($("mat_qta_"+key)?.value||m.quantita||1)
+  };
+  const show=isAltoparlanteMateriale(draft.categoria,draft.sottocategoria) && quantitaMaterialeIntera(draft)>1;
+  const previous=readSerialiUnitaFromBox(box);
+  if(box)box.classList.toggle("hidden",!show);
+  if(!box)return;
+  if(!show){box.innerHTML="";return;}
+  const saved=Object.fromEntries(serialiUnitaArray(draft).map(x=>[x.codice,x.seriale]));
+  box.innerHTML=serialiUnitaHtml(draft,"mat_unit_serial_"+key+"_",{...saved,...previous});
+}
+function leggiSerialiUnitaEditMateriale(key,row){
+  if(!isAltoparlanteMateriale(row.categoria,row.sottocategoria) || quantitaMaterialeIntera(row)<=1)return [];
+  const codici=codiciUnitaMateriale(row);
+  return codici.map((codice,i)=>({codice,seriale:String($("mat_unit_serial_"+key+"_"+i)?.value||"").trim()})).filter(x=>x.seriale);
+}
+function descriviSerialiUnitaMateriale(m){
+  return serialiUnitaArray(m).filter(x=>x.seriale).map(x=>x.codice+": "+x.seriale).join(" | ");
+}
+function renderCodiciUnitaMateriale(m){
+  const seriali=serialiUnitaArray(m);
   return '<div class="item" style="grid-column:1/-1"><h3>Codici etichetta / seriali unità</h3>'+
     '<div class="muted">Ogni pezzo fisico ha il proprio codice da riportare sull’etichetta.</div>'+
-    '<div class="unit-code-grid">'+codici.map(c=>'<span class="unit-code">'+escapeHtml(c)+'</span>').join("")+'</div></div>';
+    '<div class="unit-code-grid">'+seriali.map(r=>'<span class="unit-code">'+escapeHtml(r.codice)+(r.seriale?'<small>'+escapeHtml(r.seriale)+'</small>':'')+'</span>').join("")+'</div></div>';
 }
 let ultimoCodiceSuggerito="";
 function verificaCodiceInventario(){
@@ -1217,7 +1326,8 @@ function problemiCodiciBloccati(){
 function aggiornaQueueCodiceMateriale(m,codice){
   const key=m.local_id||m.id;
   const codiciUnita=generaCodiciUnitaMateriale({...m,codice_inventario:codice});
-  const payload={codice_inventario:codice,codici_unita:codiciUnita};
+  const serialiUnita=serialiUnitaSalvabili({...m,codice_inventario:codice,codici_unita:codiciUnita});
+  const payload={codice_inventario:codice,codici_unita:codiciUnita,seriali_unita:serialiUnita};
   let found=false;
   queue.forEach(item=>{
     if(item.table==="materiali" && item.type==="insert" && item.payload && (item.payload.local_id===m.local_id || item.payload.id===m.id)){
@@ -1267,7 +1377,8 @@ async function correggiCodiciProgressivi(){
   for(const c of changes){
     c.materiale.codice_inventario=c.expected;
     c.materiale.codici_unita=generaCodiciUnitaMateriale(c.materiale);
-    const payload={codice_inventario:c.expected,codici_unita:c.materiale.codici_unita};
+    c.materiale.seriali_unita=serialiUnitaSalvabili(c.materiale);
+    const payload={codice_inventario:c.expected,codici_unita:c.materiale.codici_unita,seriali_unita:c.materiale.seriali_unita};
     if(online() && c.materiale.id){
       const {error}=await sb.from("materiali").update(payload).eq("id",c.materiale.id);
       if(error){showSyncError(error);return;}
@@ -1772,6 +1883,7 @@ function renderMaterialeCompatto(m){
     '<div class="muted">Codici etichetta: '+codiciUnitaMateriale(m).length+'</div>'+
     (m.codice_bloccato?'<div class="muted">&#128274; Codice bloccato</div>':'')+
     dettagliAltoparlanteMateriale(m)+
+    dettagliSerialiUnitaMateriale(m)+
     dettagliCavoMateriale(m)+
     '<div class="muted">Noleggio: '+euro(m.prezzo_noleggio||0)+'</div></div>'+
     '<button class="secondary" onclick="toggleSchedaMateriale(&quot;'+key+'&quot;)">Apri scheda</button>'+
@@ -1805,6 +1917,7 @@ function renderMaterialeEdit(m){
           : '<button class="secondary" onclick="bloccaCodiceInventario(&quot;'+key+'&quot;)">&#128274; Blocca codice etichetta</button><span class="muted">Usalo dopo aver stampato e applicato l’etichetta.</span>')+
       '</div>' +
       renderCodiciUnitaMateriale(m)+
+      renderSerialiUnitaMateriale(m,key)+
       '<label>Nome<input id="mat_nome_'+key+'" value="'+escapeHtml(m.nome||"")+'"></label>' +
       '<label>Categoria<select id="mat_cat_'+key+'" onchange="aggiornaSottocategorie(&quot;mat_'+key+'&quot;)">'+categorie.map(c=>'<option '+(c===(m.categoria||"")?'selected':'')+'>'+escapeHtml(c)+'</option>').join("")+'</select></label>' +
       '<label>Sottocategoria<select id="mat_sub_'+key+'" onchange="toggleCampiCavo(&quot;mat_'+key+'&quot;);toggleCampiAltoparlante(&quot;mat_'+key+'&quot;)">'+opzioniSottocategorie(m.categoria||"Audio",m.sottocategoria||"")+'</select></label>' +
@@ -1813,7 +1926,7 @@ function renderMaterialeEdit(m){
       '<label>Marca<input id="mat_marca_'+key+'" value="'+escapeHtml(m.marca||"")+'"></label>' +
       '<label>Modello<input id="mat_modello_'+key+'" value="'+escapeHtml(m.modello||"")+'"></label>' +
       '<label>Seriale<input id="mat_seriale_'+key+'" value="'+escapeHtml(m.seriale||"")+'"></label>' +
-      '<label>Quantità<input type="number" id="mat_qta_'+key+'" value="'+Number(m.quantita||0)+'"></label>' +
+      '<label>Quantità<input type="number" id="mat_qta_'+key+'" min="1" value="'+Number(m.quantita||0)+'" oninput="renderSerialiUnitaEditMateriale(&quot;'+key+'&quot;)"></label>' +
       '<label>Posizione<input id="mat_pos_'+key+'" value="'+escapeHtml(m.posizione||"")+'"></label>' +
       '<label>Stato<select id="mat_stato_'+key+'">'+stati.map(s=>'<option '+(s===(m.stato||"")?'selected':'')+'>'+escapeHtml(s)+'</option>').join("")+'</select></label>' +
       '<label>Prezzo listino/acquisto €<input type="number" id="mat_listino_'+key+'" value="'+Number(m.prezzo_listino||0)+'"></label>' +
@@ -1903,7 +2016,7 @@ async function bloccaCodiceInventario(key){
   const codice=m.codice_inventario||$("mat_cod_"+key)?.value||"";
   if(!codice){playSound("error");alert("Non posso bloccare un materiale senza codice inventario.");return;}
   if(!confirm("Bloccare definitivamente il codice "+codice+"?\n\nUsalo solo dopo aver stampato e applicato l'etichetta. Le correzioni automatiche non potranno più modificare questo codice."))return;
-  const payload={codice_bloccato:true,codice_bloccato_il:new Date().toISOString(),codici_unita:codiciUnitaMateriale(m)};
+  const payload={codice_bloccato:true,codice_bloccato_il:new Date().toISOString(),codici_unita:codiciUnitaMateriale(m),seriali_unita:serialiUnitaSalvabili(m)};
   if(online() && m.id){
     const {error}=await sb.from("materiali").update(payload).eq("id",m.id);
     if(error){showSyncError(error);return;}
@@ -1948,6 +2061,7 @@ async function salvaModificaMateriale(key){
     note:$("mat_note_"+key).value
   };
   updated.codici_unita=codiciUnitaMateriale({...m,...updated});
+  updated.seriali_unita=leggiSerialiUnitaEditMateriale(key,{...m,...updated});
   if(!updated.nome){playSound("error");alert("Il nome materiale è obbligatorio.");return}
   if(removeFoto){
     updated.foto_url="";
@@ -1959,7 +2073,7 @@ async function salvaModificaMateriale(key){
   if(online() && m.id){
     if(foto_data){
       let blob=await (await fetch(foto_data)).blob();
-      let path=`${Date.now()}-${updated.nome||"foto"}.jpg`;
+      let path=fotoStoragePath(updated.nome||fotoFile?.name||"foto","jpg");
       let up=await sb.storage.from("foto-materiali").upload(path,blob,{upsert:true});
       if(up.error){showSyncError(up.error);return;}
       updated.foto_url=sb.storage.from("foto-materiali").getPublicUrl(path).data.publicUrl;
@@ -2606,6 +2720,7 @@ function rigaListaMagazzino(m){
   return {
     "Codice":m.codice_inventario||"",
     "Codici etichette":codiciUnitaMateriale(m).join(", "),
+    "Seriali unita":descriviSerialiUnitaMateriale(m),
     "Codice bloccato":siNo(m.codice_bloccato),
     "Categoria":m.categoria||"",
     "Tipo":m.sottocategoria||"",
@@ -2733,6 +2848,17 @@ function fileToRawDataURL(file){
     reader.readAsDataURL(file);
   });
 }
+function safeStorageName(value){
+  return String(value||"foto")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-zA-Z0-9._-]+/g,"-")
+    .replace(/-+/g,"-")
+    .replace(/^[-.]+|[-.]+$/g,"")
+    .slice(0,90) || "foto";
+}
+function fotoStoragePath(label,ext="jpg"){
+  return Date.now()+"-"+uid().replace(/[^a-zA-Z0-9_-]/g,"")+"-"+safeStorageName(label)+"."+ext;
+}
 function chiudiConfermaSalvataggio(){
   const box=$("saveConfirmOverlay");
   if(box)box.classList.add("hidden");
@@ -2842,13 +2968,14 @@ async function salvaMateriale(){
     note:v("m_note")
   };
   row.codici_unita=generaCodiciUnitaMateriale(row);
+  row.seriali_unita=leggiSerialiUnitaNuovoMateriale(row);
 
   if(!row.nome){ playSound("error"); alert("Il nome materiale è obbligatorio."); return; }
 
   if(online()){
     if(file){
       let blob=await (await fetch(foto_data)).blob();
-      let path=`${Date.now()}-${row.nome||"foto"}.jpg`;
+      let path=fotoStoragePath(row.nome||file?.name||"foto","jpg");
       let up=await sb.storage.from("foto-materiali").upload(path,blob,{upsert:true});
       if(up.error){ showSyncError(up.error); return; }
       row.foto_url=sb.storage.from("foto-materiali").getPublicUrl(path).data.publicUrl;
@@ -3272,7 +3399,7 @@ async function syncNow(){
 
       if((item.table==="materiali"||item.type==="update_materiale")&&item.foto_data){
         let blob=await (await fetch(item.foto_data)).blob();
-        let path=`${Date.now()}-${payload.nome||"foto"}.png`;
+        let path=fotoStoragePath(payload.nome||"foto","jpg");
         let up=await sb.storage.from("foto-materiali").upload(path,blob,{upsert:true});
         if(!up.error)payload.foto_url=sb.storage.from("foto-materiali").getPublicUrl(path).data.publicUrl;
       }
