@@ -39,6 +39,13 @@ button.secondary{background:#1b2942;color:#fff;border:1px solid var(--line)}butt
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
 label{display:block;font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px}
 input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:#fff;padding:11px;margin-top:6px;min-width:0}
+input.code-error{border-color:#ef4444;box-shadow:0 0 0 2px rgba(239,68,68,.18)}
+.code-hint{display:block;margin-top:6px;border:1px solid var(--line);border-radius:10px;background:#0b1220;padding:8px;font-size:12px;color:var(--muted);line-height:1.3}
+.code-hint.ok{border-color:#14532d;color:#86efac;background:#082414}
+.code-hint.bad{border-color:#7f1d1d;color:#fecaca;background:#2a0b0b}
+.code-lock-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.code-lock-row button{padding:7px 10px;font-size:13px}
+.code-locked-badge{display:inline-block;border:1px solid #14532d;background:#082414;color:#86efac;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}
 textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;font-weight:900;color:var(--yellow);word-break:break-word}
 .item{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px;overflow:hidden}.item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item img{width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:10px}.total{font-size:30px;color:var(--yellow);font-weight:900}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#24314c;color:#fff;font-size:12px;margin-top:4px}.calendar-day{border-left:4px solid var(--yellow)}.accepted{border-left:4px solid var(--green)}.blocked{opacity:.55}
 .notice{border-left:4px solid var(--yellow);padding:12px;background:#182235;border-radius:12px;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:0 1 auto;max-width:100%}.offline{background:#7f1d1d}.online{background:#14532d}.syncing{background:#854d0e}.pill{padding:6px 10px;border-radius:999px;font-size:13px;font-weight:800}
@@ -86,6 +93,11 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
 .compact-material .placeholder-img{width:64px;height:64px;border-radius:10px;background:#0b1220;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px}
 .full-card-hidden{display:none}
 .full-card-hidden.show{display:block}
+.save-confirm-overlay{position:fixed;inset:0;background:rgba(7,11,20,.82);display:flex;align-items:center;justify-content:center;z-index:9999;padding:18px}
+.save-confirm-box{width:min(440px,100%);background:var(--panel);border:1px solid var(--green);border-radius:18px;padding:22px;box-shadow:0 18px 60px rgba(0,0,0,.45)}
+.save-confirm-box h2{color:#22c55e;margin-bottom:8px}
+.save-confirm-box p{margin:0;color:var(--text);line-height:1.45}
+.save-confirm-box .muted{margin-top:6px}
 
 .compact-event{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
 .compact-event-detail{display:none}
@@ -286,7 +298,7 @@ to{opacity:1}
       <div class="card">
         <h2>Nuova scheda materiale</h2>
         <div class="row">
-          <label>Codice inventario<input id="m_codice" placeholder="Automatico: es. X-01"></label>
+          <label>Codice inventario<input id="m_codice" placeholder="Automatico: es. X-01" readonly><span id="m_codice_hint" class="code-hint">Codice generato in base alla categoria.</span></label>
           <label>Nome<input id="m_nome"></label>
           <label>Categoria<select id="m_categoria" onchange="aggiornaSottocategorie('m');aggiornaCampiNuovoMateriale(true)"><option>Audio</option><option>Luci</option><option>Video</option><option>Cavi</option><option>Strutture</option><option>Aste Microfoniche</option><option>Carrelli</option><option>Accessori</option><option>Ricambi</option><option>Utensili</option></select></label>
           <label>Sottocategoria<select id="m_sottocategoria" onchange="aggiornaCampiNuovoMateriale(true)"></select></label>
@@ -297,6 +309,21 @@ to{opacity:1}
               <label>Estremita A<select id="m_cavo_estremita_a"></select></label>
               <label>Estremita B<select id="m_cavo_estremita_b"></select></label>
             </div>
+          </div>
+          <div id="m_speaker_fields" class="item hidden" style="grid-column:1/-1">
+            <h3>Specifiche altoparlante</h3>
+            <div class="row">
+              <label>Watt RMS<input id="m_speaker_watt_rms" list="speaker_watt_rms_options" inputmode="numeric" placeholder="Es. 500"></label>
+              <label>Watt di picco<input id="m_speaker_watt_picco" list="speaker_watt_picco_options" inputmode="numeric" placeholder="Es. 1000"></label>
+              <label>Diametro coni in pollici<input id="m_speaker_diametro_pollici" list="speaker_diametro_options" placeholder="Es. 12"></label>
+              <label>Quantita coni<input id="m_speaker_quantita_coni" list="speaker_quantita_coni_options" inputmode="numeric" placeholder="Es. 1"></label>
+              <label>Decibel SPL<input id="m_speaker_spl_db" list="speaker_spl_options" inputmode="numeric" placeholder="Es. 128"></label>
+            </div>
+            <datalist id="speaker_watt_rms_options"><option value="100"><option value="150"><option value="200"><option value="250"><option value="300"><option value="400"><option value="500"><option value="700"><option value="800"><option value="1000"><option value="1200"><option value="1500"><option value="2000"></datalist>
+            <datalist id="speaker_watt_picco_options"><option value="200"><option value="300"><option value="400"><option value="500"><option value="600"><option value="800"><option value="1000"><option value="1200"><option value="1600"><option value="2000"><option value="2400"><option value="3000"><option value="4000"></datalist>
+            <datalist id="speaker_diametro_options"><option value="1"><option value="2"><option value="3"><option value="4"><option value="5"><option value="6.5"><option value="8"><option value="10"><option value="12"><option value="15"><option value="18"><option value="21"></datalist>
+            <datalist id="speaker_quantita_coni_options"><option value="1"><option value="2"><option value="3"><option value="4"><option value="6"><option value="8"></datalist>
+            <datalist id="speaker_spl_options"><option value="90"><option value="92"><option value="95"><option value="98"><option value="100"><option value="102"><option value="105"><option value="108"><option value="110"><option value="112"><option value="115"><option value="118"><option value="120"><option value="125"><option value="128"><option value="130"></datalist>
           </div>
           <label>Marca<input id="m_marca"></label><label>Modello<input id="m_modello"></label><label>Seriale<input id="m_seriale"></label>
           <label>Quantità<input id="m_quantita" type="number" value="1"></label><label>Posizione<input id="m_posizione"></label>
@@ -317,6 +344,10 @@ to{opacity:1}
         </div>
         <div class="actions">
           <button class="secondary" onclick="mostraMaterialiManutenzione()">Mostra manutenzioni</button>
+          <button class="secondary" onclick="controllaCodiciProgressivi()">Controlla codici</button>
+          <button class="secondary" onclick="correggiCodiciProgressivi()">Correggi progressivi</button>
+          <button class="secondary" onclick="scaricaListaMagazzinoExcel()">Scarica lista Excel</button>
+          <span id="codiciAuditMsg" class="muted"></span>
         </div>
         <div id="listaMateriali"></div></div>
     </section>
@@ -536,6 +567,7 @@ to{opacity:1}
           <h3>Export CSV</h3>
           <div class="actions">
             <button class="secondary" onclick="scaricaCSV('materiali')">CSV Materiali</button>
+            <button class="secondary" onclick="scaricaListaMagazzinoExcel()">Lista magazzino Excel</button>
             <button class="secondary" onclick="scaricaCSV('preventivi')">CSV Preventivi</button>
             <button class="secondary" onclick="scaricaCSV('eventi')">CSV Eventi</button>
             <button class="secondary" onclick="scaricaCSV('clienti')">CSV Clienti</button>
@@ -632,11 +664,20 @@ to{opacity:1}
   </section>
 </div>
 
+<div id="saveConfirmOverlay" class="save-confirm-overlay hidden">
+  <div class="save-confirm-box">
+    <h2>Materiale salvato</h2>
+    <p id="saveConfirmText">Scheda registrata correttamente.</p>
+    <div class="muted">Il modulo è stato svuotato ed è pronto per il prossimo inserimento.</div>
+    <div class="actions"><button class="green" onclick="chiudiConfermaSalvataggio()">OK</button></div>
+  </div>
+</div>
+
 <audio id="k38SecretAudio" preload="auto"><source src="https://actions.google.com/sounds/v1/cartoon/concussive_drum_hit.ogg" type="audio/ogg"></audio>
 <script>
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
 
-const APP_VERSION="service-k38-v46";
+const APP_VERSION="service-k38-v51";
 function bootJsonParse(raw,fallback){
   try{return raw?JSON.parse(raw):fallback}
   catch(e){return fallback}
@@ -849,8 +890,11 @@ function initCampiCavo(){
   aggiornaCampiNuovoMateriale(true);
 }
 function isCategoriaCavi(cat){return cat==="Cavi";}
+const sottocategorieAltoparlanti=["Casse attive","Casse passive","Subwoofer attivi","Subwoofer passivi","Monitor spia"];
+function isAltoparlanteMateriale(cat,sub){return cat==="Audio" && sottocategorieAltoparlanti.includes(sub||"");}
 function aggiornaCampiNuovoMateriale(forceCode=false){
   toggleCampiCavo("m");
+  toggleCampiAltoparlante("m");
   aggiornaCodiceInventarioSuggerito(forceCode);
 }
 function toggleCampiCavo(prefix){
@@ -865,12 +909,35 @@ function toggleCampiCavo(prefix){
     if(box)box.classList.toggle("hidden",!isCategoriaCavi($("mat_cat_"+key)?.value));
   }
 }
+function toggleCampiAltoparlante(prefix){
+  if(prefix==="m"){
+    const box=$("m_speaker_fields");
+    if(box)box.classList.toggle("hidden",!isAltoparlanteMateriale($("m_categoria")?.value,$("m_sottocategoria")?.value));
+    return;
+  }
+  if(prefix.startsWith("mat_")){
+    const key=prefix.replace("mat_","");
+    const box=$("mat_speaker_fields_"+key);
+    if(box)box.classList.toggle("hidden",!isAltoparlanteMateriale($("mat_cat_"+key)?.value,$("mat_sub_"+key)?.value));
+  }
+}
 function dettagliCavoMateriale(m){
   if(!isCategoriaCavi(m.categoria))return "";
   const metri=m.cavo_metratura?String(m.cavo_metratura)+" m":"metratura n/d";
   const a=m.cavo_estremita_a||"?";
   const b=m.cavo_estremita_b||"?";
   return '<div class="muted">Cavo: '+escapeHtml(metri)+' - '+escapeHtml(a)+' / '+escapeHtml(b)+'</div>';
+}
+function dettagliAltoparlanteMateriale(m){
+  if(!isAltoparlanteMateriale(m.categoria,m.sottocategoria))return "";
+  const parts=[
+    m.speaker_watt_rms?m.speaker_watt_rms+" W RMS":"",
+    m.speaker_watt_picco?m.speaker_watt_picco+" W picco":"",
+    m.speaker_diametro_pollici?m.speaker_diametro_pollici+'"':"",
+    m.speaker_quantita_coni?m.speaker_quantita_coni+" coni":"",
+    m.speaker_spl_db?m.speaker_spl_db+" dB SPL":""
+  ].filter(Boolean);
+  return parts.length?'<div class="muted">Altoparlante: '+escapeHtml(parts.join(" - "))+'</div>':"";
 }
 function normalizzaCodiceKey(value){
   return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().trim();
@@ -929,7 +996,7 @@ const prefissiCodiceInventario={
   "STRUTTURE|SUPPORTI CASSE":"SC",
   "STRUTTURE|SUPPORTI LUCI":"SL",
   "STRUTTURE|ALTRO STRUTTURE":"ASTR",
-  "ASTE MICROFONICHE|ASTE MICROFONICHE":"AM",
+  "ASTE MICROFONICHE|ASTE MICROFONICHE":"ASM",
   "CARRELLI|CARRELLI":"CAR",
   "ACCESSORI|STAND":"STD",
   "ACCESSORI|CLAMP":"CLP",
@@ -968,20 +1035,171 @@ function prossimoCodiceInventario(cat,sub){
   return prefix+"-"+String((used.length?Math.max(...used):0)+1).padStart(2,"0");
 }
 let ultimoCodiceSuggerito="";
+function verificaCodiceInventario(){
+  const input=$("m_codice");
+  const hint=$("m_codice_hint");
+  if(!input||!hint)return true;
+  const suggested=prossimoCodiceInventario($("m_categoria")?.value,$("m_sottocategoria")?.value);
+  const value=String(input.value||"").trim().toUpperCase();
+  const ok=!value || value===suggested.toUpperCase();
+  input.classList.toggle("code-error",!ok);
+  hint.classList.toggle("bad",!ok);
+  hint.classList.toggle("ok",ok && !!value);
+  hint.textContent=ok
+    ? "Codice corretto suggerito: "+suggested
+    : "Progressivo errato: il prossimo codice corretto è "+suggested;
+  return ok;
+}
 function aggiornaCodiceInventarioSuggerito(force=false){
   const input=$("m_codice");
   if(!input)return;
   const suggested=prossimoCodiceInventario($("m_categoria")?.value,$("m_sottocategoria")?.value);
-  if(force || !input.value || input.value===ultimoCodiceSuggerito){
-    input.value=suggested;
-    ultimoCodiceSuggerito=suggested;
+  input.value=suggested;
+  ultimoCodiceSuggerito=suggested;
+  verificaCodiceInventario();
+}
+function materialeSortTime(m){
+  const t=Date.parse(m.created_at||m.updated_at||"");
+  if(!Number.isNaN(t))return t;
+  const local=String(m.local_id||"").match(/local_(\d+)/);
+  return local?Number(local[1]):0;
+}
+function materialeStableKey(m){
+  return String(m.created_at||"")+"|"+String(m.local_id||"")+"|"+String(m.id||"")+"|"+String(m.nome||"");
+}
+function materialiInOrdineProgressivo(){
+  return [...materiali].sort((a,b)=>{
+    const ta=materialeSortTime(a), tb=materialeSortTime(b);
+    if(ta!==tb)return ta-tb;
+    return materialeStableKey(a).localeCompare(materialeStableKey(b));
+  });
+}
+function numeroProgressivoDaCodice(codice,prefix){
+  const m=String(codice||"").trim().match(new RegExp("^"+escapeRegExp(prefix)+"-(\\d+)$","i"));
+  return m?Number(m[1]||0):0;
+}
+function calcolaCorrezioniCodiciProgressivi(){
+  const groups={};
+  const changes=[];
+  materialiInOrdineProgressivo().forEach(m=>{
+    const prefix=prefissoCodiceInventario(m.categoria,m.sottocategoria);
+    if(!groups[prefix])groups[prefix]={locked:new Set(),unlocked:[]};
+    if(m.codice_bloccato){
+      const num=numeroProgressivoDaCodice(m.codice_inventario,prefix);
+      if(num)groups[prefix].locked.add(num);
+    }else{
+      groups[prefix].unlocked.push(m);
+    }
+  });
+  Object.entries(groups).forEach(([prefix,g])=>{
+    let next=1;
+    g.unlocked.forEach(m=>{
+      while(g.locked.has(next))next++;
+      const expected=prefix+"-"+String(next).padStart(2,"0");
+      next++;
+      const current=String(m.codice_inventario||"").trim();
+      if(current.toUpperCase()!==expected.toUpperCase()){
+        changes.push({key:m.local_id||m.id, materiale:m, old:current||"senza codice", expected});
+      }
+    });
+  });
+  return changes;
+}
+function problemiCodiciBloccati(){
+  const seen={};
+  const issues=[];
+  materiali.forEach(m=>{
+    const current=String(m.codice_inventario||"").trim();
+    if(!m.codice_bloccato||!current)return;
+    const key=current.toUpperCase();
+    if(seen[key]){
+      issues.push({codice:current, primo:seen[key], secondo:m});
+    }else{
+      seen[key]=m;
+    }
+  });
+  return issues;
+}
+function aggiornaQueueCodiceMateriale(m,codice){
+  const key=m.local_id||m.id;
+  let found=false;
+  queue.forEach(item=>{
+    if(item.table==="materiali" && item.type==="insert" && item.payload && (item.payload.local_id===m.local_id || item.payload.id===m.id)){
+      item.payload.codice_inventario=codice;
+      found=true;
+    }
+    if(item.type==="update_materiale" && item.key===key){
+      item.payload={...(item.payload||{}),codice_inventario:codice};
+      found=true;
+    }
+  });
+  if(!found)queue.push({type:"update_materiale",key,payload:{codice_inventario:codice}});
+}
+function descriviCorrezioniCodici(changes){
+  return changes.slice(0,12).map(c=>(c.old||"-")+" -> "+c.expected+"  "+(c.materiale.nome||"Materiale")).join("\n");
+}
+function descriviProblemiCodiciBloccati(issues){
+  return issues.slice(0,8).map(i=>i.codice+" duplicato: "+(i.primo.nome||"Materiale")+" / "+(i.secondo.nome||"Materiale")).join("\n");
+}
+function controllaCodiciProgressivi(){
+  const changes=calcolaCorrezioniCodiciProgressivi();
+  const lockedIssues=problemiCodiciBloccati();
+  const box=$("codiciAuditMsg");
+  if(!changes.length && !lockedIssues.length){
+    if(box)box.textContent="Codici progressivi OK.";
+    alert("Controllo completato: tutti i codici progressivi sono corretti. I codici bloccati sono protetti.");
+    return;
   }
+  let text="";
+  if(changes.length)text+="Trovati "+changes.length+" codici non bloccati da correggere.\n\n"+descriviCorrezioniCodici(changes)+(changes.length>12?"\n...":"");
+  if(lockedIssues.length)text+=(text?"\n\n":"")+"Attenzione: "+lockedIssues.length+" codici bloccati risultano duplicati e non verranno modificati automaticamente.\n\n"+descriviProblemiCodiciBloccati(lockedIssues);
+  if(box)box.textContent="Controllo codici: "+changes.length+" correzioni, "+lockedIssues.length+" duplicati bloccati.";
+  alert(text);
+}
+async function correggiCodiciProgressivi(){
+  if(!guard("event_update","correzione codici progressivi"))return;
+  const changes=calcolaCorrezioniCodiciProgressivi();
+  const lockedIssues=problemiCodiciBloccati();
+  const box=$("codiciAuditMsg");
+  if(!changes.length){
+    if(box)box.textContent="Codici progressivi OK.";
+    alert(lockedIssues.length?"Nessuna correzione automatica possibile: ci sono codici bloccati duplicati da verificare manualmente.":"Nessuna correzione necessaria.");
+    return;
+  }
+  let warn=lockedIssues.length?"\n\nNota: "+lockedIssues.length+" codici bloccati duplicati non verranno toccati.":"";
+  if(!confirm("Correggere automaticamente "+changes.length+" codici progressivi non bloccati?\nI codici con lucchetto resteranno invariati."+warn+"\n\n"+descriviCorrezioniCodici(changes)+(changes.length>12?"\n...":"")))return;
+  for(const c of changes){
+    c.materiale.codice_inventario=c.expected;
+    if(online() && c.materiale.id){
+      const {error}=await sb.from("materiali").update({codice_inventario:c.expected}).eq("id",c.materiale.id);
+      if(error){showSyncError(error);return;}
+    }else{
+      c.materiale._pending=true;
+      aggiornaQueueCodiceMateriale(c.materiale,c.expected);
+    }
+  }
+  saveCache();
+  saveQueue();
+  render();
+  aggiornaCodiceInventarioSuggerito(true);
+  playSound("success");
+  if(box)box.textContent="Corretti "+changes.length+" codici progressivi.";
+  alert("Correzione completata: "+changes.length+" codici aggiornati.");
 }
 function renderCampiCavoMateriale(m,key){
   return '<div id="mat_cavo_fields_'+key+'" class="item '+(isCategoriaCavi(m.categoria)?'':'hidden')+'" style="grid-column:1/-1"><h3>Dettagli cavo</h3><div class="row">'+
     '<label>Metratura cavo<input type="number" min="0" step="0.5" id="mat_cavo_metratura_'+key+'" value="'+Number(m.cavo_metratura||0)+'"></label>'+
     '<label>Estremita A<select id="mat_cavo_a_'+key+'">'+opzioniConnettoriCavo(m.cavo_estremita_a||"")+'</select></label>'+
     '<label>Estremita B<select id="mat_cavo_b_'+key+'">'+opzioniConnettoriCavo(m.cavo_estremita_b||"")+'</select></label>'+
+  '</div></div>';
+}
+function renderCampiAltoparlanteMateriale(m,key){
+  return '<div id="mat_speaker_fields_'+key+'" class="item '+(isAltoparlanteMateriale(m.categoria,m.sottocategoria)?'':'hidden')+'" style="grid-column:1/-1"><h3>Specifiche altoparlante</h3><div class="row">'+
+    '<label>Watt RMS<input id="mat_speaker_watt_rms_'+key+'" list="speaker_watt_rms_options" value="'+escapeHtml(m.speaker_watt_rms||"")+'"></label>'+
+    '<label>Watt di picco<input id="mat_speaker_watt_picco_'+key+'" list="speaker_watt_picco_options" value="'+escapeHtml(m.speaker_watt_picco||"")+'"></label>'+
+    '<label>Diametro coni in pollici<input id="mat_speaker_diametro_pollici_'+key+'" list="speaker_diametro_options" value="'+escapeHtml(m.speaker_diametro_pollici||"")+'"></label>'+
+    '<label>Quantita coni<input id="mat_speaker_quantita_coni_'+key+'" list="speaker_quantita_coni_options" value="'+escapeHtml(m.speaker_quantita_coni||"")+'"></label>'+
+    '<label>Decibel SPL<input id="mat_speaker_spl_db_'+key+'" list="speaker_spl_options" value="'+escapeHtml(m.speaker_spl_db||"")+'"></label>'+
   '</div></div>';
 }
 function aggiornaSottocategorie(prefix){
@@ -1001,6 +1219,7 @@ function aggiornaSottocategorie(prefix){
   }
   if(sub) sub.innerHTML=opzioniSottocategorie(cat||"Audio", sub.value);
   toggleCampiCavo(prefix);
+  toggleCampiAltoparlante(prefix);
   if(prefix==="m")aggiornaCampiNuovoMateriale(true);
 }
 function $(id){return document.getElementById(id)} function v(id){return $(id).value} function n(id){return Number(v(id)||0)} function euro(x){return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(Number(x||0))} function msg(id,t){$(id).textContent=" "+t}
@@ -1452,6 +1671,9 @@ function renderMaterialeCompatto(m){
     '<div><b>'+escapeHtml(m.nome||"Materiale")+'</b>'+
     '<div class="muted">'+escapeHtml(m.codice_inventario||"Senza codice")+' • '+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div>'+
     '<div class="muted">'+escapeHtml((m.marca||"")+(m.modello?" / "+m.modello:""))+' • Stato: '+escapeHtml(m.stato||"-")+' • Q.tà '+Number(m.quantita||0)+'</div>'+
+    (m.codice_bloccato?'<div class="muted">&#128274; Codice bloccato</div>':'')+
+    dettagliAltoparlanteMateriale(m)+
+    dettagliCavoMateriale(m)+
     '<div class="muted">Noleggio: '+euro(m.prezzo_noleggio||0)+'</div></div>'+
     '<button class="secondary" onclick="toggleSchedaMateriale(&quot;'+key+'&quot;)">Apri scheda</button>'+
     '</div><div id="full_mat_'+key+'" class="full-card-hidden">'+renderMaterialeEdit(m)+'</div>';
@@ -1477,11 +1699,17 @@ function renderMaterialeEdit(m){
   const categorie=Object.keys(categorieMateriale);
   return '<div class="item">' +
     '<div class="row">' +
-      '<label>Codice inventario<input id="mat_cod_'+key+'" value="'+escapeHtml(m.codice_inventario||"")+'"></label>' +
+      '<label>Codice inventario<input id="mat_cod_'+key+'" value="'+escapeHtml(m.codice_inventario||"")+'" readonly></label>' +
+      '<div class="code-lock-row" style="grid-column:1/-1">'+
+        (m.codice_bloccato
+          ? '<span class="code-locked-badge">&#128274; Codice bloccato</span><span class="muted">Questo codice non verrà modificato da correzioni future.</span>'
+          : '<button class="secondary" onclick="bloccaCodiceInventario(&quot;'+key+'&quot;)">&#128274; Blocca codice etichetta</button><span class="muted">Usalo dopo aver stampato e applicato l’etichetta.</span>')+
+      '</div>' +
       '<label>Nome<input id="mat_nome_'+key+'" value="'+escapeHtml(m.nome||"")+'"></label>' +
       '<label>Categoria<select id="mat_cat_'+key+'" onchange="aggiornaSottocategorie(&quot;mat_'+key+'&quot;)">'+categorie.map(c=>'<option '+(c===(m.categoria||"")?'selected':'')+'>'+escapeHtml(c)+'</option>').join("")+'</select></label>' +
-      '<label>Sottocategoria<select id="mat_sub_'+key+'">'+opzioniSottocategorie(m.categoria||"Audio",m.sottocategoria||"")+'</select></label>' +
+      '<label>Sottocategoria<select id="mat_sub_'+key+'" onchange="toggleCampiCavo(&quot;mat_'+key+'&quot;);toggleCampiAltoparlante(&quot;mat_'+key+'&quot;)">'+opzioniSottocategorie(m.categoria||"Audio",m.sottocategoria||"")+'</select></label>' +
       renderCampiCavoMateriale(m,key) +
+      renderCampiAltoparlanteMateriale(m,key) +
       '<label>Marca<input id="mat_marca_'+key+'" value="'+escapeHtml(m.marca||"")+'"></label>' +
       '<label>Modello<input id="mat_modello_'+key+'" value="'+escapeHtml(m.modello||"")+'"></label>' +
       '<label>Seriale<input id="mat_seriale_'+key+'" value="'+escapeHtml(m.seriale||"")+'"></label>' +
@@ -1534,6 +1762,42 @@ async function aggiungiManutenzioneMateriale(key){
   logAttivita("Manutenzione registrata: "+(m.nome||key));
   saveCache();saveQueue();render();
 }
+function aggiornaQueueMaterialePayload(m,payload){
+  const key=m.local_id||m.id;
+  let found=false;
+  queue.forEach(item=>{
+    if(item.table==="materiali" && item.type==="insert" && item.payload && (item.payload.local_id===m.local_id || item.payload.id===m.id)){
+      Object.assign(item.payload,payload);
+      found=true;
+    }
+    if(item.type==="update_materiale" && item.key===key){
+      item.payload={...(item.payload||{}),...payload};
+      found=true;
+    }
+  });
+  if(!found)queue.push({type:"update_materiale",key,payload});
+}
+async function bloccaCodiceInventario(key){
+  if(!guard("event_update","blocco codice inventario"))return;
+  let m=materiali.find(x=>(x.local_id||x.id)===key);
+  if(!m)return;
+  if(m.codice_bloccato){alert("Codice già bloccato.");return;}
+  const codice=m.codice_inventario||$("mat_cod_"+key)?.value||"";
+  if(!codice){playSound("error");alert("Non posso bloccare un materiale senza codice inventario.");return;}
+  if(!confirm("Bloccare definitivamente il codice "+codice+"?\n\nUsalo solo dopo aver stampato e applicato l'etichetta. Le correzioni automatiche non potranno più modificare questo codice."))return;
+  const payload={codice_bloccato:true,codice_bloccato_il:new Date().toISOString()};
+  if(online() && m.id){
+    const {error}=await sb.from("materiali").update(payload).eq("id",m.id);
+    if(error){showSyncError(error);return;}
+  }else{
+    m._pending=true;
+    aggiornaQueueMaterialePayload(m,payload);
+  }
+  Object.assign(m,payload);
+  saveCache();saveQueue();render();
+  playSound("success");
+  alert("Codice "+codice+" bloccato. Non verrà modificato dalle correzioni future.");
+}
 async function salvaModificaMateriale(key){
   if(!guard("event_update","modifica materiale"))return;
   let m=materiali.find(x=>(x.local_id||x.id)===key);
@@ -1546,6 +1810,11 @@ async function salvaModificaMateriale(key){
     cavo_metratura:Number($("mat_cavo_metratura_"+key)?.value||0),
     cavo_estremita_a:$("mat_cavo_a_"+key)?.value||"",
     cavo_estremita_b:$("mat_cavo_b_"+key)?.value||"",
+    speaker_watt_rms:$("mat_speaker_watt_rms_"+key)?.value||"",
+    speaker_watt_picco:$("mat_speaker_watt_picco_"+key)?.value||"",
+    speaker_diametro_pollici:$("mat_speaker_diametro_pollici_"+key)?.value||"",
+    speaker_quantita_coni:$("mat_speaker_quantita_coni_"+key)?.value||"",
+    speaker_spl_db:$("mat_speaker_spl_db_"+key)?.value||"",
     marca:$("mat_marca_"+key).value,
     modello:$("mat_modello_"+key).value,
     seriale:$("mat_seriale_"+key).value,
@@ -2101,6 +2370,57 @@ function scaricaCSV(tipo){
   logAttivita("Export CSV "+tipo+" scaricato");
   renderRegistroAttivita();
 }
+function valoreNumero(x){return Number(x||0)}
+function siNo(value){return value?"SI":"NO"}
+function rigaListaMagazzino(m){
+  const q=valoreNumero(m.quantita||0);
+  const acquisto=valoreNumero(m.prezzo_reale||m.prezzo_listino||0);
+  const noleggio=valoreNumero(m.prezzo_noleggio||0);
+  return {
+    "Codice":m.codice_inventario||"",
+    "Codice bloccato":siNo(m.codice_bloccato),
+    "Categoria":m.categoria||"",
+    "Tipo":m.sottocategoria||"",
+    "Nome":m.nome||"",
+    "Marca":m.marca||"",
+    "Modello":m.modello||"",
+    "Seriale":m.seriale||"",
+    "Quantita":q,
+    "Stato":m.stato||"",
+    "Posizione":m.posizione||"",
+    "Costo acquisto unitario":acquisto,
+    "Valore acquisto totale":q*acquisto,
+    "Prezzo noleggio unitario":noleggio,
+    "Valore noleggio totale":q*noleggio,
+    "Cavo metri":m.cavo_metratura||"",
+    "Cavo estremita A":m.cavo_estremita_a||"",
+    "Cavo estremita B":m.cavo_estremita_b||"",
+    "Watt RMS":m.speaker_watt_rms||"",
+    "Watt picco":m.speaker_watt_picco||"",
+    "Diametro coni pollici":m.speaker_diametro_pollici||"",
+    "Quantita coni":m.speaker_quantita_coni||"",
+    "SPL dB":m.speaker_spl_db||"",
+    "Note":m.note||""
+  };
+}
+function codiceSortValue(codice){
+  const m=String(codice||"").match(/^([A-Z]+)-(\d+)/i);
+  return m?m[1].toUpperCase()+"-"+String(Number(m[2])).padStart(8,"0"):String(codice||"");
+}
+function scaricaListaMagazzinoExcel(){
+  if(!materiali.length){alert("Nessun materiale da esportare.");return;}
+  const rows=[...materiali]
+    .sort((a,b)=>
+      String(a.categoria||"").localeCompare(String(b.categoria||"")) ||
+      String(a.sottocategoria||"").localeCompare(String(b.sottocategoria||"")) ||
+      codiceSortValue(a.codice_inventario).localeCompare(codiceSortValue(b.codice_inventario))
+    )
+    .map(rigaListaMagazzino);
+  const csv="\ufeffsep=;\n"+toCSV(rows);
+  downloadText("lista-magazzino-service-k38-"+todayISO()+".csv",csv,"text/csv;charset=utf-8");
+  logAttivita("Lista magazzino Excel scaricata");
+  renderRegistroAttivita();
+}
 
 function render(){
 renderDashboardPlus();warningOperatoriNuovoEvento();
@@ -2184,6 +2504,30 @@ function fileToRawDataURL(file){
     reader.readAsDataURL(file);
   });
 }
+function chiudiConfermaSalvataggio(){
+  const box=$("saveConfirmOverlay");
+  if(box)box.classList.add("hidden");
+}
+function mostraConfermaSalvataggio(row,mode){
+  const box=$("saveConfirmOverlay");
+  const txt=$("saveConfirmText");
+  if(txt)txt.textContent=(row.codice_inventario||"Materiale")+" - "+(row.nome||"scheda")+" salvato "+mode+".";
+  if(box)box.classList.remove("hidden");
+}
+function resetNuovaSchedaMateriale(){
+  const cat=v("m_categoria");
+  const sub=v("m_sottocategoria");
+  ["m_nome","m_marca","m_modello","m_seriale","m_posizione","m_note","m_cavo_metratura","m_cavo_estremita_a","m_cavo_estremita_b","m_speaker_watt_rms","m_speaker_watt_picco","m_speaker_diametro_pollici","m_speaker_quantita_coni","m_speaker_spl_db"].forEach(id=>{const el=$(id);if(el)el.value="";});
+  ["m_listino","m_reale","m_noleggio"].forEach(id=>{const el=$(id);if(el)el.value=0;});
+  if($("m_quantita"))$("m_quantita").value=1;
+  if($("m_stato"))$("m_stato").value="Disponibile";
+  if($("m_foto"))$("m_foto").value="";
+  if($("m_categoria"))$("m_categoria").value=cat;
+  aggiornaSottocategorie("m");
+  if($("m_sottocategoria"))$("m_sottocategoria").value=sub;
+  aggiornaCampiNuovoMateriale(true);
+  msg("m_msg","");
+}
 async function salvaMateriale(){
   if(!guard("event_update","salva materiale"))return;
   msg("m_msg","salvataggio...");
@@ -2196,15 +2540,21 @@ async function salvaMateriale(){
     foto_url=foto_data;
   }
 
+  const codiceGenerato=prossimoCodiceInventario(v("m_categoria"),v("m_sottocategoria"));
   let row={
     local_id:uid(),
-    codice_inventario:v("m_codice")||prossimoCodiceInventario(v("m_categoria"),v("m_sottocategoria")),
+    codice_inventario:codiceGenerato,
     nome:v("m_nome"),
     categoria:v("m_categoria"),
     sottocategoria:v("m_sottocategoria"),
     cavo_metratura:n("m_cavo_metratura"),
     cavo_estremita_a:v("m_cavo_estremita_a"),
     cavo_estremita_b:v("m_cavo_estremita_b"),
+    speaker_watt_rms:v("m_speaker_watt_rms"),
+    speaker_watt_picco:v("m_speaker_watt_picco"),
+    speaker_diametro_pollici:v("m_speaker_diametro_pollici"),
+    speaker_quantita_coni:v("m_speaker_quantita_coni"),
+    speaker_spl_db:v("m_speaker_spl_db"),
     marca:v("m_marca"),
     modello:v("m_modello"),
     seriale:v("m_seriale"),
@@ -2231,21 +2581,25 @@ async function salvaMateriale(){
     const ins=await sb.from("materiali").insert(cleanForDb(row)).select().single();
     if(ins.error){ showSyncError(ins.error); return; }
     materiali.unshift(ins.data);
-    aggiornaCodiceInventarioSuggerito(true);
     saveCache();
     render();
+    resetNuovaSchedaMateriale();
     playSound("success");
-    msg("m_msg","materiale salvato online");logAttivita("Materiale salvato: "+row.nome);
+    mostraConfermaSalvataggio(ins.data,"online");
+    msg("m_msg","pronto per nuovo materiale");logAttivita("Materiale salvato: "+row.nome);
     return;
   }
 
   row._pending=true;
   materiali.unshift(row);
-  aggiornaCodiceInventarioSuggerito(true);
   queue.push({type:"insert",table:"materiali",payload:{...row},foto_data});
   saveCache();
   saveQueue();
-  msg("m_msg","salvato offline");
+  render();
+  resetNuovaSchedaMateriale();
+  playSound("success");
+  mostraConfermaSalvataggio(row,"offline");
+  msg("m_msg","pronto per nuovo materiale");
 }
 function getPeriodoPreventivoCorrente(){
   const start=$("p_data")?.value||null;
