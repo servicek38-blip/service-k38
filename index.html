@@ -46,6 +46,8 @@ input.code-error{border-color:#ef4444;box-shadow:0 0 0 2px rgba(239,68,68,.18)}
 .code-lock-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
 .code-lock-row button{padding:7px 10px;font-size:13px}
 .code-locked-badge{display:inline-block;border:1px solid #14532d;background:#082414;color:#86efac;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}
+.unit-code-grid{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.unit-code{display:inline-block;background:#0b1220;border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800;color:#e5e7eb}
 textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;font-weight:900;color:var(--yellow);word-break:break-word}
 .item{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px;overflow:hidden}.item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.item img{width:100%;max-height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:10px}.total{font-size:30px;color:var(--yellow);font-weight:900}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#24314c;color:#fff;font-size:12px;margin-top:4px}.calendar-day{border-left:4px solid var(--yellow)}.accepted{border-left:4px solid var(--green)}.blocked{opacity:.55}
 .notice{border-left:4px solid var(--yellow);padding:12px;background:#182235;border-radius:12px;color:#e5e7eb}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:0 1 auto;max-width:100%}.offline{background:#7f1d1d}.online{background:#14532d}.syncing{background:#854d0e}.pill{padding:6px 10px;border-radius:999px;font-size:13px;font-weight:800}
@@ -91,6 +93,8 @@ textarea{min-height:80px}.hidden{display:none!important}.stat{font-size:30px;fon
 .compact-material{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:10px;margin-top:8px}
 .compact-material img{width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
 .compact-material .placeholder-img{width:64px;height:64px;border-radius:10px;background:#0b1220;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px}
+.photo-tools{border:1px solid var(--line);border-radius:14px;background:#0b1220;padding:10px;margin-top:10px}
+.photo-preview{width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin:8px 0}
 .full-card-hidden{display:none}
 .full-card-hidden.show{display:block}
 .save-confirm-overlay{position:fixed;inset:0;background:rgba(7,11,20,.82);display:flex;align-items:center;justify-content:center;z-index:9999;padding:18px}
@@ -120,7 +124,12 @@ border:2px solid var(--blue);
 border-radius:24px;
 background:#0b1220;
 box-shadow:0 0 40px rgba(18,184,238,.35);
+position:relative;
+overflow:hidden;
+min-width:min(560px,92vw);
 }
+.k38-secret-box:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-120%);animation:k38scan 1.4s ease-in-out infinite}
+.k38-secret-logo{width:112px;height:82px;object-fit:contain;background:#000;border-radius:16px;padding:8px;margin:0 auto 12px;box-shadow:0 0 26px rgba(255,212,0,.35)}
 .k38-secret-title{
 font-size:38px;
 font-weight:900;
@@ -132,6 +141,14 @@ animation:k38pulse 1s infinite alternate;
 font-size:18px;
 color:#fff;
 }
+.k38-secret-grid{position:absolute;inset:0;background:linear-gradient(rgba(18,184,238,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(18,184,238,.08) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(circle at center,black,transparent 72%);animation:k38grid 4s linear infinite}
+.k38-beam{position:absolute;top:-12vh;width:16vw;height:130vh;background:linear-gradient(180deg,rgba(18,184,238,.35),rgba(236,22,136,.05),transparent);filter:blur(10px);transform-origin:top center;opacity:.75}
+.k38-beam.one{left:16%;transform:rotate(-16deg);animation:k38beam1 2.6s ease-in-out infinite alternate}
+.k38-beam.two{right:16%;transform:rotate(16deg);animation:k38beam2 2.8s ease-in-out infinite alternate}
+.k38-bars{display:flex;gap:5px;justify-content:center;align-items:end;height:48px;margin-top:18px}
+.k38-bars span{display:block;width:10px;border-radius:99px;background:linear-gradient(180deg,var(--blue),var(--pink));animation:k38bar .85s ease-in-out infinite alternate}
+.k38-bars span:nth-child(2n){animation-delay:.12s}.k38-bars span:nth-child(3n){animation-delay:.24s}.k38-bars span:nth-child(4n){animation-delay:.36s}
+.k38-secret-small{margin-top:10px;color:var(--muted);font-size:13px;letter-spacing:.08em}
 @keyframes k38pulse{
 from{transform:scale(1);opacity:.85}
 to{transform:scale(1.05);opacity:1}
@@ -140,6 +157,11 @@ to{transform:scale(1.05);opacity:1}
 from{opacity:0}
 to{opacity:1}
 }
+@keyframes k38scan{to{transform:translateX(120%)}}
+@keyframes k38grid{to{background-position:0 42px,42px 0}}
+@keyframes k38beam1{to{transform:rotate(10deg) translateX(30px)}}
+@keyframes k38beam2{to{transform:rotate(-10deg) translateX(-30px)}}
+@keyframes k38bar{from{height:10px}to{height:44px}}
 
 .signature-pad{background:#fff;border:2px dashed var(--line);border-radius:14px;width:100%;height:180px;touch-action:none}
 .signature-box{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:10px}
@@ -151,16 +173,21 @@ to{opacity:1}
 .dashboard-mini{font-size:13px;color:var(--muted);margin-top:6px}
 
 .agenda-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.agenda-list{display:flex;flex-direction:column;gap:10px}
-.agenda-day{background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:13px}
+.agenda-list{display:flex;flex-direction:column;gap:6px}
+.agenda-day{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:7px 11px}
+.agenda-day.empty-day{padding:5px 11px}
 .agenda-day.has-items{border-color:rgba(255,212,0,.65);box-shadow:0 0 0 1px rgba(255,212,0,.12)}
 .agenda-day.today{border-color:var(--blue);box-shadow:0 0 0 1px rgba(18,184,238,.2)}
 .agenda-day-head{display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer}
-.agenda-date{font-weight:900;font-size:17px}
-.agenda-empty{color:var(--muted);font-size:14px;margin-top:8px}
+.agenda-day-head.no-action{cursor:default}
+.agenda-day-main{display:flex;align-items:center;gap:10px;min-width:0}
+.agenda-date{font-weight:900;font-size:16px;white-space:nowrap}
+.agenda-summary{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agenda-empty{display:none}
 .agenda-items{display:none;margin-top:10px}
 .agenda-items.show{display:block}
 .agenda-item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px;background:#0b1220}
+.agenda-item{cursor:pointer}
 .agenda-item.evento{border-left:5px solid var(--blue)}
 .agenda-item.impegno{border-left:5px solid var(--yellow)}
 .agenda-badge{font-size:11px;border-radius:999px;padding:4px 8px;font-weight:900}
@@ -403,7 +430,7 @@ to{opacity:1}
             <button class="secondary" onclick="pulisciFirma()">Pulisci firma</button>
           </div>
         </div>
-        <div class="actions"><button onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDFCliente()">PDF Cliente Professionale</button><button class="secondary" onclick="scaricaPDFTecnico()">Distinta Tecnica</button><button class="secondary" onclick="scaricaContrattoPDF()">Contratto</button><span id="p_msg" class="muted"></span></div>
+        <div class="actions"><button id="btnSalvaPreventivo" onclick="salvaPreventivo()">Salva preventivo</button><button class="secondary" onclick="scaricaPDFCliente()">PDF Cliente Professionale</button><button class="secondary" onclick="scaricaPDFTecnico()">Distinta Tecnica</button><button class="secondary" onclick="scaricaContrattoPDF()">Contratto</button><span id="p_msg" class="muted"></span></div>
       </div>
       <div class="card"><h2>Preventivi salvati</h2><div id="listaPreventivi"></div></div>
     </section>
@@ -439,7 +466,7 @@ to{opacity:1}
           </div>
           <label>Note<textarea id="new_ev_note"></textarea></label><div class="item"><h3>Operatori assegnati</h3><div id="new_ev_operatori_box"></div><div id="new_ev_operatori_warning"></div></div>
           <div class="actions">
-            <button onclick="creaEventoManuale()">Salva evento</button>
+            <button id="btnSalvaEvento" onclick="creaEventoManuale()">Salva evento</button>
             <button class="secondary" onclick="mostraNuovoEvento(false)">Annulla</button>
           </div>
         </div>
@@ -458,7 +485,7 @@ to{opacity:1}
           </div>
           <label>Note<textarea id="new_imp_note"></textarea></label>
           <div class="actions">
-            <button onclick="creaImpegnoManuale()">Salva impegno</button>
+            <button id="btnSalvaImpegno" onclick="creaImpegnoManuale()">Salva impegno</button>
             <button class="secondary" onclick="mostraNuovoImpegno(false)">Annulla</button>
           </div>
         </div>
@@ -666,7 +693,7 @@ to{opacity:1}
 
 <div id="saveConfirmOverlay" class="save-confirm-overlay hidden">
   <div class="save-confirm-box">
-    <h2>Materiale salvato</h2>
+    <h2 id="saveConfirmTitle">Materiale salvato</h2>
     <p id="saveConfirmText">Scheda registrata correttamente.</p>
     <div class="muted">Il modulo è stato svuotato ed è pronto per il prossimo inserimento.</div>
     <div class="actions"><button class="green" onclick="chiudiConfermaSalvataggio()">OK</button></div>
@@ -677,7 +704,7 @@ to{opacity:1}
 <script>
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");
 
-const APP_VERSION="service-k38-v51";
+const APP_VERSION="service-k38-v59";
 function bootJsonParse(raw,fallback){
   try{return raw?JSON.parse(raw):fallback}
   catch(e){return fallback}
@@ -685,6 +712,9 @@ function bootJsonParse(raw,fallback){
 let sb,user,profile,materiali=[],preventivi=[],eventi=[],impegni=[],clienti=[],operatori=[],utenti=[];
 let inventarioCategoriaAttiva="";
 let inventarioSottocategoriaAttiva="";
+let preventivoCategoriaAttiva="";
+let preventivoSottocategoriaAttiva="";
+let preventivoCavoSlotAttivo="";
 let mostraSoloManutenzioni=false;
 let queue=bootJsonParse(localStorage.getItem("k38_queue"),[]);
 let datiPDF=bootJsonParse(localStorage.getItem("k38_dati_pdf"),{});
@@ -695,6 +725,9 @@ let lastCacheSaveAt = localStorage.getItem("k38_last_cache_save_at") || "";
 let firmaClienteData="";
 let firmaDrawing=false;
 let lastSoundAt = 0;
+let savingPreventivo=false;
+let savingEvento=false;
+let savingImpegno=false;
 const soundClick = new Audio("sound-click.wav");
 const soundSuccess = new Audio("sound-success.wav");
 const soundError = new Audio("sound-error.wav");
@@ -841,6 +874,31 @@ document.addEventListener("DOMContentLoaded",()=>{
     }
   });
 });
+
+function triggerK38Egg(){
+  const old=document.getElementById("k38_secret_overlay");
+  if(old) old.remove();
+  const overlay=document.createElement("div");
+  overlay.id="k38_secret_overlay";
+  overlay.className="k38-secret-overlay";
+  const bars=Array.from({length:18},(_,i)=>`<span style="height:${14+(i%6)*5}px"></span>`).join("");
+  overlay.innerHTML=`
+    <div class="k38-secret-grid"></div>
+    <div class="k38-beam one"></div>
+    <div class="k38-beam two"></div>
+    <div class="k38-secret-box">
+      <img class="k38-secret-logo" src="logo-k38.png" alt="K38">
+      <div class="k38-secret-title">K38 BACKSTAGE MODE</div>
+      <div class="k38-secret-sub">Console operativa armata. Service pronto.</div>
+      <div class="k38-bars">${bars}</div>
+      <div class="k38-secret-small">AUDIO - LUCI - VIDEO - MAGAZZINO</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  const a=document.getElementById("k38SecretAudio");
+  if(a){a.currentTime=0;a.play().catch(()=>{});}
+  setTimeout(()=>{overlay.remove();},4200);
+}
 
 
 const cacheKey="k38_cache_v1";
@@ -1034,6 +1092,42 @@ function prossimoCodiceInventario(cat,sub){
   const used=materiali.map(m=>String(m.codice_inventario||"").trim().match(re)).filter(Boolean).map(m=>Number(m[1]||0));
   return prefix+"-"+String((used.length?Math.max(...used):0)+1).padStart(2,"0");
 }
+function quantitaMaterialeIntera(m){
+  return Math.max(1,Math.floor(Number(m.quantita||1)));
+}
+function letteraUnita(index){
+  let n=index;
+  let out="";
+  do{
+    out=String.fromCharCode(65+(n%26))+out;
+    n=Math.floor(n/26)-1;
+  }while(n>=0);
+  return out;
+}
+function codiceUnitaMateriale(m,index,total){
+  const base=m.codice_inventario||prossimoCodiceInventario(m.categoria,m.sottocategoria);
+  if(isAltoparlanteMateriale(m.categoria,m.sottocategoria) && total<=52){
+    return base+"-"+letteraUnita(index);
+  }
+  const width=total>=100?3:2;
+  return base+"-"+String(index+1).padStart(width,"0");
+}
+function generaCodiciUnitaMateriale(m){
+  const total=quantitaMaterialeIntera(m);
+  return Array.from({length:total},(_,i)=>codiceUnitaMateriale(m,i,total));
+}
+function codiciUnitaMateriale(m){
+  const existing=parseJsonField(m.codici_unita,[]);
+  const total=quantitaMaterialeIntera(m);
+  const generated=generaCodiciUnitaMateriale(m);
+  return Array.from({length:total},(_,i)=>existing[i]||generated[i]);
+}
+function renderCodiciUnitaMateriale(m){
+  const codici=codiciUnitaMateriale(m);
+  return '<div class="item" style="grid-column:1/-1"><h3>Codici etichetta / seriali unità</h3>'+
+    '<div class="muted">Ogni pezzo fisico ha il proprio codice da riportare sull’etichetta.</div>'+
+    '<div class="unit-code-grid">'+codici.map(c=>'<span class="unit-code">'+escapeHtml(c)+'</span>').join("")+'</div></div>';
+}
 let ultimoCodiceSuggerito="";
 function verificaCodiceInventario(){
   const input=$("m_codice");
@@ -1122,18 +1216,20 @@ function problemiCodiciBloccati(){
 }
 function aggiornaQueueCodiceMateriale(m,codice){
   const key=m.local_id||m.id;
+  const codiciUnita=generaCodiciUnitaMateriale({...m,codice_inventario:codice});
+  const payload={codice_inventario:codice,codici_unita:codiciUnita};
   let found=false;
   queue.forEach(item=>{
     if(item.table==="materiali" && item.type==="insert" && item.payload && (item.payload.local_id===m.local_id || item.payload.id===m.id)){
-      item.payload.codice_inventario=codice;
+      Object.assign(item.payload,payload);
       found=true;
     }
     if(item.type==="update_materiale" && item.key===key){
-      item.payload={...(item.payload||{}),codice_inventario:codice};
+      item.payload={...(item.payload||{}),...payload};
       found=true;
     }
   });
-  if(!found)queue.push({type:"update_materiale",key,payload:{codice_inventario:codice}});
+  if(!found)queue.push({type:"update_materiale",key,payload});
 }
 function descriviCorrezioniCodici(changes){
   return changes.slice(0,12).map(c=>(c.old||"-")+" -> "+c.expected+"  "+(c.materiale.nome||"Materiale")).join("\n");
@@ -1170,8 +1266,10 @@ async function correggiCodiciProgressivi(){
   if(!confirm("Correggere automaticamente "+changes.length+" codici progressivi non bloccati?\nI codici con lucchetto resteranno invariati."+warn+"\n\n"+descriviCorrezioniCodici(changes)+(changes.length>12?"\n...":"")))return;
   for(const c of changes){
     c.materiale.codice_inventario=c.expected;
+    c.materiale.codici_unita=generaCodiciUnitaMateriale(c.materiale);
+    const payload={codice_inventario:c.expected,codici_unita:c.materiale.codici_unita};
     if(online() && c.materiale.id){
-      const {error}=await sb.from("materiali").update({codice_inventario:c.expected}).eq("id",c.materiale.id);
+      const {error}=await sb.from("materiali").update(payload).eq("id",c.materiale.id);
       if(error){showSyncError(error);return;}
     }else{
       c.materiale._pending=true;
@@ -1593,7 +1691,7 @@ function renderStoricoClienti(){
 }
 
 function costiPreventivo(o){
-  return Number(o.costo_personale||0)+Number(o.costo_noleggi_esterni||0)+Number(o.costo_extra||0)+Number(o.costo_altro||0);
+  return Number(o.costo_personale||0)+Number(o.costo_noleggi_esterni||0)+Number(o.costo_extra||0)+Number(o.costo_altro||0)+costoCaviGenericiPreventivo(o.materiali||getSelectedPreventivoMateriali());
 }
 function utilePreventivoVal(o){
   return Number(o.totale||0)-costiPreventivo(o);
@@ -1671,6 +1769,7 @@ function renderMaterialeCompatto(m){
     '<div><b>'+escapeHtml(m.nome||"Materiale")+'</b>'+
     '<div class="muted">'+escapeHtml(m.codice_inventario||"Senza codice")+' • '+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div>'+
     '<div class="muted">'+escapeHtml((m.marca||"")+(m.modello?" / "+m.modello:""))+' • Stato: '+escapeHtml(m.stato||"-")+' • Q.tà '+Number(m.quantita||0)+'</div>'+
+    '<div class="muted">Codici etichetta: '+codiciUnitaMateriale(m).length+'</div>'+
     (m.codice_bloccato?'<div class="muted">&#128274; Codice bloccato</div>':'')+
     dettagliAltoparlanteMateriale(m)+
     dettagliCavoMateriale(m)+
@@ -1705,6 +1804,7 @@ function renderMaterialeEdit(m){
           ? '<span class="code-locked-badge">&#128274; Codice bloccato</span><span class="muted">Questo codice non verrà modificato da correzioni future.</span>'
           : '<button class="secondary" onclick="bloccaCodiceInventario(&quot;'+key+'&quot;)">&#128274; Blocca codice etichetta</button><span class="muted">Usalo dopo aver stampato e applicato l’etichetta.</span>')+
       '</div>' +
+      renderCodiciUnitaMateriale(m)+
       '<label>Nome<input id="mat_nome_'+key+'" value="'+escapeHtml(m.nome||"")+'"></label>' +
       '<label>Categoria<select id="mat_cat_'+key+'" onchange="aggiornaSottocategorie(&quot;mat_'+key+'&quot;)">'+categorie.map(c=>'<option '+(c===(m.categoria||"")?'selected':'')+'>'+escapeHtml(c)+'</option>').join("")+'</select></label>' +
       '<label>Sottocategoria<select id="mat_sub_'+key+'" onchange="toggleCampiCavo(&quot;mat_'+key+'&quot;);toggleCampiAltoparlante(&quot;mat_'+key+'&quot;)">'+opzioniSottocategorie(m.categoria||"Audio",m.sottocategoria||"")+'</select></label>' +
@@ -1720,7 +1820,13 @@ function renderMaterialeEdit(m){
       '<label>Prezzo reale pagato €<input type="number" id="mat_reale_'+key+'" value="'+Number(m.prezzo_reale||0)+'"></label>' +
       '<label>Prezzo noleggio €<input type="number" id="mat_noleggio_'+key+'" value="'+Number(m.prezzo_noleggio||0)+'"></label>' +
     '</div>' +
-    (m.foto_url?'<img src="'+escapeHtml(m.foto_url)+'">':'') +
+    '<div class="photo-tools">'+
+      '<h3>Foto materiale</h3>'+
+      '<div id="mat_foto_preview_'+key+'">'+(m.foto_url?'<img class="photo-preview" src="'+escapeHtml(m.foto_url)+'">':'<div class="muted">Nessuna foto presente.</div>')+'</div>'+
+      '<input type="hidden" id="mat_remove_foto_'+key+'" value="0">'+
+      '<label>Sostituisci foto<input id="mat_foto_'+key+'" type="file" accept="image/*" onchange="annullaRimozioneFotoMateriale(&quot;'+key+'&quot;)"></label>'+
+      '<div class="actions">'+(m.foto_url?'<button class="danger" onclick="segnaRimozioneFotoMateriale(&quot;'+key+'&quot;)">Rimuovi foto</button>':'')+'</div>'+
+    '</div>' +
     '<label>Note<textarea id="mat_note_'+key+'">'+escapeHtml(m.note||"")+'</textarea></label>' +
     renderManutenzioniMateriale(m) +
     '<div class="actions">' +
@@ -1729,6 +1835,18 @@ function renderMaterialeEdit(m){
     '</div>' +
     (m._pending?'<span class="status">da sincronizzare</span>':'') +
   '</div>';
+}
+function segnaRimozioneFotoMateriale(key){
+  const flag=$("mat_remove_foto_"+key);
+  const file=$("mat_foto_"+key);
+  const preview=$("mat_foto_preview_"+key);
+  if(flag)flag.value="1";
+  if(file)file.value="";
+  if(preview)preview.innerHTML='<div class="notice">Foto rimossa. Premi Salva modifiche materiale per confermare.</div>';
+}
+function annullaRimozioneFotoMateriale(key){
+  const flag=$("mat_remove_foto_"+key);
+  if(flag)flag.value="0";
 }
 function manutenzioniMateriale(m){return parseJsonField(m.manutenzioni,[])}
 function renderManutenzioniMateriale(m){
@@ -1785,7 +1903,7 @@ async function bloccaCodiceInventario(key){
   const codice=m.codice_inventario||$("mat_cod_"+key)?.value||"";
   if(!codice){playSound("error");alert("Non posso bloccare un materiale senza codice inventario.");return;}
   if(!confirm("Bloccare definitivamente il codice "+codice+"?\n\nUsalo solo dopo aver stampato e applicato l'etichetta. Le correzioni automatiche non potranno più modificare questo codice."))return;
-  const payload={codice_bloccato:true,codice_bloccato_il:new Date().toISOString()};
+  const payload={codice_bloccato:true,codice_bloccato_il:new Date().toISOString(),codici_unita:codiciUnitaMateriale(m)};
   if(online() && m.id){
     const {error}=await sb.from("materiali").update(payload).eq("id",m.id);
     if(error){showSyncError(error);return;}
@@ -1802,6 +1920,9 @@ async function salvaModificaMateriale(key){
   if(!guard("event_update","modifica materiale"))return;
   let m=materiali.find(x=>(x.local_id||x.id)===key);
   if(!m)return;
+  let foto_data="";
+  const removeFoto=$("mat_remove_foto_"+key)?.value==="1";
+  const fotoFile=$("mat_foto_"+key)?.files?.[0]||null;
   const updated={
     codice_inventario:$("mat_cod_"+key).value,
     nome:$("mat_nome_"+key).value,
@@ -1826,9 +1947,24 @@ async function salvaModificaMateriale(key){
     prezzo_noleggio:Number($("mat_noleggio_"+key).value||0),
     note:$("mat_note_"+key).value
   };
+  updated.codici_unita=codiciUnitaMateriale({...m,...updated});
   if(!updated.nome){playSound("error");alert("Il nome materiale è obbligatorio.");return}
+  if(removeFoto){
+    updated.foto_url="";
+  }else if(fotoFile){
+    foto_data=await fileToDataURL(fotoFile);
+    updated.foto_url=foto_data;
+  }
   Object.assign(m,updated);
   if(online() && m.id){
+    if(foto_data){
+      let blob=await (await fetch(foto_data)).blob();
+      let path=`${Date.now()}-${updated.nome||"foto"}.jpg`;
+      let up=await sb.storage.from("foto-materiali").upload(path,blob,{upsert:true});
+      if(up.error){showSyncError(up.error);return;}
+      updated.foto_url=sb.storage.from("foto-materiali").getPublicUrl(path).data.publicUrl;
+      m.foto_url=updated.foto_url;
+    }
     const {error}=await sb.from("materiali").update(updated).eq("id",m.id);
     if(error){playSound("error");alert(error.message);return}
     playSound("success");
@@ -1836,7 +1972,7 @@ async function salvaModificaMateriale(key){
     return;
   }
   m._pending=true;
-  queue.push({type:"update_materiale",key,payload:updated});
+  queue.push({type:"update_materiale",key,payload:updated,foto_data});
   saveCache();saveQueue();
   playSound("success");
   if(online())syncNow();
@@ -1874,6 +2010,7 @@ function calendarioItemsDelGiorno(day){
   return [...evs,...imps].filter(x=>!q || JSON.stringify(x).toLowerCase().includes(q));
 }
 function toggleEventoDettaglio(key){const el=$("event_detail_"+key);if(el)el.classList.toggle("show");}
+function toggleImpegnoDettaglio(key){const el=$("imp_detail_"+key);if(el)el.classList.toggle("show");}
 function renderEventoCompatto(e){
   const key=e.local_id||e.id;
   return '<div class="compact-event '+(eventoTerminato(e)?'past-event':'')+'">'+
@@ -1887,22 +2024,46 @@ function renderEventoCompatto(e){
 function renderAgendaItem(item){
   if(item.tipo_cal==="evento"){
     const key=item.local_id||item.id;
-    return '<div class="agenda-item evento '+(eventoTerminato(item)?'past-event':'')+'">'+
+    return '<div class="agenda-item evento '+(eventoTerminato(item)?'past-event':'')+'" onclick="toggleEventoDettaglio(&quot;'+key+'&quot;)">'+
       '<span class="agenda-badge evento">EVENTO</span>'+
       '<div><b>'+escapeHtml(item.titolo||"Evento service")+'</b>'+
       '<div class="muted">'+escapeHtml(item.cliente||"-")+' • '+escapeHtml(item.luogo||"-")+'</div>'+
       '<div class="muted">'+escapeHtml(formatRangeDate(item.data_evento,item.data_fine_evento||item.data_evento))+' • '+escapeHtml(item.stato||"-")+'</div></div>'+
-      '<button class="secondary" onclick="toggleEventoDettaglio(&quot;'+key+'&quot;)">Apri</button>'+
+      '<button class="secondary" onclick="event.stopPropagation();toggleEventoDettaglio(&quot;'+key+'&quot;)">Apri</button>'+
       '</div><div id="event_detail_'+key+'" class="compact-event-detail">'+renderEventoEdit(item)+'</div>';
   }
   const key=item.local_id||item.id;
-  return '<div class="agenda-item impegno">'+
+  return '<div class="agenda-item impegno" onclick="toggleImpegnoDettaglio(&quot;'+key+'&quot;)">'+
     '<span class="agenda-badge impegno">IMPEGNO</span>'+
     '<div><b>'+escapeHtml(item.titolo||"Impegno")+'</b>'+
     '<div class="muted">'+escapeHtml(item.cliente||"-")+' • '+escapeHtml(item.luogo||"-")+'</div>'+
     '<div class="muted">'+escapeHtml(formatRangeDate(item.data_impegno,item.data_fine_impegno||item.data_impegno))+' '+escapeHtml((item.ora_inizio||"")+(item.ora_fine?" - "+item.ora_fine:""))+'</div></div>'+
-    '<button class="danger" onclick="eliminaLocaleImpegno(&quot;'+key+'&quot;)">Elimina</button>'+
-    '</div>';
+    '<button class="secondary" onclick="event.stopPropagation();toggleImpegnoDettaglio(&quot;'+key+'&quot;)">Apri</button>'+
+    '</div><div id="imp_detail_'+key+'" class="compact-event-detail">'+renderImpegnoEdit(item)+'</div>';
+}
+function renderImpegnoEdit(item){
+  const key=item.local_id||item.id;
+  const stati=["Da fare","Confermato","Fatto","Annullato"];
+  const options=stati.map(st=>'<option '+(st===(item.stato||"")?'selected':'')+'>'+escapeHtml(st)+'</option>').join("");
+  return '<div class="item">'+
+    '<h3>Modifica impegno</h3>'+
+    '<div class="row">'+
+      '<label>Titolo<input id="imp_t_'+key+'" value="'+escapeHtml(item.titolo||"")+'"></label>'+
+      '<label>Cliente / riferimento<input id="imp_c_'+key+'" value="'+escapeHtml(item.cliente||"")+'"></label>'+
+      '<label>Data inizio<input type="date" id="imp_d_'+key+'" value="'+escapeHtml(item.data_impegno||"")+'"></label>'+
+      '<label>Data fine<input type="date" id="imp_df_'+key+'" value="'+escapeHtml(item.data_fine_impegno||item.data_impegno||"")+'"></label>'+
+      '<label>Ora inizio<input id="imp_oi_'+key+'" value="'+escapeHtml(item.ora_inizio||"")+'"></label>'+
+      '<label>Ora fine<input id="imp_of_'+key+'" value="'+escapeHtml(item.ora_fine||"")+'"></label>'+
+      '<label>Luogo<input id="imp_l_'+key+'" value="'+escapeHtml(item.luogo||"")+'"></label>'+
+      '<label>Stato<select id="imp_s_'+key+'">'+options+'</select></label>'+
+    '</div>'+
+    '<label>Note<textarea id="imp_n_'+key+'">'+escapeHtml(item.note||"")+'</textarea></label>'+
+    '<div class="actions">'+
+      '<button class="green" onclick="salvaModificaImpegno(&quot;'+key+'&quot;)">Salva modifiche</button>'+
+      '<button class="danger" onclick="eliminaLocaleImpegno(&quot;'+key+'&quot;)">Elimina</button>'+
+    '</div>'+
+    (item._pending?'<span class="status">da sincronizzare</span>':'')+
+  '</div>';
 }
 function renderCalendarioEvoluto(){
   const box=$("listaCalendario");if(!box)return;
@@ -1914,11 +2075,31 @@ function renderCalendarioEvoluto(){
     if(calendarioSoloOccupati && !items.length)continue;
     const occupied=items.length>0;
     const load=caricoGiorno(items);
-    out+='<div id="agenda_day_'+safeId(day)+'" class="agenda-day '+(occupied?'has-items':'')+' '+(day===todayISO()?'today':'')+'">'+
-      '<div class="agenda-day-head" onclick="toggleAgendaDay(&quot;'+day+'&quot;)">'+
+    out+='<div id="agenda_day_'+safeId(day)+'" class="agenda-day '+(occupied?'has-items':'empty-day')+' '+(day===todayISO()?'today':'')+'">'+
+      '<div class="agenda-day-head '+(occupied?'':'no-action')+'" '+(occupied?'onclick="toggleAgendaDay(&quot;'+day+'&quot;)"':'')+'>'+
       '<div><div class="agenda-date">'+escapeHtml(formatDateIT(day))+'</div><div class="muted">'+(occupied?items.length+' attività':'Nessun impegno')+'</div></div>'+
       '<div><span class="load-dot '+load+'"></span></div></div>'+
       (occupied?'<div id="agenda_items_'+safeId(day)+'" class="agenda-items show">'+items.map(renderAgendaItem).join("")+'</div>':'<div class="agenda-empty">Giornata libera</div>')+
+      '</div>';
+  }
+  out+='</div>';
+  box.innerHTML=out;
+}
+function renderCalendarioEvoluto(){
+  const box=$("listaCalendario");if(!box)return;
+  const start=new Date();start.setHours(0,0,0,0);
+  let out='<div class="agenda-list">';
+  for(let i=0;i<60;i++){
+    const day=isoDate(addDays(start,i));
+    const items=calendarioItemsDelGiorno(day);
+    if(calendarioSoloOccupati && !items.length)continue;
+    const occupied=items.length>0;
+    const load=caricoGiorno(items);
+    out+='<div id="agenda_day_'+safeId(day)+'" class="agenda-day '+(occupied?'has-items':'empty-day')+' '+(day===todayISO()?'today':'')+'">'+
+      '<div class="agenda-day-head '+(occupied?'':'no-action')+'" '+(occupied?'onclick="toggleAgendaDay(&quot;'+day+'&quot;)"':'')+'>'+
+      '<div class="agenda-day-main"><span class="agenda-date">'+escapeHtml(formatDateIT(day))+'</span><span class="agenda-summary">'+(occupied?items.length+' attività':'Giornata libera')+'</span></div>'+
+      '<div><span class="load-dot '+load+'"></span></div></div>'+
+      (occupied?'<div id="agenda_items_'+safeId(day)+'" class="agenda-items show">'+items.map(renderAgendaItem).join("")+'</div>':'')+
       '</div>';
   }
   out+='</div>';
@@ -1930,6 +2111,36 @@ async function creaImpegnoManuale(){
   if(!row.data_impegno){playSound("error");alert("Inserisci una data per l'impegno.");return;}
   if(online()){const ins=await sb.from("impegni").insert(cleanForDb(row)).select().single();if(ins.error){showSyncError(ins.error);return;}impegni.push(ins.data);saveCache();render();mostraNuovoImpegno(false);playSound("success");return;}
   row._pending=true;impegni.push(row);queue.push({type:"insert",table:"impegni",payload:{...row}});saveCache();saveQueue();mostraNuovoImpegno(false);playSound("success");
+}
+async function salvaModificaImpegno(key){
+  if(!guard("event_update","modifica impegno"))return;
+  const item=impegni.find(x=>(x.local_id||x.id)===key);
+  if(!item)return;
+  const updated={
+    titolo:$("imp_t_"+key).value||"Impegno",
+    cliente:$("imp_c_"+key).value,
+    data_impegno:$("imp_d_"+key).value||null,
+    data_fine_impegno:$("imp_df_"+key).value||$("imp_d_"+key).value||null,
+    ora_inizio:$("imp_oi_"+key).value,
+    ora_fine:$("imp_of_"+key).value,
+    luogo:$("imp_l_"+key).value,
+    stato:$("imp_s_"+key).value,
+    note:$("imp_n_"+key).value
+  };
+  if(!updated.data_impegno){playSound("error");alert("Inserisci una data per l'impegno.");return;}
+  Object.assign(item,updated);
+  if(online() && item.id){
+    const {error}=await sb.from("impegni").update(updated).eq("id",item.id);
+    if(error){showSyncError(error);return}
+    playSound("success");
+    await caricaTutto();
+    return;
+  }
+  item._pending=true;
+  queue.push({type:"update_impegno",key,payload:updated});
+  saveCache();saveQueue();
+  playSound("success");
+  if(online())syncNow();
 }
 function eliminaLocaleImpegno(key){
   if(!confirm("Vuoi eliminare questo impegno?"))return;
@@ -2310,7 +2521,8 @@ function backupCompletoObj(){
     localStorage:{
       clausole:localStorage.getItem("k38_clausole_contratto")||"",
       log:localStorage.getItem("k38_log_attivita")||"[]",
-      documenti:localStorage.getItem("k38_documenti")||"[]"
+      documenti:localStorage.getItem("k38_documenti")||"[]",
+      caviBundleConfig:localStorage.getItem("k38_cavi_bundle_config")||"{}"
     }
   };
 }
@@ -2347,6 +2559,7 @@ async function importaBackupCompleto(file){
   if(data.localStorage?.clausole)localStorage.setItem("k38_clausole_contratto",data.localStorage.clausole);
   if(data.localStorage?.log)localStorage.setItem("k38_log_attivita",data.localStorage.log);
   if(data.localStorage?.documenti)localStorage.setItem("k38_documenti",data.localStorage.documenti);
+  if(data.localStorage?.caviBundleConfig)localStorage.setItem("k38_cavi_bundle_config",data.localStorage.caviBundleConfig);
   saveCache();saveQueue();
   localStorage.setItem("k38_dati_pdf",JSON.stringify(datiPDF));
   logAttivita("Backup importato localmente");
@@ -2363,6 +2576,20 @@ function toCSV(rows){
   const keys=[...new Set(rows.flatMap(r=>Object.keys(r)))];
   return keys.join(";")+"\\n"+rows.map(r=>keys.map(k=>csvEscape(typeof r[k]==="object"?JSON.stringify(r[k]):r[k])).join(";")).join("\\n");
 }
+function excelEscape(v){
+  return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+function toExcelTable(rows,title="Export"){
+  const keys=rows.length?[...new Set(rows.flatMap(r=>Object.keys(r)))]:[];
+  const head=keys.map(k=>'<th>'+excelEscape(k)+'</th>').join("");
+  const body=rows.map(r=>'<tr>'+keys.map(k=>{
+    const value=r[k];
+    const isNumber=typeof value==="number" && Number.isFinite(value);
+    const style=isNumber?'':' style="mso-number-format:\\@;"';
+    return '<td'+style+'>'+excelEscape(isNumber?String(value).replace(".",","):value)+'</td>';
+  }).join("")+'</tr>').join("");
+  return '\ufeff<html><head><meta charset="UTF-8"><style>table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px}th{background:#111827;color:#fff;font-weight:bold}td,th{border:1px solid #9ca3af;padding:5px;vertical-align:top}.num{text-align:right}</style></head><body><h2>'+excelEscape(title)+'</h2><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>';
+}
 function scaricaCSV(tipo){
   const map={materiali,preventivi,eventi,clienti};
   const rows=map[tipo]||[];
@@ -2378,6 +2605,7 @@ function rigaListaMagazzino(m){
   const noleggio=valoreNumero(m.prezzo_noleggio||0);
   return {
     "Codice":m.codice_inventario||"",
+    "Codici etichette":codiciUnitaMateriale(m).join(", "),
     "Codice bloccato":siNo(m.codice_bloccato),
     "Categoria":m.categoria||"",
     "Tipo":m.sottocategoria||"",
@@ -2408,6 +2636,7 @@ function codiceSortValue(codice){
   return m?m[1].toUpperCase()+"-"+String(Number(m[2])).padStart(8,"0"):String(codice||"");
 }
 function scaricaListaMagazzinoExcel(){
+  if(!materiali.length)loadCache();
   if(!materiali.length){alert("Nessun materiale da esportare.");return;}
   const rows=[...materiali]
     .sort((a,b)=>
@@ -2416,8 +2645,8 @@ function scaricaListaMagazzinoExcel(){
       codiceSortValue(a.codice_inventario).localeCompare(codiceSortValue(b.codice_inventario))
     )
     .map(rigaListaMagazzino);
-  const csv="\ufeffsep=;\n"+toCSV(rows);
-  downloadText("lista-magazzino-service-k38-"+todayISO()+".csv",csv,"text/csv;charset=utf-8");
+  const excel=toExcelTable(rows,"Lista magazzino Service K38 - "+todayISO());
+  downloadText("lista-magazzino-service-k38-"+todayISO()+".xls",excel,"application/vnd.ms-excel;charset=utf-8");
   logAttivita("Lista magazzino Excel scaricata");
   renderRegistroAttivita();
 }
@@ -2508,10 +2737,15 @@ function chiudiConfermaSalvataggio(){
   const box=$("saveConfirmOverlay");
   if(box)box.classList.add("hidden");
 }
-function mostraConfermaSalvataggio(row,mode){
+function mostraConfermaSalvataggio(row,mode,tipo="Materiale"){
   const box=$("saveConfirmOverlay");
+  const title=$("saveConfirmTitle");
   const txt=$("saveConfirmText");
-  if(txt)txt.textContent=(row.codice_inventario||"Materiale")+" - "+(row.nome||"scheda")+" salvato "+mode+".";
+  const sub=document.querySelector(".save-confirm-box .muted");
+  if(title)title.textContent=tipo+" salvato";
+  const nome=row.numero_preventivo||row.numero_evento||row.codice_inventario||row.titolo||row.evento||row.cliente||row.nome||"scheda";
+  if(txt)txt.textContent=nome+" salvato "+mode+".";
+  if(sub)sub.textContent="Il modulo e stato svuotato ed e pronto per il prossimo inserimento.";
   if(box)box.classList.remove("hidden");
 }
 function resetNuovaSchedaMateriale(){
@@ -2527,6 +2761,46 @@ function resetNuovaSchedaMateriale(){
   if($("m_sottocategoria"))$("m_sottocategoria").value=sub;
   aggiornaCampiNuovoMateriale(true);
   msg("m_msg","");
+}
+function setVal(id,value){
+  const el=$(id);
+  if(el)el.value=value;
+}
+function setSaveBusy(buttonId,busy,busyText,normalText){
+  const btn=$(buttonId);
+  if(!btn)return;
+  btn.disabled=busy;
+  btn.textContent=busy?busyText:normalText;
+}
+function resetNuovoPreventivo(){
+  ["p_cliente","p_evento","p_data","p_data_fine","p_luogo","p_note","p_data_pagamento"].forEach(id=>setVal(id,""));
+  ["p_audio","p_luci","p_video","p_trasporto","p_ore","p_tariffa","p_montaggio","p_sconto","p_iva","p_incassato","p_costo_personale","p_costo_noleggi","p_costo_extra","p_costo_altro"].forEach(id=>setVal(id,0));
+  if($("p_stato_pagamento"))$("p_stato_pagamento").value="Da saldare";
+  if($("p_referente"))$("p_referente").value="Gianluca Rallo";
+  aggiornaTelefonoReferente("p");
+  const mezziBox=$("mezziTrasportoBox");
+  if(mezziBox){mezziBox.innerHTML="";aggiungiMezzoTrasporto();}
+  preventivoCategoriaAttiva="";
+  preventivoSottocategoriaAttiva="";
+  preventivoCavoSlotAttivo="";
+  renderPreventivoMaterialPicker([]);
+  pulisciFirma();
+  msg("p_msg","");
+  aggiornaTotale();
+}
+function resetNuovoEvento(){
+  ["new_ev_titolo","new_ev_cliente","new_ev_data","new_ev_data_fine","new_ev_luogo","new_ev_montaggio","new_ev_smontaggio","new_ev_note"].forEach(id=>setVal(id,""));
+  setVal("new_ev_totale",0);
+  if($("new_ev_stato"))$("new_ev_stato").value="Richiesta";
+  if($("new_ev_referente"))$("new_ev_referente").value="Gianluca Rallo";
+  aggiornaTelefonoReferente("new_ev");
+  renderOperatoriNuovoEvento();
+  const warn=$("new_ev_operatori_warning");
+  if(warn)warn.innerHTML="";
+}
+function resetNuovoImpegno(){
+  ["new_imp_titolo","new_imp_cliente","new_imp_data","new_imp_data_fine","new_imp_ora","new_imp_ora_fine","new_imp_luogo","new_imp_note"].forEach(id=>setVal(id,""));
+  if($("new_imp_stato"))$("new_imp_stato").value="Da fare";
 }
 async function salvaMateriale(){
   if(!guard("event_update","salva materiale"))return;
@@ -2567,6 +2841,7 @@ async function salvaMateriale(){
     foto_url,
     note:v("m_note")
   };
+  row.codici_unita=generaCodiciUnitaMateriale(row);
 
   if(!row.nome){ playSound("error"); alert("Il nome materiale è obbligatorio."); return; }
 
@@ -2640,31 +2915,144 @@ function materialiNonDisponibiliPreventivo(){
       return d.disponibili<item.qty || statoMaterialeCritico(m)==="bloccato";
     });
 }
+const categorieCaviPreventivo=["Cavi audio","Cavi segnale","Cavi corrente","Cavi video","Cavi rete","Adattatori"];
+function cavoBundleId(cat,slot){return "bundle:"+normalizzaCodiceKey(cat).replace(/[^A-Z0-9]/g,"_").toLowerCase()+":"+slot;}
+function isCavoBundleId(id){return String(id||"").startsWith("bundle:");}
+function cavoBundleParts(id){
+  const parts=String(id||"").split(":");
+  const slug=parts[1]||"";
+  const slot=Number(parts[2]||1);
+  const cat=categorieCaviPreventivo.find(c=>normalizzaCodiceKey(c).replace(/[^A-Z0-9]/g,"_").toLowerCase()===slug)||"Cavi generici";
+  return {cat,slot};
+}
+function nomeCavoBundle(id){
+  const p=cavoBundleParts(id);
+  return p.cat+" "+p.slot;
+}
+function loadCaviBundleConfig(){return bootJsonParse(localStorage.getItem("k38_cavi_bundle_config"),{});}
+function saveCaviBundleConfig(cfg){localStorage.setItem("k38_cavi_bundle_config",JSON.stringify(cfg));}
+function getCaviBundleEntry(id){
+  const raw=loadCaviBundleConfig()[id];
+  if(Array.isArray(raw))return {items:raw,costo_interno:0};
+  if(raw && typeof raw==="object")return {items:Array.isArray(raw.items)?raw.items:[],costo_interno:Math.max(0,Number(raw.costo_interno||0))};
+  return {items:[],costo_interno:0};
+}
+function getCaviBundleConfig(id){return getCaviBundleEntry(id).items;}
+function getCaviBundleCosto(id){return getCaviBundleEntry(id).costo_interno;}
+function setCaviBundleConfig(id,items,costoInterno=null){
+  const cfg=loadCaviBundleConfig();
+  const prev=getCaviBundleEntry(id);
+  cfg[id]={items,costo_interno:costoInterno===null?prev.costo_interno:Math.max(0,Number(costoInterno||0))};
+  saveCaviBundleConfig(cfg);
+}
+function setCaviBundleCosto(id,costoInterno){
+  const entry=getCaviBundleEntry(id);
+  setCaviBundleConfig(id,entry.items,costoInterno);
+}
+function costoCaviGenericiPreventivo(keys=[]){
+  return normalizeMaterialSelection(keys)
+    .filter(item=>isCavoBundleId(item.id))
+    .reduce((s,item)=>s+getCaviBundleCosto(item.id)*Number(item.qty||1),0);
+}
+function caviInventario(){return materiali.filter(m=>m.categoria==="Cavi");}
+function rerenderPreventivoPicker(){
+  renderPreventivoMaterialPicker(getSelectedPreventivoMateriali());
+  aggiornaTotaleMaterialiPreventivo();
+}
+function selezionaCategoriaPreventivo(cat){preventivoCategoriaAttiva=cat;preventivoSottocategoriaAttiva="";preventivoCavoSlotAttivo="";rerenderPreventivoPicker();}
+function selezionaSottocategoriaPreventivo(sub){preventivoSottocategoriaAttiva=sub;rerenderPreventivoPicker();}
+function tornaCategoriePreventivo(){preventivoCategoriaAttiva="";preventivoSottocategoriaAttiva="";preventivoCavoSlotAttivo="";rerenderPreventivoPicker();}
+function tornaSottocategoriePreventivo(){preventivoSottocategoriaAttiva="";rerenderPreventivoPicker();}
+function toggleCaviBundleConfig(id){preventivoCavoSlotAttivo=preventivoCavoSlotAttivo===id?"":id;rerenderPreventivoPicker();}
+function salvaCaviBundleConfigDaUI(id){
+  const cls="bundle_cfg_"+safeId(id);
+  const items=[...document.querySelectorAll("."+cls)].filter(x=>x.checked).map(x=>{
+    const qty=document.querySelector(`.bundle_cfg_qty_${CSS.escape(safeId(id))}[data-material="${CSS.escape(x.value)}"]`);
+    return {id:x.value,qty:Math.max(1,Math.round(Number(qty?.value||1)))};
+  });
+  setCaviBundleConfig(id,items);
+  rerenderPreventivoPicker();
+}
+function salvaCaviBundleCostoDaUI(id){
+  const input=$("bundle_cost_"+safeId(id));
+  setCaviBundleCosto(id,Number(input?.value||0));
+  aggiornaTotaleMaterialiPreventivo();
+  rerenderPreventivoPicker();
+}
+function renderCaviBundleContenuto(id){
+  const entry=getCaviBundleEntry(id);
+  const configured=entry.items;
+  const selectedMap=Object.fromEntries(configured.map(item=>[item.id,item.qty]));
+  const cavi=caviInventario();
+  if(!cavi.length)return '<div class="notice">Nessun cavo inventariato nel magazzino.</div>';
+  return '<div class="item" style="grid-column:1/-1"><h3>Contenuto '+escapeHtml(nomeCavoBundle(id))+'</h3><div class="muted">Questa lista serve allo staff. Nel preventivo cliente resta visibile solo la voce generica.</div>'+
+    '<div class="row"><label>Costo interno stimato €<input type="number" id="bundle_cost_'+safeId(id)+'" min="0" step="0.01" value="'+Number(entry.costo_interno||0)+'" onchange="salvaCaviBundleCostoDaUI(&quot;'+escapeHtml(id)+'&quot;)"></label></div>'+
+    '<div class="material-picker">'+
+    cavi.map(m=>{
+      const key=m.local_id||m.id;
+      const label=((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Cavo"));
+      return '<label class="material-pick"><div class="material-qty-row"><input type="checkbox" class="bundle_cfg_'+safeId(id)+'" value="'+escapeHtml(key)+'" '+(selectedMap[key]?'checked':'')+' onchange="salvaCaviBundleConfigDaUI(&quot;'+escapeHtml(id)+'&quot;)"><span>'+escapeHtml(label)+'</span><input type="number" class="bundle_cfg_qty_'+safeId(id)+'" data-material="'+escapeHtml(key)+'" min="1" max="'+Math.max(1,Number(m.quantita||1))+'" value="'+(selectedMap[key]||1)+'" onchange="salvaCaviBundleConfigDaUI(&quot;'+escapeHtml(id)+'&quot;)"></div><div class="muted">'+escapeHtml((m.sottocategoria||"")+" "+(m.cavo_metratura?m.cavo_metratura+" m":""))+'</div></label>';
+    }).join("")+'</div></div>';
+}
+function renderCaviGenericiPreventivo(selectedMap){
+  return '<div class="actions"><button class="secondary" onclick="tornaCategoriePreventivo()">Categorie materiale</button></div>'+
+    '<h3>Cavi generici per preventivo</h3><div class="muted">Seleziona al massimo 4 slot per categoria. Queste voci hanno importo 0 e nascondono i cavi specifici al cliente.</div>'+
+    categorieCaviPreventivo.map(cat=>
+      '<div class="item"><h3>'+escapeHtml(cat)+'</h3><div class="material-picker">'+
+      [1,2,3,4].map(slot=>{
+        const id=cavoBundleId(cat,slot);
+        const cfg=getCaviBundleConfig(id);
+        const costo=getCaviBundleCosto(id);
+        return '<label class="quote-material-pick"><div class="material-qty-row"><input type="checkbox" class="p_mat p_cable_bundle" value="'+escapeHtml(id)+'" '+(selectedMap[id]?'checked':'')+' onchange="aggiornaTotaleMaterialiPreventivo()"><span>'+escapeHtml(cat+" "+slot)+'</span><input type="number" min="1" value="1" disabled></div><div class="muted">Voce generica, importo 0 • '+cfg.length+' cavi configurati</div><div class="actions"><button type="button" class="secondary" onclick="event.preventDefault();event.stopPropagation();toggleCaviBundleConfig(&quot;'+escapeHtml(id)+'&quot;)">'+(preventivoCavoSlotAttivo===id?'Chiudi lista':'Apri lista cavi')+'</button></div></label>'+
+          '<div class="muted">Costo interno stimato: '+euro(costo)+' - non visibile al cliente</div>'+
+          (preventivoCavoSlotAttivo===id?renderCaviBundleContenuto(id):'');
+      }).join("")+
+      '</div></div>'
+    ).join("");
+}
 function renderPreventivoMaterialPicker(selected=[]){
   const box=$("p_materiali_picker");
   if(!box)return;
   const selectedMap=Object.fromEntries(normalizeMaterialSelection(selected).map(item=>[item.id,item.qty]));
-  if(!materiali.length){
-    box.innerHTML='<div class="muted">Nessun materiale inventariato.</div>';
+  const nonCavi=materiali.filter(m=>m.categoria!=="Cavi");
+  const selectedSummary=normalizeMaterialSelection(selected).length?'<div class="notice"><b>Selezionati:</b> '+normalizeMaterialSelection(selected).map(nomeMaterialeConQuantita).map(escapeHtml).join(" • ")+'</div>':"";
+  if(!preventivoCategoriaAttiva){
+    const cats=Object.keys(categorieMateriale).filter(cat=>cat!=="Cavi");
+    box.innerHTML=selectedSummary+'<div class="category-grid">'+
+      cats.map(cat=>'<div class="category-card" onclick="selezionaCategoriaPreventivo(&quot;'+escapeHtml(cat)+'&quot;)"><h3>'+escapeHtml(cat)+'</h3><div class="stat">'+nonCavi.filter(m=>m.categoria===cat).length+'</div><div class="muted">materiali</div></div>').join("")+
+      '<div class="category-card" onclick="selezionaCategoriaPreventivo(&quot;Cavi generici&quot;)"><h3>Cavi generici</h3><div class="stat">'+categorieCaviPreventivo.length+'</div><div class="muted">categorie x 4 slot</div></div>'+
+      '</div>';
     return;
   }
-  box.innerHTML=materiali.map(m=>{
-    const key=m.local_id||m.id;
-    const label=((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Materiale"));
-    const sub=(m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:"");
-    const d=disponibilitaMaterialePeriodo(key,getPeriodoPreventivoCorrente().start,getPeriodoPreventivoCorrente().end);
-    const maxQty=Math.max(1,Number(m.quantita||1));
-    const selectedQty=selectedMap[key]||1;
-    return `<label class="quote-material-pick">
-      <div class="material-qty-row">
-        <input type="checkbox" class="p_mat" value="${escapeHtml(key)}" onchange="aggiornaTotaleMaterialiPreventivo()" ${selectedMap[key]?"checked":""}>
-        <span>${escapeHtml(label)}</span>
-        <input type="number" class="p_mat_qty" data-material="${escapeHtml(key)}" min="1" max="${maxQty}" value="${selectedQty}" onchange="aggiornaTotaleMaterialiPreventivo()" oninput="aggiornaTotaleMaterialiPreventivo()">
-      </div>
-      <div class="muted">${escapeHtml(sub)}</div>
-      <span class="qty-badge">Disponibili periodo: ${d.disponibili}/${d.totale}</span>
-    </label>`;
-  }).join("");
+  if(preventivoCategoriaAttiva==="Cavi generici"){
+    box.innerHTML=selectedSummary+renderCaviGenericiPreventivo(selectedMap);
+    return;
+  }
+  if(!preventivoSottocategoriaAttiva){
+    const subs=[...new Set(nonCavi.filter(m=>m.categoria===preventivoCategoriaAttiva).map(m=>m.sottocategoria||"Altro"))].sort();
+    box.innerHTML=selectedSummary+'<div class="actions"><button class="secondary" onclick="tornaCategoriePreventivo()">Categorie materiale</button></div><h3>'+escapeHtml(preventivoCategoriaAttiva)+'</h3><div class="category-grid">'+
+      subs.map(sub=>'<div class="category-card" onclick="selezionaSottocategoriaPreventivo(&quot;'+escapeHtml(sub)+'&quot;)"><h3>'+escapeHtml(sub)+'</h3><div class="stat">'+nonCavi.filter(m=>m.categoria===preventivoCategoriaAttiva && (m.sottocategoria||"Altro")===sub).length+'</div><div class="muted">materiali</div></div>').join("")+
+      '</div>';
+    return;
+  }
+  const mats=nonCavi.filter(m=>m.categoria===preventivoCategoriaAttiva && (m.sottocategoria||"Altro")===preventivoSottocategoriaAttiva);
+  box.innerHTML=selectedSummary+'<div class="actions"><button class="secondary" onclick="tornaSottocategoriePreventivo()">Sottocategorie</button><button class="secondary" onclick="tornaCategoriePreventivo()">Categorie materiale</button></div><h3>'+escapeHtml(preventivoCategoriaAttiva+" / "+preventivoSottocategoriaAttiva)+'</h3>'+
+    (mats.length?'<div class="material-picker">'+mats.map(m=>{
+      const key=m.local_id||m.id;
+      const label=((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Materiale"));
+      const d=disponibilitaMaterialePeriodo(key,getPeriodoPreventivoCorrente().start,getPeriodoPreventivoCorrente().end);
+      const maxQty=Math.max(1,Number(m.quantita||1));
+      const selectedQty=selectedMap[key]||1;
+      return `<label class="quote-material-pick">
+        <div class="material-qty-row">
+          <input type="checkbox" class="p_mat" value="${escapeHtml(key)}" onchange="aggiornaTotaleMaterialiPreventivo()" ${selectedMap[key]?"checked":""}>
+          <span>${escapeHtml(label)}</span>
+          <input type="number" class="p_mat_qty" data-material="${escapeHtml(key)}" min="1" max="${maxQty}" value="${selectedQty}" onchange="aggiornaTotaleMaterialiPreventivo()" oninput="aggiornaTotaleMaterialiPreventivo()">
+        </div>
+        <div class="muted">${escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))}</div>
+        <span class="qty-badge">Disponibili periodo: ${d.disponibili}/${d.totale}</span>
+      </label>`;
+    }).join("")+'</div>':'<div class="notice">Nessun materiale in questa sottocategoria.</div>');
 }
 function materialiBloccatiPreventivo(){
   return getSelectedPreventivoMateriali()
@@ -2679,6 +3067,25 @@ function getSelectedPreventivoMateriali(){
 }
 function materialiPreventivoConDettaglio(keys=[]){
   return normalizeMaterialSelection(keys).map(item=>{
+    if(isCavoBundleId(item.id)){
+      const parts=cavoBundleParts(item.id);
+      return {
+        local_id:item.id,
+        id:item.id,
+        codice_inventario:"",
+        nome:nomeCavoBundle(item.id),
+        categoria:"Cavi generici",
+        sottocategoria:parts.cat,
+        quantita_richiesta:item.qty,
+        prezzo_noleggio:0,
+        prezzo_reale:0,
+        prezzo_listino:0,
+        costo_interno:getCaviBundleCosto(item.id),
+        _selection:item,
+        _bundle:true,
+        cavi_contenuti:getCaviBundleConfig(item.id)
+      };
+    }
     const m=materiali.find(x=>(x.local_id||x.id)===item.id);
     return m?{...m,quantita_richiesta:item.qty,_selection:item}:null;
   }).filter(Boolean);
@@ -2863,7 +3270,7 @@ async function syncNow(){
       let payload={...item.payload};
       delete payload._pending;
 
-      if(item.table==="materiali"&&item.foto_data){
+      if((item.table==="materiali"||item.type==="update_materiale")&&item.foto_data){
         let blob=await (await fetch(item.foto_data)).blob();
         let path=`${Date.now()}-${payload.nome||"foto"}.png`;
         let up=await sb.storage.from("foto-materiali").upload(path,blob,{upsert:true});
@@ -2890,14 +3297,19 @@ async function syncNow(){
         let p=preventivi.find(x=>(x.local_id||x.id)===item.key);
         if(p?.id)await sb.from("preventivi").update(item.payload).eq("id",p.id);
         else if(p?.local_id)await sb.from("preventivi").update(item.payload).eq("local_id",p.local_id);
+      }else if(item.type==="update_impegno"){
+        let imp=impegni.find(x=>(x.local_id||x.id)===item.key);
+        if(imp?.id)await sb.from("impegni").update(item.payload).eq("id",imp.id);
+        else if(imp?.local_id)await sb.from("impegni").update(item.payload).eq("local_id",imp.local_id);
       }else if(item.type==="update_evento"){
         let e=eventi.find(x=>(x.local_id||x.id)===item.key);
         if(e?.id)await sb.from("eventi").update(item.payload).eq("id",e.id);
         else if(e?.local_id)await sb.from("eventi").update(item.payload).eq("local_id",e.local_id);
       }else if(item.type==="update_materiale"){
         let m=materiali.find(x=>(x.local_id||x.id)===item.key);
-        if(m?.id)await sb.from("materiali").update(item.payload).eq("id",m.id);
-        else if(m?.local_id)await sb.from("materiali").update(item.payload).eq("local_id",m.local_id);
+        const cleanPayload=cleanForDb(payload);
+        if(m?.id)await sb.from("materiali").update(cleanPayload).eq("id",m.id);
+        else if(m?.local_id)await sb.from("materiali").update(cleanPayload).eq("local_id",m.local_id);
       }
     }catch(e){
       console.error("Errore elemento sync", item, e);
@@ -3030,6 +3442,7 @@ function materialiEvento(e){
   return normalizeMaterialSelection(e.materiali);
 }
 function nomeMaterialeById(key){
+  if(isCavoBundleId(key))return nomeCavoBundle(key);
   const m=materiali.find(x=>(x.local_id||x.id)===key);
   return m ? `${m.codice_inventario||""} ${m.nome||""}`.trim() : key;
 }
@@ -3051,7 +3464,7 @@ function conflittoTecnico(data, tecnico, excludeKey="", dataFine=null){
 }
 function conflittiMateriale(data, selectedKeys, excludeKey="", dataFine=null){
   if(!data || !selectedKeys?.length) return [];
-  const selected=normalizeMaterialSelection(selectedKeys);
+  const selected=normalizeMaterialSelection(selectedKeys).filter(item=>!isCavoBundleId(item.id));
   const conflicts=[];
   eventiStessaData(data,excludeKey,dataFine).forEach(ev=>{
     selected.forEach(item=>{
@@ -3064,8 +3477,12 @@ function renderMaterialPicker(e){
   const key=e.local_id||e.id;
   const selected=materialiEvento(e);
   const selectedMap=Object.fromEntries(selected.map(item=>[item.id,item.qty]));
+  const selectedBundles=selected.filter(item=>isCavoBundleId(item.id));
   if(!materiali.length) return '<div class="muted">Nessun materiale inventariato.</div>';
-  return '<div class="material-picker">' + materiali.map(m=>{
+  const bundleSummary=selectedBundles.length
+    ? '<div class="notice"><b>Cavi generici dal preventivo:</b> '+selectedBundles.map(nomeMaterialeConQuantita).map(escapeHtml).join(" • ")+'<div class="hidden">'+selectedBundles.map(item=>'<input type="checkbox" class="ev_mat_'+key+'" value="'+escapeHtml(item.id)+'" checked>').join("")+'</div></div>'
+    : '';
+  return bundleSummary+'<div class="material-picker">' + materiali.map(m=>{
     const mid=m.local_id||m.id;
     return '<label class="material-pick"><div class="material-qty-row"><input type="checkbox" class="ev_mat_'+key+'" value="'+escapeHtml(mid)+'" '+(selectedMap[mid]?'checked':'')+'><span>'+escapeHtml((m.codice_inventario?m.codice_inventario+" - ":"")+(m.nome||"Materiale"))+'</span><input type="number" class="ev_mat_qty_'+key+'" data-material="'+escapeHtml(mid)+'" min="1" max="'+Math.max(1,Number(m.quantita||1))+'" value="'+(selectedMap[mid]||1)+'"></div><div class="muted">'+escapeHtml((m.categoria||"")+(m.sottocategoria?" / "+m.sottocategoria:""))+'</div></label>';
   }).join("") + '</div>';
@@ -3159,6 +3576,150 @@ async function creaEventoManuale(){
   mostraNuovoEvento(false);
   playSound("success");
 }
+async function salvaPreventivo(){
+  if(savingPreventivo)return;
+  if(!guard("event_update","salva preventivo"))return;
+  const row=datiPreventivo();
+  if(row.firmato && row.stato_pagamento==="Da saldare") row.stato_pagamento="Firmato";
+  const nonDisp=materialiNonDisponibiliPreventivo();
+  if(nonDisp.length){playSound("error");alert("Materiale non disponibile nelle quantita richieste: "+nonDisp.map(x=>(x.materiale?.nome||"Materiale")+" richiesto x"+x.item.qty).join(", "));return;}
+  const bloccati=materialiBloccatiPreventivo();
+  if(bloccati.length){playSound("error");alert("Hai selezionato materiale fuori servizio: "+bloccati.map(m=>m.nome).join(", "));return;}
+  if(!row.cliente && !row.evento){playSound("error");alert("Inserisci almeno cliente o evento prima di salvare il preventivo.");return;}
+  if(!confirmPastDate(row.data_evento))return;
+  const operatoriConflitto=getSelectedOperatoriNuovoEvento().filter(op=>operatoriImpegnatiPeriodo(row.data_evento,row.data_fine_evento).find(b=>b.operatore===op));
+  if(operatoriConflitto.length && !confirm("ATTENZIONE: alcuni operatori risultano gia impegnati: "+operatoriConflitto.map(nomeOperatoreById).join(", ")+". Vuoi continuare comunque?"))return;
+
+  savingPreventivo=true;
+  setSaveBusy("btnSalvaPreventivo",true,"Salvataggio...","Salva preventivo");
+  msg("p_msg","salvataggio in corso...");
+  try{
+    if(online()){
+      const ins=await sb.from("preventivi").insert(cleanForDb(row)).select().single();
+      if(ins.error){showSyncError(ins.error);return;}
+      preventivi.unshift(ins.data);
+      saveCache();
+      render();
+      resetNuovoPreventivo();
+      playSound("success");
+      mostraConfermaSalvataggio(ins.data,"online","Preventivo");
+      msg("p_msg","preventivo salvato correttamente");
+      logAttivita("Preventivo salvato: "+(row.cliente||row.evento||"senza nome"));
+      return;
+    }
+
+    row._pending=true;
+    preventivi.unshift(row);
+    queue.push({type:"insert",table:"preventivi",payload:{...row}});
+    saveCache();
+    saveQueue();
+    resetNuovoPreventivo();
+    playSound("success");
+    mostraConfermaSalvataggio(row,"offline","Preventivo");
+    msg("p_msg","preventivo salvato offline");
+  }finally{
+    savingPreventivo=false;
+    setSaveBusy("btnSalvaPreventivo",false,"Salvataggio...","Salva preventivo");
+  }
+}
+
+async function creaImpegnoManuale(){
+  if(savingImpegno)return;
+  if(!guard("event_update","crea impegno"))return;
+  const row={local_id:uid(),titolo:v("new_imp_titolo")||"Nuovo impegno",cliente:v("new_imp_cliente"),data_impegno:v("new_imp_data")||null,data_fine_impegno:v("new_imp_data_fine")||v("new_imp_data")||null,ora_inizio:v("new_imp_ora"),ora_fine:v("new_imp_ora_fine"),luogo:v("new_imp_luogo"),stato:v("new_imp_stato")||"Da fare",note:v("new_imp_note")};
+  if(!row.data_impegno){playSound("error");alert("Inserisci una data per l'impegno.");return;}
+
+  savingImpegno=true;
+  setSaveBusy("btnSalvaImpegno",true,"Salvataggio...","Salva impegno");
+  try{
+    if(online()){
+      const ins=await sb.from("impegni").insert(cleanForDb(row)).select().single();
+      if(ins.error){showSyncError(ins.error);return;}
+      impegni.push(ins.data);
+      saveCache();
+      render();
+      resetNuovoImpegno();
+      mostraNuovoImpegno(true);
+      playSound("success");
+      mostraConfermaSalvataggio(ins.data,"online","Impegno");
+      return;
+    }
+    row._pending=true;
+    impegni.push(row);
+    queue.push({type:"insert",table:"impegni",payload:{...row}});
+    saveCache();
+    saveQueue();
+    resetNuovoImpegno();
+    mostraNuovoImpegno(true);
+    playSound("success");
+    mostraConfermaSalvataggio(row,"offline","Impegno");
+  }finally{
+    savingImpegno=false;
+    setSaveBusy("btnSalvaImpegno",false,"Salvataggio...","Salva impegno");
+  }
+}
+
+async function creaEventoManuale(){
+  if(savingEvento)return;
+  if(!guard("event_update","crea evento"))return;
+  const ref=v("new_ev_referente")||"Gianluca Rallo";
+  const row={
+    local_id:uid(),
+    numero_evento:progressivoEvento(),
+    titolo:v("new_ev_titolo")||"Nuovo impegno",
+    cliente:v("new_ev_cliente"),
+    referente:ref,
+    tecnico:ref,
+    telefono_referente:v("new_ev_telefono")||telefonoReferente(ref),
+    data_evento:v("new_ev_data")||null,
+    data_fine_evento:v("new_ev_data_fine")||v("new_ev_data")||null,
+    luogo:v("new_ev_luogo"),
+    stato:v("new_ev_stato")||"Richiesta",
+    totale:n("new_ev_totale"),
+    ora_montaggio:v("new_ev_montaggio"),
+    ora_smontaggio:v("new_ev_smontaggio"),
+    note:v("new_ev_note"),
+    operatori:getSelectedOperatoriNuovoEvento(),
+    materiali:[],
+    checklist:{}
+  };
+  if(!row.data_evento){playSound("error");alert("Inserisci una data per l'evento.");return;}
+  if(!confirmPastDate(row.data_evento))return;
+  const ctec=conflittoTecnico(row.data_evento,row.tecnico,"",row.data_fine_evento);
+  if(ctec && !confirm("ATTENZIONE: lo stesso tecnico/referente ha gia un evento nella stessa data: "+(ctec.titolo||"evento")+". Vuoi continuare comunque?"))return;
+
+  savingEvento=true;
+  setSaveBusy("btnSalvaEvento",true,"Salvataggio...","Salva evento");
+  try{
+    if(online()){
+      const ins=await sb.from("eventi").insert(cleanForDb(row)).select().single();
+      if(ins.error){showSyncError(ins.error);return;}
+      eventi.push(ins.data);
+      saveCache();
+      render();
+      resetNuovoEvento();
+      mostraNuovoEvento(true);
+      playSound("success");
+      mostraConfermaSalvataggio(ins.data,"online","Evento");
+      logAttivita("Evento creato: "+row.titolo);
+      return;
+    }
+
+    row._pending=true;
+    eventi.push(row);
+    queue.push({type:"insert",table:"eventi",payload:{...row}});
+    saveCache();
+    saveQueue();
+    resetNuovoEvento();
+    mostraNuovoEvento(true);
+    playSound("success");
+    mostraConfermaSalvataggio(row,"offline","Evento");
+  }finally{
+    savingEvento=false;
+    setSaveBusy("btnSalvaEvento",false,"Salvataggio...","Salva evento");
+  }
+}
+
 async function salvaModificaEvento(key){
   if(!guard("event_update","modifica evento"))return;
   let e=eventi.find(x=>(x.local_id||x.id)===key);
